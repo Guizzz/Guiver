@@ -1,6 +1,6 @@
 http = require('http');
 WebSocketServer = require('websocket').server;
-const EventEmitter = require('events');
+var EventEmitter = require('events');
 
 class Wss_manager extends EventEmitter
 {   
@@ -11,7 +11,6 @@ class Wss_manager extends EventEmitter
         this.server.listen(1337, function() { });
         console.log("Wss Manager inizializated...");
         this.established_conn = {};
-        console.log(this.established_conn);
     }
     
     start()
@@ -31,7 +30,7 @@ class Wss_manager extends EventEmitter
         console.log("New connection established: ", conn.socket._peername);
         conn.on('message', function(message){
             this.established_conn[JSON.parse(message.utf8Data).client_id.toString()] = conn;
-            console.log(message.utf8Data)
+            // console.log(message.utf8Data)
             this.emit("msg", message.utf8Data);
         }.bind(this));
         
@@ -66,5 +65,4 @@ class Wss_manager extends EventEmitter
         }   
     }
 }
-
 module.exports = Wss_manager

@@ -4,7 +4,7 @@ class Client_Manager
 {   
     constructor()
     {
-        this.link_manager = new Link_manager();
+        this.link_manager = new Link_manager("CLNT_MGMT");
         this.wss_manager = new Wss_manager();
         this.link_manager.start();
         this.wss_manager.start();

@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "amqplib": "^0.10.3",
     "http": "^0.0.1-security",
     "websocket": "^1.0.34"
   }
