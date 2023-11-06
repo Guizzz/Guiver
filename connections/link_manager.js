@@ -1,15 +1,13 @@
 var EventEmitter = require('events');
 var amqp = require('amqplib/callback_api');
-var queueing = require("../config");
 
 class Link_manager extends EventEmitter
 {
-    constructor(name)
+    constructor(name, queue_in)
     {
         super();
         this.caller = name;
-        this.queue_in = queueing[this.caller][0];
-        this.queue_out = queueing[this.caller][1]
+        this.queue_in = queue_in;
         console.log("[",this.caller,"] Link Manager inizializated...")
     }
 
@@ -19,9 +17,9 @@ class Link_manager extends EventEmitter
         amqp.connect('amqp://localhost', this._rabbit_handler.bind(this));
     }
 
-    to_core(data)
+    to_core(queue_out, data)
     {
-        this.channel.sendToQueue(this.queue_out, Buffer.from(data));
+        this.channel.sendToQueue(queue_out, Buffer.from(data));
     }
 
     from_core(data)
@@ -31,6 +29,7 @@ class Link_manager extends EventEmitter
 
     _rabbit_handler(error0, connection) 
     {
+        console.log("[",this.caller,"] connected");
         if (error0) throw error0;
         connection.createChannel(function(error1, c) {
             if (error1) throw error1;

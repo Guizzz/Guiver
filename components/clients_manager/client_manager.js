@@ -1,10 +1,11 @@
 const Wss_manager = require("../../connections/wss_manager");
 const Link_manager = require("../../connections/link_manager");
+
 class Client_Manager
 {   
     constructor()
     {
-        this.link_manager = new Link_manager("CLNT_MGMT");
+        this.link_manager = new Link_manager("CLNT_MGMT", "clients_queue");
         this.wss_manager = new Wss_manager();
         this.link_manager.start();
         this.wss_manager.start();
@@ -15,7 +16,7 @@ class Client_Manager
 
     from_client(msg) 
     {
-        return this.link_manager.to_core(msg);
+        return this.link_manager.to_core("core_queue", msg);
     }
 
     send_client(msg)
