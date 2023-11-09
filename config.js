@@ -1,7 +1,6 @@
 
 var queueing = { 
-    "CORE": ["in", "out"],
-    "CLNT_MGMT" : ["out", "in"]
+    "CORE": "core_queue"
 }
 
 module.exports = queueing

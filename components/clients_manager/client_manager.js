@@ -6,7 +6,7 @@ class Client_Manager
     constructor()
     {
         this.link_manager = new Link_manager("CLNT_MGMT", "clients_queue");
-        this.wss_manager = new Wss_manager();
+        this.wss_manager = new Wss_manager(process.env.WSS_CLI_PORT);
         this.link_manager.start();
         this.wss_manager.start();
 

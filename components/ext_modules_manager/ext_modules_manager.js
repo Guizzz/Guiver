@@ -4,9 +4,9 @@ const Link_manager = require("../../connections/link_manager");
 class Ext_Module_Manager
 {   
     constructor()
-    {
+    {   
         this.link_manager = new Link_manager("MODULES_MGMT", "modules_queue");
-        this.wss_manager = new Wss_manager();
+        this.wss_manager = new Wss_manager(process.env.WSS_MDL_PORT);
         this.link_manager.start();
         this.wss_manager.start();
 

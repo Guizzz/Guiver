@@ -4,12 +4,12 @@ var EventEmitter = require('events');
 
 class Wss_manager extends EventEmitter
 {   
-    constructor()
+    constructor(wss_port)
     {   
         super();
         this.server = http.createServer(function(request, response) {});
-        this.server.listen(1337, function() { });
-        console.log("Wss Manager inizializated...");
+        this.server.listen(wss_port, function() { });
+        console.log("Wss Manager inizializated on port",wss_port,"...");
         this.established_conn = {};
     }
     
@@ -45,6 +45,7 @@ class Wss_manager extends EventEmitter
 
     send_response(data)
     {   
+        console.log("wss send resp",data)
         var connets = []
         try{
             if (JSON.parse(data).hasOwnProperty("client_id"))
@@ -52,13 +53,17 @@ class Wss_manager extends EventEmitter
                 var client_id = JSON.parse(data).client_id;
                 connets.push(this.established_conn[client_id.toString()]);
             }
+            else
+            {
+                connets = this.established_conn;
+            }
         }
         catch
         {   
-            console.log("Corrupted json messagge or client_id is null")
+            console.log("Corrupted json messagge")
             connets = this.established_conn;
         }
-
+        
         for (var conn in connets)
         {
             connets[conn].sendUTF(data);

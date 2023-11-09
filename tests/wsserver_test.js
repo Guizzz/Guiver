@@ -22,24 +22,21 @@ client.on('connect', function(connection) {
         }
     });
 
-    function sendNumber() {
+    var stdin = process.openStdin();
+    stdin.on('data', sendNumber.bind(this)); 
+
+    function sendNumber(data) {
         if (connection.connected) {
-            var number = Math.round(Math.random() * 0xFFFFFF);
 
             data = {
                 "client_id": ID,
-                "payload": number.toString(16)
+                "command": data.toString()
             }
 
             connection.sendUTF(JSON.stringify(data));
             
         }
     }
-    sendNumber();
-    setTimeout(sendNumber, 3000);
-    setTimeout(sendNumber, 6000);
-    setTimeout(()=>{connection.close(1000, ID.toString())}, 7000)
-    //connection.close(1000, ID.toString())
 });
 
-client.connect('ws://localhost:1337/');
+client.connect('ws://localhost:7777/');

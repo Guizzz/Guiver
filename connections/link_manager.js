@@ -19,6 +19,7 @@ class Link_manager extends EventEmitter
 
     to_core(queue_out, data)
     {
+        console.log("[",this.caller,"]",queue_out, data);
         this.channel.sendToQueue(queue_out, Buffer.from(data));
     }
 
@@ -34,6 +35,7 @@ class Link_manager extends EventEmitter
         connection.createChannel(function(error1, c) {
             if (error1) throw error1;
             this.channel = c;
+            this.emit("channel_new");
 
             this.channel.assertQueue(this.queue_in, {
                 durable: false
