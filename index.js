@@ -11,4 +11,4 @@ var client_manager = new Client_Manager()
 
 var ext_module_manager = new Ext_Module_Manager();
 var wether = new Weather_module();
-// var led = new Led_module();
+var led = new Led_module();
