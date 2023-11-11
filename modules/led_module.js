@@ -11,7 +11,7 @@ class Led_module extends Module
             "led_manual": this.led_manual_mgmt.bind(this)
         });
         this._init_led();
-        //this._set_led()
+        this._set_led()
     }
 
     _init_led()
@@ -19,9 +19,9 @@ class Led_module extends Module
         this.redValue=0;
         this.greenValue=0;
         this.blueValue=0;
-        // this.RedLed = new Gpio(4, {mode: Gpio.OUTPUT});
-        // this.GreenLed = new Gpio(17, {mode: Gpio.OUTPUT});
-        // this.BlueLed = new Gpio(18, {mode: Gpio.OUTPUT});
+        this.RedLed = new Gpio(4, {mode: Gpio.OUTPUT});
+        this.GreenLed = new Gpio(17, {mode: Gpio.OUTPUT});
+        this.BlueLed = new Gpio(18, {mode: Gpio.OUTPUT});
     }
 
     _set_led()
@@ -42,7 +42,7 @@ class Led_module extends Module
         if(command.hasOwnProperty("blueValue"))
             this.blueValue=command.blueValue;
         
-        //this._set_led();
+        this._set_led();
 
         var resp = new Object();
         resp.command = "to_client";
