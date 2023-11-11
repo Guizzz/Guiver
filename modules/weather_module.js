@@ -1,14 +1,14 @@
 const Link_manager = require("../connections/link_manager");
 const Http = require("../connections/http");
 
-class Wether_module
+class Weather_module
 {
     constructor()
     {
         this.commands_handled = new Object();
-        this.commands_handled["get_wether"] = this.get_wether.bind(this);
+        this.commands_handled["get_weather"] = this.get_weather.bind(this);
         this.http = new Http();
-        this.link_manager = new Link_manager("WETHER_MODULE", "wether_queue");
+        this.link_manager = new Link_manager("WEATHER_MODULE", "weather_queue");
         this.link_manager.on("msg", this.manage_request.bind(this));
         this.link_manager.on("channel_new", this.start.bind(this));
         this.link_manager.start();
@@ -45,9 +45,9 @@ class Wether_module
 
     }
 
-    get_wether(command)
+    get_weather(command)
     {
-        var url = "https://api.openweathermap.org/data/2.5/weather?q=latina&appid=" + process.env.WETHER_KEY; // TODO
+        var url = "https://api.openweathermap.org/data/2.5/weather?q=latina&appid=" + process.env.WEATHER_KEY; // TODO
         this.http.get(url,function(res){
             let data = [];
             const headerDate = res.headers && res.headers.date ? res.headers.date : 'no response date';
@@ -71,4 +71,4 @@ class Wether_module
     
 }
 
-module.exports = Wether_module;
+module.exports = Weather_module;
