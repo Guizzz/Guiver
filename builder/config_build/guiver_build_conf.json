@@ -1,0 +1,14 @@
+{
+    "name": "guiver",
+    "other_modules":
+    [
+        {
+            "name": "ext_modules_manager",
+            "path": "./components/ext_modules_manager/ext_modules_manager"
+        },
+        {
+            "name": "weather_module",
+            "path": "./modules/weather_module"
+        }
+    ]
+}
