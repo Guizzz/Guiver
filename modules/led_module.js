@@ -31,8 +31,10 @@ class Led_module extends Module
         this.BlueLed.pwmWrite(parseInt(this.blueValue,10));
     }
 
-    led_manual_mgmt(command)
+    led_manual_mgmt(req_cmd)
     {
+        var command = JSON.parse(req_cmd).payload;
+        
         if(command.hasOwnProperty("redValue"))
             this.redValue=command.redValue;
         
