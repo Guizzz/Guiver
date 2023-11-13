@@ -7,9 +7,9 @@ class API_Server
 {   
     constructor()
     {
-        this.link_manager = new Link_manager("CLNT_MGMT", "clients_queue");
+        this.link_manager = new Link_manager("API_SERVER", "api_queue");
         this.link_manager.start();
-        this.link_manager.on("msg", this.send_client.bind(this));
+        // this.link_manager.on("msg", this.send_client.bind(this));
         this.app = express();
         this.app.use(cors());
         this.app.use(bodyParser.urlencoded({ extended: false }));

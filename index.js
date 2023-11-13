@@ -9,7 +9,7 @@ const Weather_module = require("./modules/weather_module");
 
 var core = new Core()
 var client_manager = new Client_Manager()
-var api_server = API_Server()
+var api_server = new API_Server()
 
 var ext_module_manager = new Ext_Module_Manager();
 //var wether = new Weather_module();

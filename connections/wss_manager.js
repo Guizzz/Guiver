@@ -4,9 +4,10 @@ var EventEmitter = require('events');
 
 class Wss_manager extends EventEmitter
 {   
-    constructor(wss_port)
+    constructor(wss_port, event_name)
     {   
         super();
+        this.event_name = event_name;
         this.server = http.createServer(function(request, response) {});
         this.server.listen(wss_port, function() { });
         console.log("Wss Manager inizializated on port",wss_port,"...");
@@ -31,7 +32,7 @@ class Wss_manager extends EventEmitter
         conn.on('message', function(message){
             this.established_conn[JSON.parse(message.utf8Data).client_id.toString()] = conn;
             // console.log(message.utf8Data)
-            this.emit("msg", message.utf8Data);
+            this.emit(this.event_name, message.utf8Data);
         }.bind(this));
         
         conn.on('close', function(conn, res) {

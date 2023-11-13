@@ -6,11 +6,11 @@ class Ext_Module_Manager
     constructor()
     {   
         this.link_manager = new Link_manager("MODULES_MGMT", "modules_queue");
-        this.wss_manager = new Wss_manager(process.env.WSS_MDL_PORT);
+        this.wss_manager = new Wss_manager(process.env.WSS_MDL_PORT, "mdl_ws_msg");
         this.link_manager.start();
         this.wss_manager.start();
 
-        this.wss_manager.on("msg", this.from_client.bind(this));
+        this.wss_manager.on("mdl_ws_msg", this.from_client.bind(this));
         this.link_manager.on("msg", this.send_client.bind(this));
     }
 

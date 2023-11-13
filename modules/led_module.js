@@ -1,6 +1,5 @@
-const Link_manager = require("../connections/link_manager");
 const Module = require("./module");
-//var Gpio = require('pigpio').Gpio;
+var Gpio = require('pigpio').Gpio;
 
 class Led_module extends Module
 {
@@ -31,30 +30,26 @@ class Led_module extends Module
         this.BlueLed.pwmWrite(parseInt(this.blueValue,10));
     }
 
-    led_manual_mgmt(req_cmd)
+    led_manual_mgmt(request)
     {
-        var command = JSON.parse(req_cmd).payload;
+        if(request.payload.hasOwnProperty("redValue"))
+            this.redValue=request.payload.redValue;
         
-        if(command.hasOwnProperty("redValue"))
-            this.redValue=command.redValue;
+        if(request.payload.hasOwnProperty("greenValue"))
+            this.greenValue=request.payload.greenValue;
         
-        if(command.hasOwnProperty("greenValue"))
-            this.greenValue=command.greenValue;
-        
-        if(command.hasOwnProperty("blueValue"))
-            this.blueValue=command.blueValue;
+        if(request.payload.hasOwnProperty("blueValue"))
+            this.blueValue=request.payload.blueValue;
         
         this._set_led();
 
         var resp = new Object();
         resp.command = "to_client";
         resp.payload = {
-            "RedLed": this.redValue,
-            "GreenLed": this.greenValue,
-            "BlueLed": this.blueValue,
+            "redValue": this.redValue,
+            "greenValue": this.greenValue,
+            "blueValue": this.blueValue,
         };
-
-        console.log(resp);
 
         this.link_manager.to_core("core_queue", JSON.stringify(resp));
     }

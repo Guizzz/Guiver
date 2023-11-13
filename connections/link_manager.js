@@ -8,29 +8,31 @@ class Link_manager extends EventEmitter
         super();
         this.caller = name;
         this.queue_in = queue_in;
-        console.log("[",this.caller,"] Link Manager inizializated...")
+        console.log("[LINK_",this.caller,"] Link Manager inizializated...")
     }
 
     start()
     {
-        console.log("[",this.caller,"] Link Manager started...");
+        console.log("[LINK_",this.caller,"] Link Manager started...");
         amqp.connect('amqp://localhost', this._rabbit_handler.bind(this));
     }
 
     to_core(queue_out, data)
     {
-        console.log("[",this.caller,"]",queue_out, data);
+        console.log("[LINK_",this.caller,"]",queue_out, data);
         this.channel.sendToQueue(queue_out, Buffer.from(data));
     }
 
     from_core(data)
     {   
+        console.log(this.listeners("msg"))
         this.emit("msg", data.toString().trim())
+        console.log("[LINK_",this.caller,"] emit:", data.toString().trim());
     }
 
     _rabbit_handler(error0, connection) 
     {
-        console.log("[",this.caller,"] connected");
+        console.log("[LINK_",this.caller,"] connected");
         if (error0) throw error0;
         connection.createChannel(function(error1, c) {
             if (error1) throw error1;
@@ -43,6 +45,7 @@ class Link_manager extends EventEmitter
 
             this.channel.consume(this.queue_in, function(msg) 
             {
+                console.log("[LINK_",this.caller,"] -> ",this.queue_in," consume:", msg.content.toString());
                 this.from_core(msg.content.toString());
                 }.bind(this), {
                 noAck: true
