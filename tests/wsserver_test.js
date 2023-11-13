@@ -60,4 +60,4 @@ client.on('connect', function(connection) {
     }.bind(this), 1000)
 });
 
-client.connect('ws://localhost:7777/');
+client.connect('ws://192.168.1.22:7777/');

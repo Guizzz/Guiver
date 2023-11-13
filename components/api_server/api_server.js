@@ -22,22 +22,23 @@ class API_Server
 
     handle_led_req(req,res)
     {
+        console.log("API request:" + req.query);
         var redValue = 0;
         var greenValue = 0;
         var blueValue = 0;
         if(req.query.redValue)
             redValue = req.query.redValue;
         if(req.query.greenValue)
-        greenValue = req.query.greenValue;
+            greenValue = req.query.greenValue;
         if(req.query.blueValue)
             blueValue = req.query.blueValue;
 
         var j_cmd = {
             "command": "led_manual",
             "payload": {
-                "RedLed": redValue,
-                "GreenLed": greenValue,
-                "BlueLed": blueValue,
+                "RedLed": parseInt(redValue),
+                "GreenLed": parseInt(greenValue),
+                "BlueLed": parseInt(blueValue),
             }
         }
 

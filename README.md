@@ -1,5 +1,7 @@
 # Guiver
  Personal server
+# requirements
+sudo apt-get install pigpio
 
 # To do:
 Create ".env" file with:
