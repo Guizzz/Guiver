@@ -26,11 +26,11 @@ class API_Server
         var greenValue = 0;
         var blueValue = 0;
         if(req.query.redValue)
-            redValue = req.query.redValue;
+            redValue = parseInt(req.query.redValue);
         if(req.query.greenValue)
-        greenValue = req.query.greenValue;
+            greenValue = parseInt(req.query.greenValue);
         if(req.query.blueValue)
-            blueValue = req.query.blueValue;
+            blueValue = parseInt(req.query.blueValue);
 
         var j_cmd = {
             "command": "led_manual",
@@ -42,6 +42,10 @@ class API_Server
         }
 
         this.link_manager.to_core("core_queue", j_cmd);
+
+        this.link_manager.on("msg", function(data){
+            res.send(data);
+        }.bind(this))
     }
 }
 
