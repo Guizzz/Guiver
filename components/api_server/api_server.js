@@ -41,7 +41,7 @@ class API_Server
             }
         }
 
-        this.link_manager.to_core("core_queue", j_cmd);
+        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
 
         this.link_manager.on("msg", function(data){
             res.send(data);
