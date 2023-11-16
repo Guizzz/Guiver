@@ -32,7 +32,7 @@ class API_Server
             try
             {
                 var req_val = parseInt(req.query.redValue);
-                if (req_val>0 || req_val < 255)
+                if (req_val>0 && req_val < 255)
                     redValue = req_val
                 else
                     error = "Led value must be between 0 and 255";
@@ -47,7 +47,7 @@ class API_Server
             try
             {
                 var req_val = parseInt(req.query.greenValue);
-                if (req_val>0 || req_val < 255)
+                if (req_val>0 && req_val < 255)
                     greenValue = req_val
                 else
                     error = "Led value must be between 0 and 255";
@@ -63,7 +63,7 @@ class API_Server
             try
             {
                 var req_val = parseInt(req.query.blueValue);
-                if (req_val>0 || req_val < 255)
+                if (req_val>0 && req_val < 255)
                     blueValue = req_val
                 else
                     error = "Led value must be between 0 and 255";
