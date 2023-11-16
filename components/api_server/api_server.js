@@ -16,7 +16,6 @@ class API_Server
         this.app.use(bodyParser.json());
 
         this.app.post('/manual_led', this.handle_led_req.bind(this));
-
         this.app.listen(process.env.API_PORT, () => console.log("API Server started"));
     }
 
@@ -26,27 +25,69 @@ class API_Server
         var redValue = 0;
         var greenValue = 0;
         var blueValue = 0;
+        var error = "";
+
         if(req.query.redValue)
-            redValue = parseInt(req.query.redValue);
+        {
+            try
+            {
+                redValue = parseInt(req.query.redValue);
+            }
+            catch
+            {
+                error = "Led value can only be numbers";
+            }
+
+            if (redValue<0 || redValue > 255)
+                error = "Led value must be between 0 and 255";
+        }
         if(req.query.greenValue)
-            greenValue = parseInt(req.query.greenValue);
+        {
+            try
+            {
+                greenValue = parseInt(req.query.greenValue);
+            }
+            catch
+            {
+                error = "Led value can only be numbers";
+            }
+
+            if (greenValue<0 || greenValue > 255)
+                error = "Led value must be between 0 and 255";
+        }
         if(req.query.blueValue)
-            blueValue = parseInt(req.query.blueValue);
+        {
+            try
+            {
+                blueValue = parseInt(req.query.blueValue);
+            }
+            catch
+            {
+                error = "Led value can only be numbers";
+            }
+
+            if (blueValue<0 || blueValue > 255)
+                error = "Led value must be between 0 and 255";
+        }
 
         var j_cmd = {
             "command": "led_manual",
             "payload": {
-                "RedLed": parseInt(redValue),
-                "GreenLed": parseInt(greenValue),
-                "BlueLed": parseInt(blueValue),
+                "redValue": parseInt(redValue),
+                "greenValue": parseInt(greenValue),
+                "blueValue": parseInt(blueValue),
             }
         }
 
-        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
+        if (error != "")
+            j_cmd["error"] = error;
 
-        this.link_manager.on("msg", function(data){
-            res.send(data);
-        }.bind(this))
+        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
+        res.send("OK!");
+
+        // this.link_manager.on("msg", function(data){
+        //     res.send(data);
+        // }.bind(this))
     }
 }
 

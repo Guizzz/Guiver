@@ -25,9 +25,8 @@ class Link_manager extends EventEmitter
 
     from_core(data)
     {   
-        console.log(this.listeners("msg"))
-        this.emit("msg", data.toString().trim())
         console.log("[LINK_",this.caller,"] emit:", data.toString().trim());
+        this.emit("msg", data.toString().trim())
     }
 
     _rabbit_handler(error0, connection) 
