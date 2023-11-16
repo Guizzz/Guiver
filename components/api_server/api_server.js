@@ -31,42 +31,48 @@ class API_Server
         {
             try
             {
-                redValue = parseInt(req.query.redValue);
+                req_val = parseInt(req.query.redValue);
             }
             catch
             {
                 error = "Led value can only be numbers";
             }
 
-            if (redValue<0 || redValue > 255)
+            if (req_val>0 || req_val < 255)
+                redValue = req_val
+            else
                 error = "Led value must be between 0 and 255";
         }
         if(req.query.greenValue)
         {
             try
             {
-                greenValue = parseInt(req.query.greenValue);
+                req_val = parseInt(req.query.greenValue);
             }
             catch
             {
                 error = "Led value can only be numbers";
             }
 
-            if (greenValue<0 || greenValue > 255)
+            if (req_val>0 || req_val < 255)
+                greenValue = req_val
+            else
                 error = "Led value must be between 0 and 255";
         }
         if(req.query.blueValue)
         {
             try
             {
-                blueValue = parseInt(req.query.blueValue);
+                req_val = parseInt(req.query.blueValue);
             }
             catch
             {
                 error = "Led value can only be numbers";
             }
 
-            if (blueValue<0 || blueValue > 255)
+            if (req_val>0 || req_val < 255)
+                blueValue = req_val
+            else
                 error = "Led value must be between 0 and 255";
         }
 
