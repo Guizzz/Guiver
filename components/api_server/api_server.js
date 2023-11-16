@@ -31,7 +31,7 @@ class API_Server
         {
             try
             {
-                req_val = parseInt(req.query.redValue);
+                var req_val = parseInt(req.query.redValue);
                 if (req_val>0 || req_val < 255)
                     redValue = req_val
                 else
@@ -46,7 +46,7 @@ class API_Server
         {
             try
             {
-                req_val = parseInt(req.query.greenValue);
+                var req_val = parseInt(req.query.greenValue);
                 if (req_val>0 || req_val < 255)
                     greenValue = req_val
                 else
@@ -62,7 +62,7 @@ class API_Server
         {
             try
             {
-                req_val = parseInt(req.query.blueValue);
+                var req_val = parseInt(req.query.blueValue);
                 if (req_val>0 || req_val < 255)
                     blueValue = req_val
                 else
