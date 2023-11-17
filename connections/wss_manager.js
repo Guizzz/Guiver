@@ -29,8 +29,16 @@ class Wss_manager extends EventEmitter
         var conn = request.accept(null, request.origin);
         
         console.log("New connection established: ", conn.socket._peername);
-        conn.on('message', function(message){
-            this.established_conn[JSON.parse(message.utf8Data).client_id.toString()] = conn;
+        conn.on('message', function(message)
+        {
+            var msg = JSON.parse(message.utf8Data);
+            if(!msg.hasOwnProperty("client_id"))
+            {
+                conn.sendUTF("FAIL"); //TODO
+                return;
+            }
+            
+            this.established_conn[msg.client_id.toString()] = conn;
             // console.log(message.utf8Data)
             this.emit(this.event_name, message.utf8Data);
         }.bind(this));

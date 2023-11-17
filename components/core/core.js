@@ -26,24 +26,29 @@ class Core
         console.log("[core] Message recived: ", message);
         var j_msg = JSON.parse(message);
         var req_cmd = j_msg.command = j_msg.command.trim();
-        if(this.command_handled.hasOwnProperty(req_cmd))
+
+        if(j_msg.type == "request")
         {
-            var queue = this.command_handled[req_cmd];
-            this.link_manager.to_core(queue, message);
-            return;
+            if(this.command_handled.hasOwnProperty(req_cmd))
+            {
+                var queue = this.command_handled[req_cmd];
+                this.link_manager.to_core(queue, message);
+                return;
+            }
         }
-
-        if (req_cmd == "module_config")
+        else if (j_msg.type == "managment")
         {
-            this.commands_management(j_msg);
-            return;
-        }  
-
-        if (req_cmd == "to_client")
+            if (req_cmd == "module_config")
+            {
+                this.commands_management(j_msg);
+                return;
+            }  
+        }
+        else if (j_msg.type == "response")
         {
             this.link_manager.to_core("clients_queue",JSON.stringify(j_msg));
             return;
-        }  
+        }
 
         console.log("[core] Command ["+req_cmd+"] not implemented error");
         j_msg.payload = "ERROR: Command ["+req_cmd+"] not implemented";

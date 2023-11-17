@@ -24,6 +24,7 @@ class Module
     {
         var cmds = Object.keys(this.commands_handled);
         var j_msg = {
+            "type": "managment",
             "command": "module_config",
             "module": this.module_name,
             "module_queue": this.module_queue,

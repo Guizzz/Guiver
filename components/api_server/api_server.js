@@ -76,6 +76,7 @@ class API_Server
         }
 
         var j_cmd = {
+            "type": "request",
             "command": "led_manual",
             "payload": {
                 "redValue": parseInt(redValue),

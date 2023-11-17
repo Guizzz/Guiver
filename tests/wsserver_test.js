@@ -23,7 +23,7 @@ client.on('connect', function(connection) {
     });
 
     var stdin = process.openStdin();
-    stdin.on('data', sendNumber.bind(this)); 
+    stdin.on('data', run.bind(this)); 
 
     function sendNumber(data) {
         if (connection.connected) {
@@ -39,8 +39,15 @@ client.on('connect', function(connection) {
     var greenValue=0;
     var blueValue=0;
 
-    setInterval(function(){
-        data = { 
+    // setInterval(run.bind(this), 1000)
+
+    function run(num){
+        num = parseInt(num);
+        console.log(num);
+        if(!num)
+            num=5
+        data = {
+            "type": "request", 
             "command": "led_manual",
             "payload" :{
                 "redValue": redValue,
@@ -49,15 +56,15 @@ client.on('connect', function(connection) {
             }
         };
         
-        redValue = (redValue + 5) % 255;
-        greenValue = (greenValue + 5) % 255;
-        blueValue = (blueValue + 5) % 255;
+        redValue = (redValue + num) % 255;
+        greenValue = (greenValue + num) % 255;
+        blueValue = (blueValue + num) % 255;
 
-        data["client_id"]= ID;
+        // data["client_id"]= ID;
         // console.log(data);
         connection.sendUTF(JSON.stringify(data));
 
-    }.bind(this), 1000)
+    }
 });
 
 client.connect('ws://192.168.1.22:7777/');

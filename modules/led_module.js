@@ -44,15 +44,14 @@ class Led_module extends Module
         
         this._set_led();
 
-        var resp = new Object();
-        resp.command = "to_client";
-        resp.payload = {
+        request.type = "response";
+        request.payload = {
             "redValue": this.redValue,
             "greenValue": this.greenValue,
             "blueValue": this.blueValue,
         };
 
-        this.link_manager.to_core("core_queue", JSON.stringify(resp));
+        this.link_manager.to_core("core_queue", JSON.stringify(request));
     }
     
 }
