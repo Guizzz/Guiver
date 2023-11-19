@@ -15,26 +15,46 @@ client.on('connect', function(connection) {
     });
     connection.on('close', function() {
         console.log('Connection Closed');
+        exit();
     });
     connection.on('message', function(message) {
         if (message.type === 'utf8') {
-            console.log("Received:", JSON.parse(message.utf8Data));
+            console.log("Received:", message.utf8Data);
         }
     });
 
     var stdin = process.openStdin();
-    stdin.on('data', run.bind(this)); 
+    stdin.on('data', sendNumber.bind(this)); 
 
     function sendNumber(data) {
-        if (connection.connected) {
-            msg = {}
-            msg["client_id"]= ID;
-            msg["command"] = data.toString()
-            // console.log(data);
-            connection.sendUTF(JSON.stringify(msg));
+        data = data.toString().trim();
+        if (data == "on")
+        {
+            var cmd = {
+                "type": "request", 
+                "command": "rainbow_start",
+                "client_id":ID,
+                "payload" :{
+                    "time": 50,
+                    "brightnes":200
+                }
+            };
+            console.log("cmd :", JSON.stringify(cmd))
+            connection.sendUTF(JSON.stringify(cmd));
         }
-    }
 
+        if (data == "off")
+        {
+            var cmd = {
+                "type": "request", 
+                "command": "rainbow_stop",
+                "client_id":ID,
+            };
+            connection.sendUTF(JSON.stringify(cmd));
+        }
+        console.log(data);
+    }
+    
     var redValue=0;
     var greenValue=0;
     var blueValue=0;

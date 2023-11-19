@@ -7,11 +7,14 @@ class Led_module extends Module
     {
         super("LED_MODULE", "led_queue");
         this.set_handled_cmds({
-            "led_manual": this.led_manual_mgmt.bind(this)
+            "led_manual": this.led_manual_mgmt.bind(this),
+            "rainbow_start": this.rainbow_start.bind(this),
+            "rainbow_stop": this.rainbow_stop.bind(this),            
         });
         this._init_led();
         this._set_led();
         this.rainbowRunning = false;
+        this.rainbowBrightness=0;
     }
 
     _init_led()
@@ -55,10 +58,19 @@ class Led_module extends Module
         this.link_manager.to_core("core_queue", JSON.stringify(request));
     }
 
-    setRainbow(request)
+    rainbow_stop(request)
+    {
+        this.rainbowRunning = false;
+        request.payload = "OK"
+        this.link_manager.to_core("core_queue",SON.stringify(request));
+    }
+
+    rainbow_start(request)
     {
         var time=request.payload.time;
-    
+        var brightnes=request.payload.brightnes;
+        this.rainbowBrightness = parseInt(brightnes,10);
+        
         request.type = "response";
         if(this.rainbowRunning) 
         {
@@ -74,6 +86,8 @@ class Led_module extends Module
             return;
         }
 
+        this.time = parseInt(time,10);
+
         if(time<20) //to do
         {
             request.error = "Time frequence is too high";
@@ -81,16 +95,18 @@ class Led_module extends Module
             return;
         }
 
-        this.time = parseInt(time,10);
         this.rainbowRunning=true;
 
-        this.startRainbow();
+        this._startRainbow();
 
-        return({success:1});
+        request.payload = "OK"
+
+        this.link_manager.to_core("core_queue",JSON.stringify(request));
     }
 
     async _startRainbow()
     {
+        console.log("Starting Rainbow, rainbowBrightness:", this.rainbowBrightness);
         for(; this.redValue<this.rainbowBrightness; this.redValue++)
         {
             this.RedLed.pwmWrite(parseInt(this.redValue,10));

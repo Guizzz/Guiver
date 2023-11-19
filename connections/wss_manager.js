@@ -34,7 +34,7 @@ class Wss_manager extends EventEmitter
             var msg = JSON.parse(message.utf8Data);
             if(!msg.hasOwnProperty("client_id"))
             {
-                conn.sendUTF("FAIL"); //TODO
+                conn.sendUTF("FAIL: Client_id missing"); //TODO
                 return;
             }
             
