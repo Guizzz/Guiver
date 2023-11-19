@@ -41,7 +41,8 @@ class Module
         if(this.commands_handled.hasOwnProperty(req_cmd))
         {
             var cmdManager = this.commands_handled[req_cmd];
-            cmdManager(j_msg);
+            var data = cmdManager(j_msg);
+            this.link_manager.to_core("core_queue", JSON.stringify(data));
             return;
         }
 

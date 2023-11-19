@@ -35,7 +35,7 @@ client.on('connect', function(connection) {
                 "command": "rainbow_start",
                 "client_id":ID,
                 "payload" :{
-                    "time": 50,
+                    "time": 30,
                     "brightnes":200
                 }
             };

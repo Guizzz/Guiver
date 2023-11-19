@@ -16,6 +16,8 @@ class API_Server
         this.app.use(bodyParser.json());
 
         this.app.post('/manual_led', this.handle_led_req.bind(this));
+        this.app.post('/rainbow_start', this.handle_rainbow_start.bind(this));
+        this.app.post('/rainbow_stop', this.handle_rainbow_stop.bind(this));
         this.app.listen(process.env.API_PORT, () => console.log("API Server started"));
     }
 
@@ -32,7 +34,7 @@ class API_Server
             try
             {
                 var req_val = parseInt(req.query.redValue);
-                if (req_val>0 && req_val < 255)
+                if (req_val>0 && req_val < 256)
                     redValue = req_val
                 else
                     error = "Led value must be between 0 and 255";
@@ -47,7 +49,7 @@ class API_Server
             try
             {
                 var req_val = parseInt(req.query.greenValue);
-                if (req_val>0 && req_val < 255)
+                if (req_val>0 && req_val < 256)
                     greenValue = req_val
                 else
                     error = "Led value must be between 0 and 255";
@@ -63,7 +65,7 @@ class API_Server
             try
             {
                 var req_val = parseInt(req.query.blueValue);
-                if (req_val>0 && req_val < 255)
+                if (req_val>0 && req_val < 256)
                     blueValue = req_val
                 else
                     error = "Led value must be between 0 and 255";
@@ -86,14 +88,43 @@ class API_Server
         }
 
         if (error != "")
-            j_cmd["error"] = error;
-
+        {
+            res.send(error);
+            return;
+        }
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
         res.send("OK!");
 
         // this.link_manager.on("msg", function(data){
         //     res.send(data);
         // }.bind(this))
+    }
+
+    handle_rainbow_start(req,res)
+    {
+        var j_cmd = {
+            "type": "request",
+            "command": "rainbow_start",
+            "payload" :{
+                "time": 30,
+                "brightnes":254
+            }
+            
+        }
+
+        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
+        res.send("OK!");
+    }
+
+    handle_rainbow_stop(req,res)
+    {
+        var j_cmd = {
+            "type": "request",
+            "command": "rainbow_stop",            
+        }
+
+        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
+        res.send("OK!");
     }
 }
 

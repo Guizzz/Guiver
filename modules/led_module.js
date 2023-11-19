@@ -9,7 +9,8 @@ class Led_module extends Module
         this.set_handled_cmds({
             "led_manual": this.led_manual_mgmt.bind(this),
             "rainbow_start": this.rainbow_start.bind(this),
-            "rainbow_stop": this.rainbow_stop.bind(this),            
+            "rainbow_stop": this.rainbow_stop.bind(this),
+            "led_status": this.led_status.bind(this),            
         });
         this._init_led();
         this._set_led();
@@ -34,9 +35,24 @@ class Led_module extends Module
         this.GreenLed.pwmWrite(parseInt(this.greenValue,10));
         this.BlueLed.pwmWrite(parseInt(this.blueValue,10));
     }
-
+    
+    led_status(request)
+    {
+        var resp = {
+            "command": request.command,
+            "payload": {
+                "rainbowRunning": this.rainbowRunning,
+                "redValue": this.redValue,
+                "greenValue": this.greenValue,
+                "blueValue": this.blueValue,
+            }
+        }
+        return resp;
+    }
+    
     led_manual_mgmt(request)
     {
+        
         if(request.payload.hasOwnProperty("redValue"))
             this.redValue=request.payload.redValue;
         
@@ -48,21 +64,28 @@ class Led_module extends Module
         
         this._set_led();
 
-        request.type = "response";
-        request.payload = {
-            "redValue": this.redValue,
-            "greenValue": this.greenValue,
-            "blueValue": this.blueValue,
-        };
-
-        this.link_manager.to_core("core_queue", JSON.stringify(request));
+        var resp = {
+            "type" : "response",
+            "command": "rainbow_start",
+            "payload" : {
+                "redValue": this.redValue,
+                "greenValue": this.greenValue,
+                "blueValue": this.blueValue,
+            }
+        }
+        return resp;
     }
 
     rainbow_stop(request)
     {
         this.rainbowRunning = false;
-        request.payload = "OK"
-        this.link_manager.to_core("core_queue",SON.stringify(request));
+
+        var resp = {
+            "type" : "response",
+            "command": "rainbow_stop"
+        }
+
+        return resp;
     }
 
     rainbow_start(request)
@@ -71,7 +94,6 @@ class Led_module extends Module
         var brightnes=request.payload.brightnes;
         this.rainbowBrightness = parseInt(brightnes,10);
         
-        request.type = "response";
         if(this.rainbowRunning) 
         {
             request.error = "Rainbow already running";
@@ -99,9 +121,12 @@ class Led_module extends Module
 
         this._startRainbow();
 
-        request.payload = "OK"
+        var resp = {
+            "type" : "response",
+            "command": "rainbow_start",
+        }
 
-        this.link_manager.to_core("core_queue",JSON.stringify(request));
+        return resp;
     }
 
     async _startRainbow()
@@ -110,7 +135,7 @@ class Led_module extends Module
         for(; this.redValue<this.rainbowBrightness; this.redValue++)
         {
             this.RedLed.pwmWrite(parseInt(this.redValue,10));
-            await this.sleep(this.time);
+            await this._sleep(this.time);
         }
 
         while(this.rainbowRunning)
@@ -118,37 +143,37 @@ class Led_module extends Module
             for(; this.greenValue<this.rainbowBrightness && this.rainbowRunning; this.greenValue++)
             {
                 this.GreenLed.pwmWrite(parseInt(this.greenValue,10));
-                await this.sleep(this.time);
+                await this._sleep(this.time);
             }
             
             for(; this.redValue>0 && this.rainbowRunning; this.redValue--)
             {
                 this.RedLed.pwmWrite(parseInt(this.redValue,10));
-                await this.sleep(this.time);
+                await this._sleep(this.time);
             }
 
             for(; this.blueValue<this.rainbowBrightness && this.rainbowRunning; this.blueValue++)
             {
                 this.BlueLed.pwmWrite(parseInt(this.blueValue,10));
-                await this.sleep(this.time);
+                await this._sleep(this.time);
             }
 
             for(; this.greenValue>0 && this.rainbowRunning; this.greenValue--)
             {
                 this.GreenLed.pwmWrite(parseInt(this.greenValue,10));
-                await this.sleep(this.time);
+                await this._sleep(this.time);
             }
 
             for(; this.redValue<this.rainbowBrightness && this.rainbowRunning; this.redValue++)
             {
                 this.RedLed.pwmWrite(parseInt(this.redValue,10));
-                await this.sleep(this.time);
+                await this._sleep(this.time);
             }
 
             for(; this.blueValue>0 && this.rainbowRunning; this.blueValue--)
             {
                 this.BlueLed.pwmWrite(parseInt(this.blueValue,10));
-                await this.sleep(this.time);
+                await this._sleep(this.time);
             }
         }
 
@@ -157,8 +182,13 @@ class Led_module extends Module
             if(this.redValue>0)   this.RedLed.pwmWrite(parseInt(this.redValue--,10));
             if(this.greenValue>0) this.GreenLed.pwmWrite(parseInt(this.greenValue--,10));
             if(this.blueValue>0)  this.BlueLed.pwmWrite(parseInt(this.blueValue--,10));
-            await this.sleep(parseInt(this.time/2, 10));
+            await this._sleep(parseInt(this.time/2, 10));
         }
+    }
+
+    _sleep(millis) 
+    {
+        return new Promise(resolve => setTimeout(resolve, millis));
     }
     
 }
