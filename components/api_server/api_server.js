@@ -23,7 +23,7 @@ class API_Server
 
     handle_led_req(req,res)
     {
-        console.log("API request:" + req.query);
+        console.log("API request:" + req);
         var redValue = 0;
         var greenValue = 0;
         var blueValue = 0;
@@ -34,7 +34,7 @@ class API_Server
             try
             {
                 var req_val = parseInt(req.query.redValue);
-                if (req_val>0 && req_val < 256)
+                if (req_val>=0 && req_val < 256)
                     redValue = req_val
                 else
                     error = "Led value must be between 0 and 255";
@@ -49,7 +49,7 @@ class API_Server
             try
             {
                 var req_val = parseInt(req.query.greenValue);
-                if (req_val>0 && req_val < 256)
+                if (req_val>=0 && req_val < 256)
                     greenValue = req_val
                 else
                     error = "Led value must be between 0 and 255";
@@ -65,7 +65,7 @@ class API_Server
             try
             {
                 var req_val = parseInt(req.query.blueValue);
-                if (req_val>0 && req_val < 256)
+                if (req_val>=0 && req_val < 256)
                     blueValue = req_val
                 else
                     error = "Led value must be between 0 and 255";

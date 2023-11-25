@@ -9,7 +9,6 @@ class Core
         this.link_manager.start();
         this.link_manager.on("msg", this.manage_request.bind(this));
         this.command_handled = new Object();
-
     }
 
     commands_management(new_config)
