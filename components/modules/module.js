@@ -33,20 +33,20 @@ class Module
         this.link_manager.to_core("core_queue", JSON.stringify(j_msg));
     }
 
-    manage_request(message)
+    async manage_request(message)
     {
-        console.log("[Led_module] Message recived: ", message);
+        console.log("["+this.module_name+"] Message recived: ", message);
         var j_msg = JSON.parse(message);
         var req_cmd = j_msg.command = j_msg.command.trim();
         if(this.commands_handled.hasOwnProperty(req_cmd))
         {
             var cmdManager = this.commands_handled[req_cmd];
-            var data = cmdManager(j_msg);
+            var data = await cmdManager(j_msg);
             this.link_manager.to_core("core_queue", JSON.stringify(data));
             return;
         }
 
-        console.log("[Led_module] Command ["+req_cmd+"] not implemented error");
+        console.log("["+this.module_name+"] Command ["+req_cmd+"] not implemented error");
         j_msg.payload = "ERROR: Command ["+req_cmd+"] not implemented";
         j_msg.error = 500;
         this.link_manager.to_core("core_queue", JSON.stringify(j_msg));

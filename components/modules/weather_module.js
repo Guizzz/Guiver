@@ -1,5 +1,5 @@
 const Module = require("./module");
-const Http = require("../connections/http");
+const Http = require("../connections/utils/http");
 
 class Weather_module extends Module
 {
@@ -29,8 +29,13 @@ class Weather_module extends Module
               console.log('Response ended: ');
               console.log(Buffer.concat(data).toString());
               var resp = new Object();
-              resp.command = "to_client";
-              resp.payload = Buffer.concat(data).toString();
+
+              var resp = {
+                "type" : "response",
+                "command": "get_weather",
+                "payload": Buffer.concat(data).toString(),
+              }
+              
               this.link_manager.to_core("core_queue", JSON.stringify(resp));
             }.bind(this));
           }.bind(this))

@@ -24,6 +24,13 @@ class Core
     {
         console.log("[core] Message recived: ", message);
         var j_msg = JSON.parse(message);
+
+        if(!j_msg.hasOwnProperty("command"))
+        {
+            console.log("wrong message")
+            return;
+        }
+
         var req_cmd = j_msg.command = j_msg.command.trim();
 
         if(j_msg.type == "request")

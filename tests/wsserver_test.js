@@ -32,7 +32,9 @@ client.on('connect', function(connection) {
         {
             var cmd = {
                 "type": "request", 
-                "command": "rainbow_start",
+                "command": "delay",
+                "delay_time": 5000,
+                "command_to_delay": "rainbow_start",
                 "client_id":ID,
                 "payload" :{
                     "time": 30,
@@ -87,4 +89,4 @@ client.on('connect', function(connection) {
     }
 });
 
-client.connect('ws://192.168.1.22:7777/');
+client.connect('ws://localhost:7777/');
