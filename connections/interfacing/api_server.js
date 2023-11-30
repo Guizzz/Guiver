@@ -1,4 +1,4 @@
-const Link_manager = require("../../connections/link_manager");
+const Link_manager = require("../utils/link_manager");
 const express = require('express')
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -9,6 +9,8 @@ class API_Server
     {
         this.link_manager = new Link_manager("API_SERVER", "api_queue");
         this.link_manager.start();
+        this.link_manager.on("msg", this.update_value.bind(this));
+
         this.app = express();
         this.app.use(cors());
         this.app.use(bodyParser.urlencoded({ extended: false }));
@@ -18,7 +20,27 @@ class API_Server
         this.app.post('/rainbow_start', this.handle_rainbow_start.bind(this));
         this.app.post('/rainbow_stop', this.handle_rainbow_stop.bind(this));
         this.app.listen(process.env.API_PORT, () => console.log("API Server started"));
+
+        this.redValue=0;
+        this.greenValue=0;
+        this.blueValue=0;
+        this.last = {}
     }
+
+    update_value(data)
+    {
+        this.last = data;
+        data = JSON.parse(data);
+        if(data.payload.hasOwnProperty("redValue"))
+            this.redValue=request.payload.redValue;
+        
+        if(data.payload.hasOwnProperty("greenValue"))
+            this.greenValue=request.payload.greenValue;
+        
+        if(data.payload.hasOwnProperty("blueValue"))
+            this.blueValue=request.payload.blueValue;
+    }
+
 
     handle_led_req(req,res)
     {
@@ -92,11 +114,13 @@ class API_Server
             return;
         }
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-        res.send("OK!");
-
-        // this.link_manager.on("msg", function(data){
-        //     res.send(data);
-        // }.bind(this))
+        
+        var resp_data = {
+            "redValue": this.redValue,
+            "greenValue": this.greenValue,
+            "blueValue": this.blueValue,
+        }
+        setTimeout(function(){res.send(this.last);}.bind(this), 2000);
     }
 
     handle_rainbow_start(req,res)
@@ -105,14 +129,13 @@ class API_Server
             "type": "request",
             "command": "rainbow_start",
             "payload" :{
-                "time": 30,
+                "time": 40,
                 "brightnes":254
             }
-            
         }
 
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-        res.send("OK!");
+        setTimeout(function(){res.send(this.last);}.bind(this), 2000);
     }
 
     handle_rainbow_stop(req,res)
@@ -123,7 +146,7 @@ class API_Server
         }
 
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-        res.send("OK!");
+        setTimeout(function(){res.send(this.last);}.bind(this), 2000);
     }
 }
 

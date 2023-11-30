@@ -1,4 +1,4 @@
-const Link_manager = require("../connections/link_manager");
+const Link_manager = require("../../connections/utils/link_manager");
 
 class Module
 {

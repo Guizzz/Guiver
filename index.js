@@ -4,15 +4,16 @@ var core = new Core()
 
 
 
-// var Client_Manager = require("./components/clients_manager/client_manager");
+var Client_Manager = require("./connections/interfacing/client_manager");
+var client_manager = new Client_Manager()
 
-// const API_Server = require("./components/api_server/api_server");
+const API_Server = require("./connections/interfacing/api_server");
+var api_server = new API_Server();
+
 // // const Ext_Module_Manager = require("./components/ext_modules_manager/ext_modules_manager");
 // const Led_module = require("./modules/led_module");
 // const Weather_module = require("./modules/weather_module");
 
-// var client_manager = new Client_Manager()
-// var api_server = new API_Server()
 
 // var ext_module_manager = new Ext_Module_Manager();
 //var wether = new Weather_module();

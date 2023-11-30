@@ -1,4 +1,4 @@
-var Link_manager = require("../../connections/link_manager");
+var Link_manager = require("../../connections/utils/link_manager");
 
 
 class Core
@@ -46,13 +46,15 @@ class Core
         else if (j_msg.type == "response")
         {
             this.link_manager.to_core("clients_queue",JSON.stringify(j_msg));
+            this.link_manager.to_core("api_queue",JSON.stringify(j_msg));
             return;
         }
 
-        console.log("[core] Command ["+req_cmd+"] not implemented error");
-        j_msg.payload = "ERROR: Command ["+req_cmd+"] not implemented";
+        console.log("[core] Command <"+req_cmd+"> not implemented error");
+        j_msg.payload = "ERROR: Command <"+req_cmd+"> not implemented";
         j_msg.error = 500;
         this.link_manager.to_core("clients_queue",JSON.stringify(j_msg));
+        this.link_manager.to_core("api_queue",JSON.stringify(j_msg));
 
     }
 }

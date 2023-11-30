@@ -54,7 +54,7 @@ class Wss_manager extends EventEmitter
 
     send_response(data)
     {   
-        console.log("wss send resp",data)
+        // console.log("wss send resp",data)
         var connets = []
         try{
             if (JSON.parse(data).hasOwnProperty("client_id"))
