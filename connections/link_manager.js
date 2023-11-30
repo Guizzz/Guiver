@@ -14,7 +14,7 @@ class Link_manager extends EventEmitter
     start()
     {
         console.log("[LINK_",this.caller,"] Link Manager started...");
-        amqp.connect('amqp://localhost', this._rabbit_handler.bind(this));
+        amqp.connect('amqp://127.0.0.1', this._rabbit_handler.bind(this));
     }
 
     to_core(queue_out, data)
@@ -32,9 +32,14 @@ class Link_manager extends EventEmitter
     _rabbit_handler(error0, connection) 
     {
         console.log("[LINK_",this.caller,"] connected");
-        if (error0) throw error0;
-        connection.createChannel(function(error1, c) {
-            if (error1) throw error1;
+        if (error0) 
+            throw error0;
+        
+        connection.createChannel(function(error1, c) 
+        {   
+            if (error1) 
+                throw error1;
+
             this.channel = c;
             this.emit("channel_new");
 
@@ -50,6 +55,7 @@ class Link_manager extends EventEmitter
                 noAck: true
             });
         }.bind(this));
+        
 
         
     }

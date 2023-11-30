@@ -13,9 +13,9 @@ class Core
 
     commands_management(new_config)
     {
-        for ( var cmd in new_config.commands_handled)
+        for ( var cmd of new_config.commands_handled)
         {
-            this.command_handled[new_config.commands_handled[cmd]] = new_config.module_queue;
+            this.command_handled[cmd] = new_config.module_queue;
         }
         console.log("New command_handled:",this.command_handled)
     }
