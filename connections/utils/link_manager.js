@@ -19,13 +19,13 @@ class Link_manager extends EventEmitter
 
     to_core(queue_out, data)
     {
-        console.log("[LINK_",this.caller,"]",queue_out, data);
+        // console.log("[LINK_",this.caller,"]",queue_out, data);
         this.channel.sendToQueue(queue_out, Buffer.from(data));
     }
 
     from_core(data)
     {   
-        console.log("[LINK_",this.caller,"] emit:", data.toString().trim());
+        // console.log("[LINK_",this.caller,"] emit:", data.toString().trim());
         this.emit("msg", data.toString().trim())
     }
 
@@ -49,7 +49,7 @@ class Link_manager extends EventEmitter
 
             this.channel.consume(this.queue_in, function(msg) 
             {
-                console.log("[LINK_",this.caller,"] -> ",this.queue_in," consume:", msg.content.toString());
+                // console.log("[LINK_",this.caller,"] -> ",this.queue_in," consume:", msg.content.toString());
                 this.from_core(msg.content.toString());
                 }.bind(this), {
                 noAck: true

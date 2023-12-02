@@ -42,7 +42,8 @@ class Module
         {
             var cmdManager = this.commands_handled[req_cmd];
             var data = await cmdManager(j_msg);
-            this.link_manager.to_core("core_queue", JSON.stringify(data));
+            if (data != undefined && data != JSON.stringify("{}"))
+                this.link_manager.to_core("core_queue", JSON.stringify(data));
             return;
         }
 

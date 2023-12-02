@@ -19,22 +19,23 @@ client.on('connect', function(connection) {
     });
     connection.on('message', function(message) {
         if (message.type === 'utf8') {
-            console.log("Received:", message.utf8Data);
+            console.log("Received:", JSON.parse(message.utf8Data));
         }
     });
-
+    
     var stdin = process.openStdin();
     stdin.on('data', sendNumber.bind(this)); 
-
+    
     function sendNumber(data) {
+        // console.log(data);
         data = data.toString().trim();
         if (data == "on")
         {
             var cmd = {
                 "type": "request", 
-                "command": "delay",
+                "command": "get_weather",
                 "delay_time": 5000,
-                "command_to_delay": "rainbow_start",
+                // "command_to_delay": "get_weather",
                 "client_id":ID,
                 "payload" :{
                     "time": 30,
@@ -54,7 +55,6 @@ client.on('connect', function(connection) {
             };
             connection.sendUTF(JSON.stringify(cmd));
         }
-        console.log(data);
     }
     
     var redValue=0;
