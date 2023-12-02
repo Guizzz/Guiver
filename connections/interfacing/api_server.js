@@ -31,14 +31,17 @@ class API_Server
     {
         this.last = data;
         data = JSON.parse(data);
-        if(data.payload.hasOwnProperty("redValue"))
-            this.redValue=request.payload.redValue;
-        
-        if(data.payload.hasOwnProperty("greenValue"))
-            this.greenValue=request.payload.greenValue;
-        
-        if(data.payload.hasOwnProperty("blueValue"))
-            this.blueValue=request.payload.blueValue;
+        if(data.hasOwnProperty("payload"))
+        {
+            if(data.payload.hasOwnProperty("redValue"))
+                this.redValue=request.payload.redValue;
+            
+            if(data.payload.hasOwnProperty("greenValue"))
+                this.greenValue=request.payload.greenValue;
+            
+            if(data.payload.hasOwnProperty("blueValue"))
+                this.blueValue=request.payload.blueValue;
+        }
     }
 
 
