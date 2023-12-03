@@ -11,6 +11,9 @@ var api_server = new API_Server();
 const Delay_module = require("./components/modules/delay");
 var delay_mdl = new Delay_module();
 
+const LoopTask_module = require("./components/modules/loop_task");
+var loop_mdl = new LoopTask_module();
+
 const Weather_module = require("./components/modules/weather_module");
 var wether = new Weather_module();
 

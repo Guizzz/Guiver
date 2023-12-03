@@ -17,22 +17,22 @@ class Delay_module extends Module
 
     async _delay(command)
     {   
-        var cmd = {
-            "type": "reqeust"
-        }
         var delay_time = 0;
         if(command.hasOwnProperty("delay_time"))
             delay_time = command.delay_time;
 
         if(command.hasOwnProperty("command_to_delay"))
         {
-            cmd["command"] = command.command_to_delay;
-            cmd["payload"] = command.payload;
+            command["type"] = "request";
+            command["command"] = command.command_to_delay;
+            command["payload"] = command.payload;
+            delete command["delay_time"];
+            delete command["command_to_delay"];
         }
         
         await sleep(parseInt(delay_time,10));
         console.log("wait Done")
-        return cmd;
+        return command;
     }
 
 }
