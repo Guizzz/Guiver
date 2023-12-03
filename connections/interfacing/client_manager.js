@@ -12,6 +12,18 @@ class Client_Manager
 
         this.wss_manager.on("ws_msg", this.from_client.bind(this));
         this.link_manager.on("msg", this.send_client.bind(this));
+        this.link_manager.on("channel_new", this._start.bind(this));
+    }
+
+    _start()
+    {
+        var j_msg = {
+            "type": "managment",
+            "command": "response_config",
+            "module": "CLNT_MGMT",
+            "module_queue": "clients_queue",
+        }
+        this.link_manager.to_core("core_queue", JSON.stringify(j_msg));
     }
 
     from_client(msg) 

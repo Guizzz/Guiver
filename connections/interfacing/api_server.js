@@ -10,6 +10,7 @@ class API_Server
         this.link_manager = new Link_manager("API_SERVER", "api_queue");
         this.link_manager.start();
         this.link_manager.on("msg", this.update_value.bind(this));
+        this.link_manager.on("channel_new", this._start.bind(this));
 
         this.app = express();
         this.app.use(cors());
@@ -25,6 +26,17 @@ class API_Server
         this.greenValue=0;
         this.blueValue=0;
         this.last = {}
+    }
+
+    _start()
+    {
+        var j_msg = {
+            "type": "managment",
+            "command": "response_config",
+            "module": "API_SERVER",
+            "module_queue": "api_queue",
+        }
+        this.link_manager.to_core("core_queue", JSON.stringify(j_msg));
     }
 
     update_value(data)
@@ -123,7 +135,7 @@ class API_Server
             "greenValue": this.greenValue,
             "blueValue": this.blueValue,
         }
-        setTimeout(function(){res.send(this.last);}.bind(this), 2000);
+        setTimeout(function(){res.send(this.last);this.last = {};}.bind(this), 2000);
     }
 
     handle_rainbow_start(req,res)
@@ -138,7 +150,7 @@ class API_Server
         }
 
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-        setTimeout(function(){res.send(this.last);}.bind(this), 2000);
+        setTimeout(function(){res.send(this.last);this.last = {};}.bind(this), 2000);
     }
 
     handle_rainbow_stop(req,res)
@@ -149,7 +161,7 @@ class API_Server
         }
 
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-        setTimeout(function(){res.send(this.last);}.bind(this), 2000);
+        setTimeout(function(){res.send(this.last);this.last = {};}.bind(this), 2000);
     }
 }
 

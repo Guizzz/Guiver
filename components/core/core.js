@@ -9,6 +9,7 @@ class Core
         this.link_manager.start();
         this.link_manager.on("msg", this.manage_request.bind(this));
         this.command_handled = new Object();
+        this.response_handlers = [];
     }
 
     commands_management(new_config)
@@ -18,6 +19,21 @@ class Core
             this.command_handled[cmd] = new_config.module_queue;
         }
         console.log("New command_handled:",this.command_handled)
+    }
+
+    response_management(new_conf)
+    {
+        this.response_handlers.push(new_conf.module_queue);
+        console.log("New response_handlers:",this.response_handlers)
+    }
+
+    send_response(j_msg)
+    {
+        for (var resp_manager of this.response_handlers)
+        {
+            console.log("Sending response to ", resp_manager)
+            this.link_manager.to_core(resp_manager,JSON.stringify(j_msg));
+        }
     }
 
     manage_request(message)
@@ -47,22 +63,23 @@ class Core
             if (req_cmd == "module_config")
             {
                 this.commands_management(j_msg);
-                return;
+            }
+            else if (req_cmd == "response_config")
+            {
+                this.response_management(j_msg);
             }  
+            return;
         }
         else if (j_msg.type == "response")
         {
-            this.link_manager.to_core("clients_queue",JSON.stringify(j_msg));
-            this.link_manager.to_core("api_queue",JSON.stringify(j_msg));
+            this.send_response(j_msg)
             return;
         }
 
         console.log("[core] Command <"+req_cmd+"> not implemented error");
         j_msg.payload = "ERROR: Command <"+req_cmd+"> not implemented";
         j_msg.error = 500;
-        this.link_manager.to_core("clients_queue",JSON.stringify(j_msg));
-        this.link_manager.to_core("api_queue",JSON.stringify(j_msg));
-
+        this.send_response(j_msg)
     }
 }
 

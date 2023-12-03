@@ -12,7 +12,7 @@ class Weather_module extends Module
         this.http = new Http();
     }
 
-    async get_weather(command)
+    get_weather(command)
     {
         var url = "https://api.openweathermap.org/data/2.5/weather?q=latina&units=metric&appid=" + process.env.WEATHER_KEY; // TODO
 

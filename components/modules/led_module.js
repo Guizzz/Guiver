@@ -15,7 +15,8 @@ class Led_module extends Module
         this._init_led();
         this._set_led();
         this.rainbowRunning = false;
-        this.rainbowBrightness=0;
+        this.rainbowBrightness=255;
+        this.time=50;
     }
 
     _init_led()
@@ -41,7 +42,11 @@ class Led_module extends Module
         var resp = {
             "command": request.command,
             "payload": {
-                "rainbowRunning": this.rainbowRunning,
+                "rainbow_status":{
+                    "rainbowRunning": this.rainbowRunning,
+                    "time": this.time,
+                    "brightnes": this.rainbowBrightness
+                },
                 "redValue": this.redValue,
                 "greenValue": this.greenValue,
                 "blueValue": this.blueValue,
