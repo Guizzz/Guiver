@@ -17,8 +17,11 @@ var loop_mdl = new LoopTask_module();
 const Weather_module = require("./components/modules/weather_module");
 var wether = new Weather_module();
 
+const Info_Point = require("./components/info_point/info_point");
+var info_point = new Info_Point();
+
 // const Ext_Module_Manager = require("./components/ext_modules_manager/ext_modules_manager");
 // var ext_module_manager = new Ext_Module_Manager();
 
-const Led_module = require("./components/modules/led_module");
-var led = new Led_module();
+// const Led_module = require("./components/modules/led_module");
+// var led = new Led_module();

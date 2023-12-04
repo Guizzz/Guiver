@@ -33,9 +33,9 @@ client.on('connect', function(connection) {
         {
             var cmd = {
                 "type": "request", 
-                "command": "get_weather",
+                "command": "delay",
                 "delay_time": 5000,
-                // "command_to_delay": "get_weather",
+                "command_to_delay": "rainbow_start",
                 "client_id":ID,
                 "payload" :{
                     "time": 30,
@@ -46,11 +46,36 @@ client.on('connect', function(connection) {
             connection.sendUTF(JSON.stringify(cmd));
         }
 
-        if (data == "off")
+        if (data == "loop")
         {
             var cmd = {
                 "type": "request", 
-                "command": "rainbow_stop",
+                "command": "add_loop_task",
+                "delta_time": 5000,
+                "command_to_loop": "get_weather",
+                "client_id":ID,
+            };
+            console.log("cmd :", JSON.stringify(cmd))
+            connection.sendUTF(JSON.stringify(cmd));
+        }
+
+        if (data == "unloop")
+        {
+            var cmd = {
+                "type": "request", 
+                "command": "delete_loop_task",
+                "command_to_unloop": "get_weather",
+                "client_id":ID,
+            };
+            console.log("cmd :", JSON.stringify(cmd))
+            connection.sendUTF(JSON.stringify(cmd));
+        }
+
+        if (data == "w")
+        {
+            var cmd = {
+                "type": "request", 
+                "command": "get_weather",
                 "client_id":ID,
             };
             connection.sendUTF(JSON.stringify(cmd));
@@ -89,4 +114,5 @@ client.on('connect', function(connection) {
     }
 });
 
+// client.connect('ws://192.168.1.22:7777/');
 client.connect('ws://localhost:7777/');
