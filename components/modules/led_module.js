@@ -1,5 +1,5 @@
 const Module = require("./module");
-var Gpio = require('pigpio').Gpio;
+// var Gpio = require('pigpio').Gpio;
 
 class Led_module extends Module
 {
@@ -13,7 +13,7 @@ class Led_module extends Module
             "led_status": this.led_status.bind(this),            
         });
         this._init_led();
-        this._set_led();
+        // this._set_led();
         this.rainbowRunning = false;
         this.rainbowBrightness=255;
         this.time=50;
@@ -24,9 +24,9 @@ class Led_module extends Module
         this.redValue=0;
         this.greenValue=0;
         this.blueValue=0;
-        this.RedLed = new Gpio(4, {mode: Gpio.OUTPUT});
-        this.GreenLed = new Gpio(17, {mode: Gpio.OUTPUT});
-        this.BlueLed = new Gpio(18, {mode: Gpio.OUTPUT});
+        // this.RedLed = new Gpio(4, {mode: Gpio.OUTPUT});
+        // this.GreenLed = new Gpio(17, {mode: Gpio.OUTPUT});
+        // this.BlueLed = new Gpio(18, {mode: Gpio.OUTPUT});
         
     }
 
@@ -40,7 +40,8 @@ class Led_module extends Module
     led_status(request)
     {
         var resp = {
-            "command": request.command,
+            "type": "response",
+            "command": "led_status",
             "payload": {
                 "rainbow_status":{
                     "rainbowRunning": this.rainbowRunning,
@@ -67,18 +68,9 @@ class Led_module extends Module
         if(request.payload.hasOwnProperty("blueValue"))
             this.blueValue=request.payload.blueValue;
         
-        this._set_led();
+        // this._set_led();
 
-        var resp = {
-            "type" : "response",
-            "command": "rainbow_start",
-            "payload" : {
-                "redValue": this.redValue,
-                "greenValue": this.greenValue,
-                "blueValue": this.blueValue,
-            }
-        }
-        return resp;
+        return this.led_status("");
     }
 
     rainbow_stop(request)
@@ -90,7 +82,7 @@ class Led_module extends Module
             "command": "rainbow_stop"
         }
 
-        return resp;
+        return this.led_status("");
     }
 
     rainbow_start(request)
@@ -124,14 +116,9 @@ class Led_module extends Module
 
         this.rainbowRunning=true;
 
-        this._startRainbow();
+        // this._startRainbow();
 
-        var resp = {
-            "type" : "response",
-            "command": "rainbow_start",
-        }
-
-        return resp;
+        return this.led_status("");
     }
 
     async _startRainbow()
