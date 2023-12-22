@@ -13,7 +13,7 @@ class Led_module extends Module
             "led_status": this.led_status.bind(this),            
         });
         this._init_led();
-        // this._set_led();
+        this._set_led();
         this.rainbowRunning = false;
         this.rainbowBrightness=255;
         this.time=50;
@@ -24,9 +24,9 @@ class Led_module extends Module
         this.redValue=0;
         this.greenValue=0;
         this.blueValue=0;
-        // this.RedLed = new Gpio(4, {mode: Gpio.OUTPUT});
-        // this.GreenLed = new Gpio(17, {mode: Gpio.OUTPUT});
-        // this.BlueLed = new Gpio(18, {mode: Gpio.OUTPUT});
+        this.RedLed = new Gpio(4, {mode: Gpio.OUTPUT});
+        this.GreenLed = new Gpio(17, {mode: Gpio.OUTPUT});
+        this.BlueLed = new Gpio(18, {mode: Gpio.OUTPUT});
         
     }
 
@@ -68,7 +68,7 @@ class Led_module extends Module
         if(request.payload.hasOwnProperty("blueValue"))
             this.blueValue=request.payload.blueValue;
         
-        // this._set_led();
+        this._set_led();
 
         return this.led_status("");
     }
