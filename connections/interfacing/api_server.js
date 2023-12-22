@@ -17,6 +17,7 @@ class API_Server
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(bodyParser.json());
 
+        this.app.post('/get_weather', this.handle_weather.bind(this));
         this.app.post('/manual_led', this.handle_led_req.bind(this));
         this.app.post('/rainbow_start', this.handle_rainbow_start.bind(this));
         this.app.post('/rainbow_stop', this.handle_rainbow_stop.bind(this));
@@ -46,16 +47,15 @@ class API_Server
         if(data.hasOwnProperty("payload"))
         {
             if(data.payload.hasOwnProperty("redValue"))
-                this.redValue=request.payload.redValue;
+                this.redValue=data.payload.redValue;
             
             if(data.payload.hasOwnProperty("greenValue"))
-                this.greenValue=request.payload.greenValue;
+                this.greenValue=data.payload.greenValue;
             
             if(data.payload.hasOwnProperty("blueValue"))
-                this.blueValue=request.payload.blueValue;
+                this.blueValue=data.payload.blueValue;
         }
     }
-
 
     handle_led_req(req,res)
     {
@@ -159,6 +159,17 @@ class API_Server
             "type": "request",
             "command": "rainbow_stop",            
         }
+
+        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
+        setTimeout(function(){res.send(this.last);this.last = {};}.bind(this), 2000);
+    }
+
+    handle_weather(req,res)
+    {
+        var j_cmd = {
+            "type": "request", 
+            "command": "get_weather",
+        };
 
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
         setTimeout(function(){res.send(this.last);this.last = {};}.bind(this), 2000);
