@@ -1,5 +1,6 @@
 # Guiver
- Personal server
+ Personal server for managing room's led, light bulb and air conditioner
+ 
 # requirements
 https://abyz.me.uk/rpi/pigpio/download.html
 
