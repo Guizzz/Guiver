@@ -1,11 +1,27 @@
 const Module = require("./module");
-// var Gpio = require('pigpio').Gpio;
+var Gpio = null;
+
+try
+{
+    Gpio = require('pigpio').Gpio;
+}
+catch
+{
+    console.log("ERORE")
+}
+
 
 class Led_module extends Module
 {
     constructor()
-    {
+    {   
         super("LED_MODULE", "led_queue");
+        if(Gpio == null)
+        {
+            console.log("Led Module do not loaded")
+            return;
+        }
+
         this.set_handled_cmds({
             "led_manual": this.led_manual_mgmt.bind(this),
             "rainbow_start": this.rainbow_start.bind(this),

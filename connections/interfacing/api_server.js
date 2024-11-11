@@ -26,7 +26,7 @@ class API_Server
         this.redValue=0;
         this.greenValue=0;
         this.blueValue=0;
-        this.last = {}
+        this.last = null
     }
 
     _start()
@@ -135,7 +135,16 @@ class API_Server
             "greenValue": this.greenValue,
             "blueValue": this.blueValue,
         }
-        setTimeout(function(){res.send(this.last);this.last = {};}.bind(this), 2000);
+
+        this.inter = setInterval(
+            function(){
+                console.log("INSIDE", this.last)
+                if (this.last == null)
+                    return;
+                res.send(this.last);
+                this.last = null;
+                clearInterval(this.inter);
+            }.bind(this), 10);
     }
 
     handle_rainbow_start(req,res)
@@ -150,7 +159,15 @@ class API_Server
         }
 
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-        setTimeout(function(){res.send(this.last);this.last = {};}.bind(this), 2000);
+        this.inter = setInterval(
+            function(){
+                console.log("INSIDE", this.last)
+                if (this.last == null)
+                    return;
+                res.send(this.last);
+                this.last = null;
+                clearInterval(this.inter);
+            }.bind(this), 10);
     }
 
     handle_rainbow_stop(req,res)
@@ -161,7 +178,15 @@ class API_Server
         }
 
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-        setTimeout(function(){res.send(this.last);this.last = {};}.bind(this), 2000);
+        this.inter = setInterval(
+            function(){
+                console.log("INSIDE", this.last)
+                if (this.last == null)
+                    return;
+                res.send(this.last);
+                this.last = null;
+                clearInterval(this.inter);
+            }.bind(this), 10);
     }
 
     handle_weather(req,res)
@@ -172,7 +197,16 @@ class API_Server
         };
 
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-        setTimeout(function(){res.send(this.last);this.last = {};}.bind(this), 2000);
+        
+        this.inter = setInterval(
+            function(){
+                console.log("INSIDE", this.last)
+                if (this.last == null)
+                    return;
+                res.send(this.last);
+                this.last = null;
+                clearInterval(this.inter);
+            }.bind(this), 10);
     }
 }
 

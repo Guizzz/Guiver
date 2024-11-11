@@ -1,27 +1,35 @@
 require('dotenv').config()
+
 var Core = require("./components/core/core");
 var core = new Core()
 
-var Client_Manager = require("./connections/interfacing/client_manager");
-var client_manager = new Client_Manager()
+var modules = {
+    "client_manager": {
+        "path": "./connections/interfacing/client_manager"
+    },
+    "api_server": {
+        "path": "./connections/interfacing/api_server"
+    },
+    "delay": {
+        "path": "./components/modules/delay"
+    },
+    "loop_task": {
+        "path": "./components/modules/loop_task"
+    },
+    "weather_module": {
+        "path": "./components/modules/weather_module"
+    },
+    "led_module": {
+        "path": "./components/modules/led_module"
+    },
+    "info_point": {
+        "path": "./components/info_point/info_point"
+    },
+}
 
-const API_Server = require("./connections/interfacing/api_server");
-var api_server = new API_Server();
+for (mod in modules)
+{
+    var NewModule = require(modules[mod].path)
+    modules[mod]["value"] = new NewModule()
+}
 
-const Delay_module = require("./components/modules/delay");
-var delay_mdl = new Delay_module();
-
-const LoopTask_module = require("./components/modules/loop_task");
-var loop_mdl = new LoopTask_module();
-
-const Weather_module = require("./components/modules/weather_module");
-var wether = new Weather_module();
-
-const Info_Point = require("./components/info_point/info_point");
-var info_point = new Info_Point();
-
-// const Ext_Module_Manager = require("./components/ext_modules_manager/ext_modules_manager");
-// var ext_module_manager = new Ext_Module_Manager();
-
-// const Led_module = require("./components/modules/led_module");
-// var led = new Led_module();
