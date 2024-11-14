@@ -132,7 +132,7 @@ class Led_module extends Module
 
         this.rainbowRunning=true;
 
-        // this._startRainbow();
+        this._startRainbow();
 
         return this.led_status("");
     }
