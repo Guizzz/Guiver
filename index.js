@@ -10,6 +10,9 @@ var modules = {
     "api_server": {
         "path": "./connections/interfacing/api_server"
     },
+    "homekit_server": {
+        "path": "./connections/interfacing/homekit"
+    },
     "delay": {
         "path": "./components/modules/delay"
     },
