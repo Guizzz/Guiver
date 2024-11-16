@@ -67,7 +67,7 @@ class Homekit_Server
             return;
         if(!data.payload.rainbow_status.hasOwnProperty("rainbowRunning"))
             return;    
-        this.currentRainbowStatus = faldata.payload.rainbow_status.rainbowRunning;
+        this.currentRainbowStatus = data.payload.rainbow_status.rainbowRunning;
     }
 
     _get( callback) {
