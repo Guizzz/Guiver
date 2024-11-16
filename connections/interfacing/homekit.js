@@ -12,16 +12,16 @@ class Homekit_Server
     {
         this.link_manager = new Link_manager("HOMEKIT_SERVER", "homekit_queue");
         this.link_manager.start();
-        // this.link_manager.on("msg", this.update_value.bind(this));
+        this.link_manager.on("msg", this.update_value.bind(this));
         this.link_manager.on("channel_new", this._start.bind(this));
+
 
         this.accessoryUuid = hap.uuid.generate("hap.examples.light");
         this.accessory = new Accessory("Test luce Apple Home", this.accessoryUuid);
 
         this.lightService = new Service.Lightbulb("Lightbulb Test");
 
-        this.currentLightState = false; // on or off
-        this.currentBrightnessLevel = 100;
+        this.currentRainbowStatus = false; // on or off
         this.onCharacteristic = this.lightService.getCharacteristic(Characteristic.On);
         this.onCharacteristic.on(CharacteristicEventTypes.GET, this._get.bind(this));
         this.onCharacteristic.on(CharacteristicEventTypes.SET, this._set.bind(this));
@@ -49,16 +49,35 @@ class Homekit_Server
             "module_queue": "homekit_queue",
         }
         this.link_manager.to_core("core_queue", JSON.stringify(j_msg));
+
+        var j_cmd = {
+            "type": "request",
+            "command": "led_status"
+        }
+        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
     }
 
-    // with the 'on' function we can add event handlers for different events, mainly the 'get' and 'set' event
-    _get( callback) {
-        console.log("Queried current light state: " + this.currentLightState);
-        callback(undefined, this.currentLightState);
+    update_value(data)
+    {
+        this.last = data;
+        data = JSON.parse(data);
+        if(!data.hasOwnProperty("payload"))
+            return;
+        if(!data.payload.hasOwnProperty("rainbow_status"))
+            return;
+        if(!data.payload.rainbow_status.hasOwnProperty("rainbowRunning"))
+            return;    
+        this.currentRainbowStatus = faldata.payload.rainbow_status.rainbowRunning;
     }
+
+    _get( callback) {
+        console.log("Queried current light state: " + this.currentRainbowStatus);
+        callback(undefined, this.currentRainbowStatus);
+    }
+
     _set(value, callback) {
         console.log("Setting light state to: " + value);
-        this.currentLightState = value;
+        this.currentRainbowStatus = value;
         var j_cmd = {
             "type": "request",
             "command": "rainbow_start",
