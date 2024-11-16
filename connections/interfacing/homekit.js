@@ -78,15 +78,21 @@ class Homekit_Server
     _set(value, callback) {
         console.log("Setting light state to: " + value);
         this.currentRainbowStatus = value;
-        var j_cmd = {
-            "type": "request",
-            "command": "rainbow_start",
-            "payload" :{
-                "time": 40,
-                "brightnes":254
+        let j_cmd = {};
+        if (value)
+            j_cmd = {
+                "type": "request",
+                "command": "rainbow_start",
+                "payload" :{
+                    "time": 40,
+                    "brightnes":254
+                }
             }
-        }
-
+        else
+            j_cmd = {
+                "type": "request",
+                "command": "rainbow_stop",            
+            }
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
         callback();
     }
