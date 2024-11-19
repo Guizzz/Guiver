@@ -17,7 +17,8 @@ class API_Server
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(bodyParser.json());
 
-        this.app.post('/get_weather', this.handle_weather.bind(this));
+        this.app.get('/help', this.help.bind(this));
+        this.app.get('/get_weather', this.handle_weather.bind(this));
         this.app.post('/manual_led', this.handle_led_req.bind(this));
         this.app.post('/rainbow_start', this.handle_rainbow_start.bind(this));
         this.app.post('/rainbow_stop', this.handle_rainbow_stop.bind(this));
@@ -207,6 +208,39 @@ class API_Server
                 this.last = null;
                 clearInterval(this.inter);
             }.bind(this), 10);
+    }
+
+    help(req, res)  
+    {
+        var route,routes = [];
+        process.env.DEBUG?console.log("Get help request"):"";
+        try
+        {
+            this.app._router.stack.forEach(function(middleware)
+            {
+                if(middleware.route)
+                { // routes registered directly on the app
+                    routes.push(middleware.route);
+                } 
+                else if(middleware.name === 'router')
+                { // router middleware 
+                    middleware.handle.stack.forEach(function(handler)
+                    {
+                        route = handler.route;
+                        route && routes.push(route);
+                    });
+                }
+            });
+
+            process.env.DEBUG?console.log(routes):"";
+            res.send(routes);
+        }
+        catch(e)
+        {
+            console.error("Error: "+e);
+            jres = {success:"0", value: {error: e} }
+            res.send(jres);
+        }
     }
 }
 
