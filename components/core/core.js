@@ -41,6 +41,16 @@ class Core
         console.log("[core] Message recived: ", message);
         var j_msg = JSON.parse(message);
 
+        if(j_msg.hasOwnProperty("error"))
+        {
+            console.log("[core] Command <"+req_cmd+"> has failed");
+            j_msg.payload = "ERROR: " + j_msg.hasOwnProperty("error");
+            j_msg.error = 500;
+            this.send_response(j_msg);
+            return;
+        }
+    
+
         if(!j_msg.hasOwnProperty("command"))
         {
             console.log("wrong message")
