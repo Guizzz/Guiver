@@ -43,8 +43,8 @@ class Core
 
         if(j_msg.hasOwnProperty("error"))
         {
-            console.log("[core] Command <"+req_cmd+"> has failed");
-            j_msg.payload = "ERROR: " + j_msg.hasOwnProperty("error");
+            console.log("[core] Command <"+req_cmd+"> has failed: " + j_msg.error);
+            j_msg.payload = "ERROR: " + j_msg.error;
             j_msg.error = 500;
             this.send_response(j_msg);
             return;

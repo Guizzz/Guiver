@@ -1,5 +1,5 @@
-const Wss_manager = require("../../connections/wss_manager");
-const Link_manager = require("../../connections/link_manager");
+const Wss_manager = require("../utils/wss_manager");
+const Link_manager = require("../utils/link_manager");
 
 class Ext_Module_Manager
 {   
