@@ -19,6 +19,7 @@ class API_Server
 
         this.app.get('/help', this.help.bind(this));
         this.app.get('/get_weather', this.handle_weather.bind(this));
+        this.app.get('/get_led_status', this.handle_led_status.bind(this));
         this.app.post('/manual_led', this.handle_led_req.bind(this));
         this.app.post('/rainbow_start', this.handle_rainbow_start.bind(this));
         this.app.post('/rainbow_stop', this.handle_rainbow_stop.bind(this));
@@ -195,6 +196,26 @@ class API_Server
         var j_cmd = {
             "type": "request", 
             "command": "get_weather",
+        };
+
+        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
+        
+        this.inter = setInterval(
+            function(){
+                console.log("INSIDE", this.last)
+                if (this.last == null)
+                    return;
+                res.send(this.last);
+                this.last = null;
+                clearInterval(this.inter);
+            }.bind(this), 10);
+    }
+
+    handle_led_status(req,res)
+    {
+        var j_cmd = {
+            "type": "request", 
+            "command": "led_status",
         };
 
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
