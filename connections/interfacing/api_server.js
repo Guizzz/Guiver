@@ -26,8 +26,8 @@ class API_Server
         this.app.post('/rainbow_start', this.handle_rainbow_start.bind(this));
         this.app.post('/rainbow_stop', this.handle_rainbow_stop.bind(this));
 
-        this.app.post('/get_water_pump_status', this.get_water_pump_status.bind(this));
-        this.app.post('/get_water_pump_ambient_temp', this.get_water_pump_ambient_temp.bind(this));
+        this.app.get('/get_water_pump_status', this.get_water_pump_status.bind(this));
+        this.app.get('/get_water_pump_ambient_temp', this.get_water_pump_ambient_temp.bind(this));
 
         this.app.listen(process.env.API_PORT, () => console.log("API Server started"));
 
