@@ -69,4 +69,4 @@ class Water_pump_module extends Module
     
 }
 
-module.exports = Weather_module;
+module.exports = Water_pump_module;
