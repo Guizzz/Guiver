@@ -1,5 +1,5 @@
 const Module = require("./module");
-const Http = require("../../connections/utils/http");
+const Https = require("../../connections/utils/https");
 
 class Weather_module extends Module
 {
@@ -9,14 +9,14 @@ class Weather_module extends Module
         this.set_handled_cmds({
             "get_weather": this.get_weather.bind(this)
         });
-        this.http = new Http();
+        this.https = new Https();
     }
 
     get_weather(command)
     {
         var url = "https://api.openweathermap.org/data/2.5/weather?q=latina&units=metric&appid=" + process.env.WEATHER_KEY; // TODO
 
-        this.http.get(url,function(res){
+        this.https.get(url,function(res){
             let data = [];
             // const headerDate = res.headers && res.headers.date ? res.headers.date : 'no response date';
             // console.log('Status Code:', res.statusCode);

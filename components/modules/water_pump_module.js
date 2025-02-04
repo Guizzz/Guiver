@@ -1,5 +1,5 @@
 const Module = require("./module");
-const Http = require("../../connections/utils/http");
+const Http = require("../../connections/utils/https");
 
 class Water_pump_module extends Module
 {

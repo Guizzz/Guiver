@@ -1,12 +1,12 @@
 const https = require('https');
-class Http
+class Https
 {
     get(url, callback)
     {   
-        console.log("[ Http ] Url:",url);
+        console.log("[ Https ] Url:",url);
         https.get(url, callback).on('error', err => {
             console.log('Error: ', err.message);
         });
     }
 }
-module.exports = Http;
+module.exports = Https;
