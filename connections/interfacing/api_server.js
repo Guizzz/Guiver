@@ -18,11 +18,17 @@ class API_Server
         this.app.use(bodyParser.json());
 
         this.app.get('/help', this.help.bind(this));
+        
         this.app.get('/get_weather', this.handle_weather.bind(this));
+        
         this.app.get('/get_led_status', this.handle_led_status.bind(this));
         this.app.post('/manual_led', this.handle_led_req.bind(this));
         this.app.post('/rainbow_start', this.handle_rainbow_start.bind(this));
         this.app.post('/rainbow_stop', this.handle_rainbow_stop.bind(this));
+
+        this.app.post('/get_water_pump_status', this.get_water_pump_status.bind(this));
+        this.app.post('/get_water_pump_ambient_temp', this.get_water_pump_ambient_temp.bind(this));
+
         this.app.listen(process.env.API_PORT, () => console.log("API Server started"));
 
         this.redValue=0;
@@ -216,6 +222,46 @@ class API_Server
         var j_cmd = {
             "type": "request", 
             "command": "led_status",
+        };
+
+        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
+        
+        this.inter = setInterval(
+            function(){
+                console.log("INSIDE", this.last)
+                if (this.last == null)
+                    return;
+                res.send(this.last);
+                this.last = null;
+                clearInterval(this.inter);
+            }.bind(this), 10);
+    }
+
+    get_water_pump_status(req,res)
+    {
+        var j_cmd = {
+            "type": "request", 
+            "command": "get_water_pump_status",
+        };
+
+        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
+        
+        this.inter = setInterval(
+            function(){
+                console.log("INSIDE", this.last)
+                if (this.last == null)
+                    return;
+                res.send(this.last);
+                this.last = null;
+                clearInterval(this.inter);
+            }.bind(this), 10);
+    }
+
+    get_water_pump_ambient_temp(req,res)
+    {
+        var j_cmd = {
+            "type": "request", 
+            "command": "get_water_pump_ambient_temp",
         };
 
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));

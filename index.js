@@ -22,6 +22,9 @@ var modules = {
     "weather_module": {
         "path": "./components/modules/weather_module"
     },
+    "water_pump_module": {
+        "path": "./components/modules/water_pump_module"
+    },
     "led_module": {
         "path": "./components/modules/led_module"
     },
