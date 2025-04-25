@@ -24,6 +24,9 @@
     WSS_MDL_PORT=
     API_PORT=
     WEATHER_KEY=
+    RABBITMQ_IP=
+    RABBITMQ_USR=
+    RABBITMQ_PSW=
     ```
 5. Start the application using `npm start`.
 

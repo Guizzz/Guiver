@@ -14,7 +14,9 @@ class Link_manager extends EventEmitter
     start()
     {
         console.log("[LINK_",this.caller,"] Link Manager started...");
-        amqp.connect('amqp://127.0.0.1', this._rabbit_handler.bind(this));
+        var rabbit_server_ip =  process.env.RABBITMQ_IP.toString();
+        const opt = { credentials: require('amqplib').credentials.plain(process.env.RABBITMQ_USR, process.env.RABBITMQ_PSW) };
+        amqp.connect('amqp://' + rabbit_server_ip , opt, this._rabbit_handler.bind(this));
     }
 
     to_core(queue_out, data)

@@ -1,40 +1,17 @@
 require('dotenv').config()
 
-var Core = require("./components/core/core");
-var core = new Core()
+var fs = require('fs');
+var modules = JSON.parse(fs.readFileSync("components/all_modules.json", 'utf8'));
 
-var modules = {
-    "client_manager": {
-        "path": "./connections/interfacing/client_manager"
-    },
-    "api_server": {
-        "path": "./connections/interfacing/api_server"
-    },
-    "homekit_server": {
-        "path": "./connections/interfacing/homekit"
-    },
-    "delay": {
-        "path": "./components/modules/delay"
-    },
-    "loop_task": {
-        "path": "./components/modules/loop_task"
-    },
-    "weather_module": {
-        "path": "./components/modules/weather_module"
-    },
-    "water_pump_module": {
-        "path": "./components/modules/water_pump_module"
-    },
-    "led_module": {
-        "path": "./components/modules/led_module"
-    },
-    "info_point": {
-        "path": "./components/info_point/info_point"
-    },
-}
+var white_list = ["homekit_server"]
 
 for (mod in modules)
 {
+    if (!white_list.includes(mod))
+    {
+        console.log("Ignoring: "+ mod);
+        continue;
+    }
     var NewModule = require(modules[mod].path)
     modules[mod]["value"] = new NewModule()
 }
