@@ -1,6 +1,6 @@
 # Guiver 🚀
 
-**Guiver ** is a Node.js backend application designed for managing leds, lightbulb and air conditioner using Raspberry Pi, with hardware interaction via GPIO pins using the `pigpio` library.
+**Guiver** is a Node.js backend application designed for managing leds, lightbulb and air conditioner using Raspberry Pi, with hardware interaction via GPIO pins using the `pigpio` library.
 
 ## Features ✨
 
@@ -17,7 +17,7 @@
 1. Clone this repository to your Raspberry Pi.
 2. Install the `pigpio` library by following [these instructions](https://abyz.me.uk/rpi/pigpio/download.html).
 3. Run `npm install` to install Node.js dependencies.
-4.  Create a `.env` file in the project root with the following variables:
+4. Create a `.env` file in the project root with the following variables:
 
     ```plaintext
     WSS_CLI_PORT=
