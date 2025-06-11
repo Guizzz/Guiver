@@ -2,15 +2,6 @@
     "core":{
         "path": "./components/core/core"
     },
-    "client_manager": {
-        "path": "./connections/interfacing/client_manager"
-    },
-    "api_server": {
-        "path": "./connections/interfacing/api_server"
-    },
-    "homekit_server": {
-        "path": "./connections/interfacing/homekit"
-    },
     "delay": {
         "path": "./components/modules/delay"
     },
