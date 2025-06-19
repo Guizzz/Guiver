@@ -24,3 +24,5 @@ class Relay_module extends Module
     }
 
 }
+
+module.exports = Relay_module;
