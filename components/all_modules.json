@@ -17,6 +17,9 @@
     "led_module": {
         "path": "./components/modules/led_module"
     },
+    "relay_module": {
+        "path": "./components/modules/relay_module"
+    },
     "info_point": {
         "path": "./components/info_point/info_point"
     }

@@ -7,5 +7,5 @@
     },
     "homekit_server": {
         "path": "./connections/interfacing/homekit"
-    },
+    }
 }
