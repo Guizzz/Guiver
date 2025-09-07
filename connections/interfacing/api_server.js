@@ -26,6 +26,8 @@ class API_Server
         this.app.post('/rainbow_start', this.handle_rainbow_start.bind(this));
         this.app.post('/rainbow_stop', this.handle_rainbow_stop.bind(this));
 
+        this.app.post('/set_light', this.handle_set_light.bind(this));
+
         this.app.get('/get_water_pump_status', this.get_water_pump_status.bind(this));
         this.app.get('/get_water_pump_ambient_temp', this.get_water_pump_ambient_temp.bind(this));
 
@@ -195,6 +197,11 @@ class API_Server
                 this.last = null;
                 clearInterval(this.inter);
             }.bind(this), 10);
+    }
+
+    handle_set_light(req, res)
+    {
+        console.log(req)
     }
 
     handle_weather(req,res)
