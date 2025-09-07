@@ -2,6 +2,7 @@ require('dotenv').config()
 
 var fs = require('fs');
 var modules = JSON.parse(fs.readFileSync("components/all_modules.json", 'utf8'));
+var interfaces = JSON.parse(fs.readFileSync("connections/interfacing/all_interfacing.json", 'utf8'));
 
 var black_list = ["homekit_server"]
 
@@ -16,3 +17,13 @@ for (mod in modules)
     modules[mod]["value"] = new NewModule()
 }
 
+for (int in interfaces)
+{
+    if (black_list.includes(int))
+    {
+        console.log("Ignoring: "+ int);
+        continue;
+    }
+    var NewInt = require(interfaces[int].path)
+    interfaces[int]["value"] = new NewInt()
+}
