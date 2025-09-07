@@ -218,6 +218,7 @@ class API_Server
                 console.log("INSIDE", this.last)
                 if (this.last == null)
                     return;
+                res.setHeader('Content-Type', 'application/json');
                 res.send(this.last);
                 this.last = null;
                 clearInterval(this.inter);
