@@ -201,7 +201,8 @@ class API_Server
 
     handle_set_light(req, res)
     {
-        console.log(req)
+        console.log(req.body)
+        res.send("{\"bo\":3}")
     }
 
     handle_weather(req,res)
