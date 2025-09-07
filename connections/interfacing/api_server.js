@@ -202,7 +202,26 @@ class API_Server
     handle_set_light(req, res)
     {
         console.log(req.body)
-        res.send("{\"bo\":3}")
+        var j_cmd = {
+                "type": "request", 
+                "command": "",
+            };
+        if(req.body.light_on)
+            j_cmd["command"] = "light_on"
+        else
+            j_cmd["command"] = "light_off"
+
+        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
+
+        this.inter = setInterval(
+            function(){
+                console.log("INSIDE", this.last)
+                if (this.last == null)
+                    return;
+                res.send(this.last);
+                this.last = null;
+                clearInterval(this.inter);
+            }.bind(this), 10);
     }
 
     handle_weather(req,res)
