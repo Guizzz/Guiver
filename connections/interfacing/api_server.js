@@ -23,10 +23,9 @@ class API_Server
         
         this.app.get('/get_led_status', this.handle_led_status.bind(this));
         this.app.post('/manual_led', this.handle_led_req.bind(this));
-        this.app.post('/rainbow_start', this.handle_rainbow_start.bind(this));
-        this.app.post('/rainbow_stop', this.handle_rainbow_stop.bind(this));
-
-        this.app.post('/set_light', this.handle_set_light.bind(this));
+        this.app.post('/set_rainbow', this.handle_set_rainbow.bind(this));
+        
+        this.app.post('/set_relay', this.handle_set_relay.bind(this));
 
         this.app.get('/get_water_pump_status', this.get_water_pump_status.bind(this));
         this.app.get('/get_water_pump_ambient_temp', this.get_water_pump_ambient_temp.bind(this));
@@ -157,59 +156,50 @@ class API_Server
             }.bind(this), 10);
     }
 
-    handle_rainbow_start(req,res)
-    {
-        var j_cmd = {
-            "type": "request",
-            "command": "rainbow_start",
-            "payload" :{
-                "time": 40,
-                "brightnes":254
-            }
-        }
-
-        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-        this.inter = setInterval(
-            function(){
-                console.log("INSIDE", this.last)
-                if (this.last == null)
-                    return;
-                res.send(this.last);
-                this.last = null;
-                clearInterval(this.inter);
-            }.bind(this), 10);
-    }
-
-    handle_rainbow_stop(req,res)
-    {
-        var j_cmd = {
-            "type": "request",
-            "command": "rainbow_stop",            
-        }
-
-        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-        this.inter = setInterval(
-            function(){
-                console.log("INSIDE", this.last)
-                if (this.last == null)
-                    return;
-                res.send(this.last);
-                this.last = null;
-                clearInterval(this.inter);
-            }.bind(this), 10);
-    }
-
-    handle_set_light(req, res)
+    handle_set_rainbow(req, res)
     {
         console.log(req.body)
         var j_cmd = {
                 "type": "request", 
                 "command": "",
             };
-        if(req.body.light_on)
-            j_cmd["command"] = "light_on"
+        if(req.body.run_rainbow)
+        {
+            j_cmd["command"] = "rainbow_start"
+            j_cmd["payload"] ={
+                "time": 40,
+                "brightnes":254
+            }
+        }
         else
-            j_cmd["command"] = "light_off"
+            j_cmd["command"] = "rainbow_stop"
+        
+        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
+
+        this.inter = setInterval(
+            function(){
+                console.log("INSIDE", this.last)
+                if (this.last == null)
+                    return;
+                res.setHeader('Content-Type', 'application/json');
+                res.send(this.last);
+                this.last = null;
+                clearInterval(this.inter);
+            }.bind(this), 10);
+
+    }
+
+    handle_set_relay(req, res)
+    {
+        console.log(req.body)
+        var j_cmd = {
+                "type": "request", 
+                "command": "set_relay",
+                "payload" : {
+                    "set_relay": req.body.set_relay,
+                    "relay": req.body.relay
+                }
+            };
 
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
 
