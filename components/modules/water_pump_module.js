@@ -1,6 +1,8 @@
 const Module = require("./module");
 const Http = require("../../connections/utils/https");
 
+var PUMP_IP = "192.168.1.25"
+
 class Water_pump_module extends Module
 {
     constructor()
@@ -15,7 +17,7 @@ class Water_pump_module extends Module
 
     get_water_pump_status(command)
     {
-        var url = "http://192.168.1.31/get_status";
+        var url = "http://" + PUMP_IP + "/get_status";
 
         this.http.get(url,function(res){
             let data = [];
@@ -42,7 +44,7 @@ class Water_pump_module extends Module
 
     get_water_pump_ambient_temp(command)
     {
-        var url = "http://192.168.1.31/get_temp";
+        var url = "http://" + PUMP_IP + "/get_temp";
 
         this.http.get(url,function(res){
             let data = [];
