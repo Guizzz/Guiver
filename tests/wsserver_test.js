@@ -90,6 +90,27 @@ client.on('connect', function(connection) {
             };
             connection.sendUTF(JSON.stringify(cmd));
         }
+
+        if (data == "r on")
+        {
+            var cmd = {
+                "type": "request", 
+                "command": "light_on",
+                "client_id":ID,
+            };
+            connection.sendUTF(JSON.stringify(cmd));
+        }
+
+        if (data == "r off")
+        {
+            var cmd = {
+                "type": "request", 
+                "command": "light_off",
+                "client_id":ID,
+            };
+            connection.sendUTF(JSON.stringify(cmd));
+        }
+        
     }
     
     var redValue=0;
@@ -125,4 +146,4 @@ client.on('connect', function(connection) {
 });
 
 // client.connect('ws://192.168.1.22:7777/');
-client.connect('ws://localhost:7777/');
+client.connect('ws://192.168.1.26:7777/');
