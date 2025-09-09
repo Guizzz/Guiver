@@ -43,18 +43,28 @@ class Relay_module extends Module
 
     set_relay(request) {
 
-        console.log("[SET_RELAY] " + request.payload.set_relay)
-
         if(request.payload.set_relay === undefined)
-            return this.relay_status();
+            return this.relay_error("set_relay not found in payload");
 
         if(request.payload.relay === undefined || request.payload.relay === "")
-            return this.relay_status();
+            return this.relay_error("relay not found in payload or is empty");
         
         pin_map[request.payload.relay]["status"] = request.payload.set_relay;
         pin_map[request.payload.relay]["GPIO"].digitalWrite(pin_map[request.payload.relay]["status"],10);
         return this.relay_status();
     }
+
+    relay_error(msg)
+    {
+        var resp = {
+            "type": "response",
+            "command": "relay_status",
+            "payload": {
+                "ERROR": msg
+            }
+        }
+    }
+
 
     relay_status()
     {
