@@ -1,46 +1,46 @@
 
 ---
 
-# 🦉 Guiver – Message Processing Flow
+# Guiver – Message Processing Flow 🚀
 
 ---
 
-# 1. 🏛️ Architectural Overview
+# 1. Architectural Overview 🏗️
 
-Guiver segue un’architettura modulare costruita attorno a un componente centrale: il **Core**.
+Guiver follows a modular architecture built around a central **Core** component.
 
-Il Core si occupa di:
+The Core is responsible for:
 
-* 📥 Ricevere richieste dalle interfacce (REST API, WebSocket, ecc.)
-* ✅ Validare la struttura dei messaggi
-* 🔀 Instradare le richieste al modulo appropriato
-* 📊 Raccogliere le risposte dai moduli
-* 📤 Inviare le risposte all’interfaccia di origine
+* Receiving requests from interfaces (REST API, WebSocket, etc.) 📡
+* Validating message structure ✅
+* Routing requests to the appropriate module 🔀
+* Collecting module responses 📥
+* Sending responses back to the originating interface 📤
 
-Il Core funge da:
+The Core acts as:
 
-* 🛣️ Router dei messaggi
-* 🧩 Coordinatore logico
-* ⚡ Livello di decoupling tra interfacce e moduli
-
----
-
-# 2. 🏃‍♂️ Processing Flow
-
-Il flusso di elaborazione dei messaggi segue questi passi:
-
-1. 🖥️ L’interfaccia riceve una richiesta da un client
-2. 🔧 L’interfaccia costruisce un messaggio interno standardizzato
-3. 🗂️ Il Core riceve e analizza il messaggio
-4. 📨 Il Core instrada la richiesta al modulo appropriato
-5. ⚙️ Il modulo elabora la richiesta
-6. 📄 Il modulo restituisce una risposta standardizzata
-7. 🔄 Il Core inoltra la risposta all’interfaccia
-8. 📨 L’interfaccia restituisce la risposta al client
+* A message router 🛣️
+* A logical coordinator 🧩
+* A decoupling layer between interfaces and modules 🔧
 
 ---
 
-# 3. 📝 Standard Message Structure
+# 2. Processing Flow 🔄
+
+The message processing flow follows these steps:
+
+1. An interface receives a request from a client 🖥️
+2. The interface builds a standardized internal message 📝
+3. The Core receives and parses the message 🔍
+4. The Core routes the request to the appropriate module ➡️
+5. The module processes the request ⚙️
+6. The module returns a standardized response 📦
+7. The Core forwards the response to the interface 🔁
+8. The interface returns the response to the client ✅
+
+---
+
+# 3. Standard Message Structure 📑
 
 ## Request
 
@@ -64,13 +64,13 @@ Il flusso di elaborazione dei messaggi segue questi passi:
 
 ### Rules 📌
 
-* `type` definisce se il messaggio è una richiesta o una risposta
-* `command` identifica l’azione o il modulo
-* `payload` contiene i dati necessari per l’elaborazione
+* `type` defines whether the message is a request or a response
+* `command` identifies the action or module
+* `payload` contains the data required for processing
 
 ---
 
-# 5. 🔄 Message Flow Diagram
+# 5. Message Flow Diagram 🖼️
 
 ```
 +-------------+        +--------+        +---------------+
@@ -92,7 +92,7 @@ Il flusso di elaborazione dei messaggi segue questi passi:
 
 ---
 
-# 6. 📊 Sequence Diagram (Mermaid)
+# 6. Sequence Diagram (Mermaid) ⏱️
 
 ```mermaid
 sequenceDiagram
@@ -113,54 +113,54 @@ sequenceDiagram
 
 ---
 
-# 8. 🎭 System Roles
+# 8. System Roles 🎭
 
-## 🌐 Interface Layer (API / WebSocket)
+## Interface Layer (API / WebSocket) 🌐
 
-Responsabilità:
+Responsibilities:
 
-* 🔄 Tradurre le richieste esterne in messaggi interni standardizzati
-* 📨 Restituire le risposte al client
-* ⚙️ Non contenere logica hardware
-* 🛡️ Rimanere indipendente dai dettagli dei moduli
-
----
-
-## 🧠 Core
-
-Responsabilità:
-
-* 🔀 Routing dei comandi
-* 📇 Gestione del registro dei moduli
-* ✅ Applicazione del formato dei messaggi
-* 🤝 Coordinamento tra interfacce e moduli
-
-Il Core è l’elemento centrale del sistema.
+* Translate external requests into standardized internal messages 🔄
+* Return responses to the client 📤
+* Contain no hardware logic ❌⚡
+* Remain independent from module implementation details 🧩
 
 ---
 
-## 🛠️ Modules
+## Core 🏛️
 
-Responsabilità:
+Responsibilities:
 
-* ⚡ Implementare logica specifica di business o hardware
-* 🔌 Gestire interazioni con hardware o servizi
-* 📄 Restituire sempre oggetti risposta strutturati
+* Command routing 🛤️
+* Module registry management 📋
+* Message format enforcement 📝
+* Coordination between interfaces and modules 🤝
 
-I moduli devono essere:
-
-* 🧩 Indipendenti
-* 🔌 Plug-and-play
-* ⚡ Decoupled dalla logica delle interfacce
+The Core is the central element of the system.
 
 ---
 
-# 9. ✨ Architectural Benefits
+## Modules 🧱
 
-* 🔗 Decoupling completo tra interfacce e moduli
-* ➕ Facilmente estendibile
-* 📏 Protocollo interno standardizzato
-* 🔄 Flusso di messaggi chiaro
-* 🏗️ Architettura modulare e manutenibile
+Responsibilities:
+
+* Implement specific business or hardware logic ⚙️
+* Handle hardware or service interactions 🔌
+* Always return structured response objects 📦
+
+Modules must be:
+
+* Independent 🆓
+* Plug-and-play 🔌
+* Decoupled from interface logic 🧩
+
+---
+
+# 9. Architectural Benefits ✨
+
+* Full decoupling between interfaces and modules 🔄
+* Easy extensibility 🛠️
+* Standardized internal protocol 📑
+* Clear message flow 🧭
+* Modular and maintainable architecture 🏗️
 
 ---
