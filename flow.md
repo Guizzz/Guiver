@@ -5,23 +5,23 @@
 
 ---
 
-# 1. Architectural Overview 🏗️ 
+# 1. Architectural Overview 🏗️
 
 Guiver follows a modular architecture built around a central **Core** component.
 
 The Core is responsible for:
 
-📡 Receiving requests from interfaces (REST API, WebSocket, etc.)
-✅ Validating message structure
-🔀 Routing requests to the appropriate module
-📥 Collecting module responses
-📤 Sending responses back to the originating interface
+- 📡 Receiving requests from interfaces (REST API, WebSocket, etc.)
+- ✅ Validating message structure
+- 🔀 Routing requests to the appropriate module
+- 📥 Collecting module responses
+- 📨 Sending responses back to the originating interface
 
 The Core acts as:
 
-🛣️ A message router
-🧩 A logical coordinator
-🔧 A decoupling layer between interfaces and modules
+- 🛣️ A message router
+- 🧩 A logical coordinator
+- 🔧 A decoupling layer between interfaces and modules
 
 ---
 
@@ -29,14 +29,14 @@ The Core acts as:
 
 The message processing flow follows these steps:
 
-🖥️ 1. An interface receives a request from a client
-📝 2. The interface builds a standardized internal message
-🔍 3. The Core receives and parses the message
-➡️ 4. The Core routes the request to the appropriate module
-⚙️ 5. The module processes the request
-📦 6. The module returns a standardized response
-🔁 7. The Core forwards the response to the interface
-✅ 8. The interface returns the response to the client
+- 🖥️ 1. An interface receives a request from a client
+- 📝 2. The interface builds a standardized internal message
+- 🔍 3. The Core receives and parses the message
+- ➡️ 4. The Core routes the request to the appropriate module
+- ⚙️ 5. The module processes the request
+- 📦 6. The module returns a standardized response
+- 🔁 7. The Core forwards the response to the interface
+- ✅ 8. The interface returns the response to the client
 
 ---
 
@@ -64,9 +64,11 @@ The message processing flow follows these steps:
 
 ### Rules
 
-📌 `type` defines whether the message is a request or a response
-📌 `command` identifies the action or module
-📌 `payload` contains the data required for processing
+> 📌 `type` defines whether the message is a request or a response
+>
+>📌 `command` identifies the action or module
+>
+> 📌 `payload` contains the data required for processing
 
 ---
 
@@ -113,16 +115,16 @@ sequenceDiagram
 
 ---
 
-# 8. System Roles 
+# 8. System Roles
 
 ## Interface Layer (API / WebSocket) 🌐 
 
 Responsibilities:
 
-🔄 Translate external requests into standardized internal messages
-📤 Return responses to the client
-❌⚡ Contain no hardware logic
-🧩 Remain independent from module implementation details
+- 🔄 Translate external requests into standardized internal messages
+- 📤 Return responses to the client
+- ❌⚡ Contain no hardware logic
+- 🧩 Remain independent from module implementation details
 
 ---
 
@@ -130,10 +132,10 @@ Responsibilities:
 
 Responsibilities:
 
-🛤️ Command routing
-📋 Module registry management
-📝 Message format enforcement
-🤝 Coordination between interfaces and modules
+- 🛤️ Command routing
+- 📋 Module registry management
+- 📝 Message format enforcement
+- 🤝 Coordination between interfaces and modules
 
 The Core is the central element of the system.
 
@@ -143,26 +145,26 @@ The Core is the central element of the system.
 
 Responsibilities:
 
-⚙️ Implement specific business or hardware logic
-🔌 Handle hardware or service interactions
-📦 Always return structured response objects
+- ⚙️ Implement specific business or hardware logic
+- 🔌 Handle hardware or service interactions
+- 📦 Always return structured response objects
 
 Modules must be:
 
-🆓 Independent
-🔌 Plug-and-play
-🧩 Decoupled from interface logic
+- 🆓 Independent
+- 🔌 Plug-and-play
+- 🧩 Decoupled from interface logic
 
 ---
 
-# 9. Architectural Benefits ✨
+# 9. Architectural Benefits ✨ 
 
 Benefits:
 
-🔄 Full decoupling between interfaces and modules
-🛠️ Easy extensibility
-📑 Standardized internal protocol
-🧭 Clear message flow
-🏗️ Modular and maintainable architecture
+- 🔄 Full decoupling between interfaces and modules
+- 🛠️ Easy extensibility
+- 📑 Standardized internal protocol
+- 🧭 Clear message flow
+- 🏗️ Modular and maintainable architecture
 
 ---
