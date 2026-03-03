@@ -115,11 +115,9 @@ class Led_module extends Module
                 this.link_manager.to_core("core_queue", JSON.stringify(request));
                 return;
             }
-            if (parseInt(time,10) != this.time)
-            {
-                this.time = parseInt(time,10);
-                return this.led_status("");
-            }
+            
+            this.time = parseInt(time,10);
+            return this.led_status("");
         }
             
         if(time==undefined)
