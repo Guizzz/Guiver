@@ -22,9 +22,12 @@ class Homekit_Server
         this.lightService = new Service.Lightbulb("Lightbulb Test");
 
         this.currentRainbowStatus = false; // on or off
-        this.onCharacteristic = this.lightService.getCharacteristic(Characteristic.On);
-        this.onCharacteristic.on(CharacteristicEventTypes.GET, this._get.bind(this));
-        this.onCharacteristic.on(CharacteristicEventTypes.SET, this._set.bind(this));
+        this.onCharacteristic_onoff = this.lightService.getCharacteristic(Characteristic.On);
+        this.onCharacteristic_onoff.on(CharacteristicEventTypes.GET, this._get.bind(this));
+        this.onCharacteristic_onoff.on(CharacteristicEventTypes.SET, this._set.bind(this));
+
+        this.onCharacteristic_brightness = this.lightService.getCharacteristic(Characteristic.Brightness);
+        this.onCharacteristic_brightness.on(CharacteristicEventTypes.SET, this._set_brightness.bind(this));
 
         this.accessory.addService(this.lightService);
         // accessory.addService(test); // adding the service to the accessory
@@ -93,6 +96,23 @@ class Homekit_Server
                 "type": "request",
                 "command": "rainbow_stop",            
             }
+        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
+        callback();
+    }
+
+    _set_brightness(value, callback)
+    {
+        const speed = Math.round(value); // 0–100
+
+        let j_cmd = {
+        type: "request",
+        command: "rainbow_start",
+        payload: {
+            time: speed,
+            brightnes: 254
+        }
+        };
+
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
         callback();
     }
