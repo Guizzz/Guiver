@@ -102,15 +102,14 @@ class Homekit_Server
 
     _set_brightness(value, callback)
     {
-        const speed = Math.round(value); // 0–100
-
+        const speed = Math.round(value) * 0.30 + 20; // 40 – 90
         let j_cmd = {
-        type: "request",
-        command: "rainbow_start",
-        payload: {
-            time: speed,
-            brightnes: 254
-        }
+            type: "request",
+            command: "rainbow_start",
+            payload: {
+                time: speed,
+                brightnes: 254
+            }
         };
 
         this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));

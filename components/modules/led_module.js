@@ -103,15 +103,23 @@ class Led_module extends Module
 
     rainbow_start(request)
     {
-        var time=request.payload.time;
+        var time = request.payload.time;
         var brightnes=request.payload.brightnes;
         this.rainbowBrightness = parseInt(brightnes,10);
         
         if(this.rainbowRunning) 
         {
-            request.error = "Rainbow already running";
-            this.link_manager.to_core("core_queue", JSON.stringify(request));
-            return;
+            if ( time == undefined)
+            {
+                request.error = "Rainbow already running";
+                this.link_manager.to_core("core_queue", JSON.stringify(request));
+                return;
+            }
+            if (parseInt(time,10) != this.time)
+            {
+                this.time = parseInt(time,10);
+                return this.led_status("");
+            }
         }
             
         if(time==undefined)
