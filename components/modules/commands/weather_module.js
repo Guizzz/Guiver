@@ -1,5 +1,5 @@
-const Module = require("./module");
-const Https = require("../../connections/utils/https");
+const Module = require("../module");
+const Https = require("../../../connections/utils/https");
 
 class Weather_module extends Module
 {

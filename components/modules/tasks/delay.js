@@ -1,4 +1,4 @@
-const Module = require("./module");
+const Module = require("../module");
 
 function sleep(time) {
     console.log("waiting for :", time)

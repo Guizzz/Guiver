@@ -1,4 +1,4 @@
-const Module = require("./module");
+const Module = require("../module");
 
 class LoopTask_module extends Module
 {

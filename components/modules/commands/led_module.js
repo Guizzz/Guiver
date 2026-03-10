@@ -1,4 +1,4 @@
-const Module = require("./module");
+const Module = require("../module");
 var Gpio = null;
 
 try
@@ -13,9 +13,9 @@ catch
 
 class Led_module extends Module
 {
-    constructor()
+    constructor(config)
     {   
-        super("LED_MODULE", "led_queue");
+        super("LED_MODULE", "led_queue", config);
         if(Gpio == null)
         {
             console.log("Led Module do not loaded")

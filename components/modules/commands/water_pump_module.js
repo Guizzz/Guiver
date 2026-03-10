@@ -1,13 +1,13 @@
-const Module = require("./module");
-const Http = require("../../connections/utils/https");
+const Module = require("../module");
+const Http = require("../../../connections/utils/https");
 
 var PUMP_IP = "192.168.1.25"
 
 class Water_pump_module extends Module
 {
-    constructor()
+    constructor(config)
     {
-        super("WATER_PUMP_MODULE", "water_pump_queue");
+        super("WATER_PUMP_MODULE", "water_pump_queue", config);
         this.set_handled_cmds({
             "get_water_pump_status": this.get_water_pump_status.bind(this),
             "get_water_pump_ambient_temp": this.get_water_pump_ambient_temp.bind(this),

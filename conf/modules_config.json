@@ -1,0 +1,37 @@
+{
+    "core":{
+        "path": "./components/core/core"
+    },
+    "delay": {
+        "path": "./components/modules/tasks/delay"
+    },
+    "loop_task": {
+        "path": "./components/modules/tasks/loop_task"
+    },
+    "weather_module": {
+        "path": "./components/modules/commands/weather_module"
+    },
+    "water_pump_module": {
+        "path": "./components/modules/commands/water_pump_module",
+        "config": {
+            "pump_ip": "192.168.1.25"
+        }
+    },
+    "led_module": {
+        "path": "./components/modules/commands/led_module",
+        "config": {
+            "red_pin": 4,
+            "green_pin": 17,
+            "blue_pin": 18
+        }
+    },
+    "relay_module": {
+        "path": "./components/modules/commands/relay_module",
+        "config": {
+            "light_pin": 3
+        }
+    },
+    "info_point": {
+        "path": "./components/info_point/info_point"
+    }
+}

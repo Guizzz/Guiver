@@ -1,4 +1,4 @@
-const Module = require("./module");
+const Module = require("../module");
 var Gpio = null;
 
 try
@@ -19,11 +19,25 @@ var pin_map = {
     }
 }
 
+/*
+request: 
+{
+    "type": "request",
+    "command": "set_relay",
+    "payload" :{
+        "set_relay": true, <---------- value to set
+        "relay": "light",  <---------- name of the relay on pin_map
+    }
+}
+
+*/
+
+
 class Relay_module extends Module
 {
-    constructor()
+    constructor(config)
     {
-        super("RELAY_MODULE", "relay_queue");
+        super("RELAY_MODULE", "relay_queue", config);
         this.set_handled_cmds({
             "set_relay": this.set_relay.bind(this),
             "relay_status": this.relay_status.bind(this)
@@ -49,8 +63,10 @@ class Relay_module extends Module
         if(request.payload.relay === undefined || request.payload.relay === "")
             return this.relay_error("relay not found in payload or is empty");
         
-        pin_map[request.payload.relay]["status"] = request.payload.set_relay;
-        pin_map[request.payload.relay]["GPIO"].digitalWrite(pin_map[request.payload.relay]["status"],10);
+        var pin_ID = request.payload.relay;
+
+        pin_map[pin_ID]["status"] = request.payload.set_relay;
+        pin_map[pin_ID]["GPIO"].digitalWrite(pin_map[pin_ID]["status"], 10);
         return this.relay_status();
     }
 
@@ -64,7 +80,6 @@ class Relay_module extends Module
             }
         }
     }
-
 
     relay_status()
     {

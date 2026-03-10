@@ -2,10 +2,15 @@ const Link_manager = require("../../connections/utils/link_manager");
 
 class Module
 {
-    constructor(module_name, module_queue)
+    constructor(module_name, module_queue, config = {})
     {   
         this.module_name = module_name;
         this.module_queue = module_queue;
+
+        this.CONFIG = config;
+        if(this.CONFIG != {})
+            console.log("["+this.module_name+"] Config loaded:", config);
+
 
         this.commands_handled = new Object();
         this.link_manager = new Link_manager(module_name, module_queue);
