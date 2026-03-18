@@ -10,6 +10,11 @@ class Core
         this.link_manager.on("msg", this.manage_request.bind(this));
         this.command_handled = new Object();
         this.response_handlers = [];
+
+        this.managment_handlers = {
+            "module_config": this.commands_management.bind(this),
+            "response_config": this.response_management.bind(this)
+        }
     }
 
     commands_management(new_config)
@@ -32,7 +37,7 @@ class Core
         for (var resp_manager of this.response_handlers)
         {
             coreLogger.info("Sending response to " + resp_manager)
-            this.link_manager.to_core(resp_manager,JSON.stringify(j_msg));
+            this.link_manager.to_module(resp_manager,JSON.stringify(j_msg));
         }
     }
 
@@ -49,7 +54,6 @@ class Core
             this.send_response(j_msg);
             return;
         }
-    
 
         if(!j_msg.hasOwnProperty("command"))
         {
@@ -64,21 +68,22 @@ class Core
             if(this.command_handled.hasOwnProperty(req_cmd))
             {
                 var queue = this.command_handled[req_cmd];
-                this.link_manager.to_core(queue, message);
+                this.link_manager.to_module(queue, message);
+                return;
+            }
+            if(req_cmd == "list_commands")
+            {
+                this.send_response({"payload": Object.keys(this.command_handled)});
                 return;
             }
         }
         else if (j_msg.type == "managment")
         {
-            if (req_cmd == "module_config")
+            if(this.managment_handlers.hasOwnProperty(req_cmd))
             {
-                this.commands_management(j_msg);
+                this.managment_handlers[req_cmd](j_msg);
+                return;
             }
-            else if (req_cmd == "response_config")
-            {
-                this.response_management(j_msg);
-            }
-            return;
         }
         else if (j_msg.type == "response")
         {

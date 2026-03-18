@@ -12,7 +12,7 @@ if(!modules.hasOwnProperty("core"))
     exit();
 }
 
-var black_list = ["homekit_server", "led_module", "relay_module"]
+var black_list = []
 
 for (mod in modules)
 {

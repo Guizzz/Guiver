@@ -42,7 +42,7 @@ class Module
 
     async manage_request(message)
     {
-        this.moduleLogger.debug("["+this.module_name+"] Message recived: ", message);
+        this.moduleLogger.debug("["+this.module_name+"] Message recived: " + message);
         var j_msg = JSON.parse(message);
         var req_cmd = j_msg.command = j_msg.command.trim();
         if(this.commands_handled.hasOwnProperty(req_cmd))

@@ -110,6 +110,16 @@ client.on('connect', function(connection) {
             };
             connection.sendUTF(JSON.stringify(cmd));
         }
+
+        if (data == "i")
+        {
+            var cmd = {
+                "type": "request", 
+                "command": "list_commands",
+                "client_id":ID,
+            };
+            connection.sendUTF(JSON.stringify(cmd));
+        }
         
     }
     
@@ -146,4 +156,4 @@ client.on('connect', function(connection) {
 });
 
 // client.connect('ws://192.168.1.22:7777/');
-client.connect('ws://192.168.1.26:7777/');
+client.connect('ws://127.0.0.1:7777/');
