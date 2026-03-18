@@ -121,6 +121,15 @@ client.on('connect', function(connection) {
             connection.sendUTF(JSON.stringify(cmd));
         }
         
+        if (data == "p")
+        {
+            var cmd = {
+                "type": "request", 
+                "command": "get_water_pump_status",
+                "client_id":ID,
+            };
+            connection.sendUTF(JSON.stringify(cmd));
+        }
     }
     
     var redValue=0;

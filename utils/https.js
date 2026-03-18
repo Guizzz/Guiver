@@ -1,12 +1,26 @@
+const http = require('http');
 const https = require('https');
+const { URL } = require('url');
+const { interfaceLogger } = require('./logger');
+
 class Https
-{
-    get(url, callback)
+{   
+    constructor()
+    {
+        this.logger = interfaceLogger("HTTPS_UTIL")
+    }
+
+    get(urlString, callback)
     {   
-        console.log("[ Https ] Url:",url);
-        https.get(url, callback).on('error', err => {
-            console.log('Error: ', err.message);
+        this.logger.debug("Url:" + urlString);
+
+        const url = new URL(urlString);
+        const client = url.protocol === 'https:' ? https : http;
+
+        client.get(url, callback).on('error', err => {
+            this.logger.error('Error:' + err.message);
         });
     }
 }
+
 module.exports = Https;
