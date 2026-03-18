@@ -10,7 +10,7 @@ class Wss_manager extends EventEmitter
         this.event_name = event_name;
         this.server = http.createServer(function(request, response) {});
         this.server.listen(wss_port, function() { });
-        console.log("Wss Manager inizializated on port",wss_port,"...");
+        console.log("[Wss Manager] inizializated on port",wss_port,"...");
         this.established_conn = {};
         this.verified_conn = {};
     }
@@ -22,7 +22,7 @@ class Wss_manager extends EventEmitter
         });
         // Gestione degli eventi
         this.wsServer.on('request', this._handle_request.bind(this));
-        console.log("Wss Manager started...");
+        console.log("[Wss Manager] started...");
     }
 
     _handle_request(request)

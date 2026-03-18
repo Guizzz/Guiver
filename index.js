@@ -3,9 +3,7 @@ require('dotenv').config()
 var fs = require('fs');
 const { exit } = require('process');
 var modules = JSON.parse(fs.readFileSync("conf/modules_config.json", 'utf8'));
-var module_params = JSON.parse(fs.readFileSync("conf/params_config.json", 'utf8'));
 var interfaces = JSON.parse(fs.readFileSync("conf/interfaces_config.json", 'utf8'));
-
 
 if(!modules.hasOwnProperty("core"))
 {

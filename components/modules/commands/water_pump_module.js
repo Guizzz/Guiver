@@ -1,5 +1,5 @@
 const Module = require("../module");
-const Http = require("../../../connections/utils/https");
+const Http = require("../../../utils/https");
 
 var PUMP_IP = "192.168.1.25"
 

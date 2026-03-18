@@ -18,7 +18,8 @@
     "hap-nodejs": "^1.2.0",
     "http": "^0.0.1-security",
     "https": "^1.0.0",
+    "websocket": "^1.0.34",
     "pigpio": "^3.3.1",
-    "websocket": "^1.0.34"
+    "winston": "^3.19.0"
   }
 }

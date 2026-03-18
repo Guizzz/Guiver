@@ -1,11 +1,11 @@
-var Link_manager = require("../../connections/utils/link_manager");
-
+var Link_manager = require("../../utils/link_manager");
+const { coreLogger } = require('../../utils/logger');
 
 class Core
 {
     constructor()
     {
-        this.link_manager = new Link_manager("CORE", "core_queue");
+        this.link_manager = new Link_manager("CORE", "core_queue", (msg) => coreLogger.debug(msg));
         this.link_manager.start();
         this.link_manager.on("msg", this.manage_request.bind(this));
         this.command_handled = new Object();
@@ -18,32 +18,32 @@ class Core
         {
             this.command_handled[cmd] = new_config.module_queue;
         }
-        console.log("New command_handled:",this.command_handled)
+        coreLogger.info("New command_handled: " + JSON.stringify(this.command_handled))
     }
 
     response_management(new_conf)
     {
         this.response_handlers.push(new_conf.module_queue);
-        console.log("New response_handlers:",this.response_handlers)
+        coreLogger.info("New response_handlers: " + this.response_handlers)
     }
 
     send_response(j_msg)
     {
         for (var resp_manager of this.response_handlers)
         {
-            console.log("Sending response to ", resp_manager)
+            coreLogger.info("Sending response to " + resp_manager)
             this.link_manager.to_core(resp_manager,JSON.stringify(j_msg));
         }
     }
 
     manage_request(message)
     {
-        console.log("[core] Message recived: ", message);
+        coreLogger.debug("Message recived: " + message);
         var j_msg = JSON.parse(message);
 
         if(j_msg.hasOwnProperty("error"))
         {
-            console.log("[core] Command <"+req_cmd+"> has failed: " + j_msg.error);
+            coreLogger.error("Command <"+req_cmd+"> has failed: " + j_msg.error);
             j_msg.payload = "ERROR: " + j_msg.error;
             j_msg.error = 500;
             this.send_response(j_msg);
@@ -53,7 +53,7 @@ class Core
 
         if(!j_msg.hasOwnProperty("command"))
         {
-            console.log("wrong message")
+            coreLogger.info("wrong message")
             return;
         }
 
@@ -77,7 +77,7 @@ class Core
             else if (req_cmd == "response_config")
             {
                 this.response_management(j_msg);
-            }  
+            }
             return;
         }
         else if (j_msg.type == "response")
@@ -86,7 +86,7 @@ class Core
             return;
         }
 
-        console.log("[core] Command <"+req_cmd+"> not implemented error");
+        coreLogger.error("Command <"+req_cmd+"> not implemented error");
         j_msg.payload = "ERROR: Command <"+req_cmd+"> not implemented";
         j_msg.error = 500;
         this.send_response(j_msg)
