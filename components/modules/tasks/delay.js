@@ -9,7 +9,7 @@ class Delay_module extends Module
 {
     constructor()
     {
-        super("DELAY_MODULE", "delay_queue");
+        super("DELAY_MODULE", "delay_queue", );
         this.set_handled_cmds({
             "delay": this._delay.bind(this),           
         });

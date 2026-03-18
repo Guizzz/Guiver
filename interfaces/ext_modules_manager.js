@@ -1,12 +1,14 @@
 const Wss_manager = require("../utils/wss_manager");
 const Link_manager = require("../utils/link_manager");
+const { interfaceLogger } = require('../utils/logger');
 
 class Ext_Module_Manager
 {   
     constructor()
     {   
-        this.link_manager = new Link_manager("MODULES_MGMT", "modules_queue");
-        this.wss_manager = new Wss_manager(process.env.WSS_MDL_PORT, "mdl_ws_msg");
+        this.logger = interfaceLogger("WSS_MODULES");
+        this.link_manager = new Link_manager("MODULES_MGMT", "modules_queue", (msg) => this.logger.debug(msg));
+        this.wss_manager = new Wss_manager(process.env.WSS_MDL_PORT, "mdl_ws_msg", (msg) => this.logger.debug(msg));
         this.link_manager.start();
         this.wss_manager.start();
 

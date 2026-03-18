@@ -1,13 +1,15 @@
 var udp = require('dgram');
 require('dotenv').config()
+const { interfaceLogger } = require('../../utils/logger');
 
 class Info_Point
 {
     constructor()
-    {
+    {   
+        this.logger = interfaceLogger("INFO_POINT");
         this.server = udp.createSocket('udp4');
         this.server.on('error', function(error){
-          console.log('Error: ' + error);
+          interfaceLogger.error('Error: ' + error);
           this.server.close();
         }.bind(this));
 
@@ -17,7 +19,7 @@ class Info_Point
         this.server.on('message', this.on_messages.bind(this));
         //emits after the socket is closed using socket.close();
         this.server.on('close', function(){
-            console.log('Socket is closed !');
+            this.logger.debug('Socket is closed !');
         });
 
         this.server.bind(process.env.INFO_PORT);
@@ -29,15 +31,15 @@ class Info_Point
         var port = address.port;
         var family = address.family;
         var ipaddr = address.address;
-        console.log('Server is listening at port' + port);
-        console.log('Server ip :' + ipaddr);
-        console.log('Server is IP4/IP6 : ' + family);
+        this.logger.info('Server is listening at port ' + port);
+        this.logger.debug('Server ip :' + ipaddr);
+        this.logger.debug('Server is IP4/IP6 : ' + family);
     }
 
     on_messages(msg,info)
     {
-        console.log('Data received from client : ' + msg.toString());
-        console.log('From %s:%d\n', info.address, info.port);
+        this.logger.debug('Data received from client : ' + msg.toString());
+        this.logger.debug('From %s:%d\n', info.address, info.port);
     
         if (msg.toString() == "WHOISBRAIN")
         {

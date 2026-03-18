@@ -1,12 +1,14 @@
 const Wss_manager = require("../utils/wss_manager");
 const Link_manager = require("../utils/link_manager");
+const { interfaceLogger } = require('../utils/logger');
 
 class Client_Manager
 {   
     constructor()
     {
-        this.link_manager = new Link_manager("CLNT_MGMT", "clients_queue");
-        this.wss_manager = new Wss_manager(process.env.WSS_CLI_PORT, "ws_msg");
+        this.logger = interfaceLogger("WSS_CLIENTS");
+        this.link_manager = new Link_manager("CLNT_MGMT", "clients_queue", (msg) => this.logger.debug(msg));
+        this.wss_manager = new Wss_manager(process.env.WSS_CLI_PORT, "ws_msg", (msg) => this.logger.debug(msg));
         this.link_manager.start();
         this.wss_manager.start();
 
@@ -33,7 +35,7 @@ class Client_Manager
 
     send_client(msg)
     {   
-        console.log("client_manager", msg)
+        this.logger.info(msg)
         return this.wss_manager.send_response(msg);
     }
 

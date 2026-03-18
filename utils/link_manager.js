@@ -9,12 +9,12 @@ class Link_manager extends EventEmitter
         this.caller = name;
         this.queue_in = queue_in;
         this.logger = logger;
-        this.logger("[LINK_" + this.caller + "] Link Manager inizializated...")
+        this.logger("[LINK] Link Manager inizializated...")
     }
 
     start()
     {
-        this.logger("[LINK_"+ this.caller + "] Link Manager started...");
+        this.logger("[LINK] Link Manager started...");
         var rabbit_server_ip =  process.env.RABBITMQ_IP.toString();
         const opt = { credentials: require('amqplib').credentials.plain(process.env.RABBITMQ_USR, process.env.RABBITMQ_PSW) };
         amqp.connect('amqp://' + rabbit_server_ip , opt, this._rabbit_handler.bind(this));
@@ -34,7 +34,7 @@ class Link_manager extends EventEmitter
 
     _rabbit_handler(error0, connection) 
     {
-        this.logger("[LINK_"+this.caller+"] connected");
+        this.logger("[LINK] connected");
         if (error0) 
             throw error0;
         

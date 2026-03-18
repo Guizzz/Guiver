@@ -1,5 +1,6 @@
 const hap = require("hap-nodejs");
 const Link_manager = require("../utils/link_manager");
+const { interfaceLogger } = require('../utils/logger');
 
 const Accessory = hap.Accessory;
 const Characteristic = hap.Characteristic;
@@ -10,7 +11,8 @@ class Homekit_Server
 {   
     constructor()
     {
-        this.link_manager = new Link_manager("HOMEKIT_SERVER", "homekit_queue");
+        this.logger = interfaceLogger("WSS_CLIENTS");
+        this.link_manager = new Link_manager("HOMEKIT_SERVER", "homekit_queue", (m) => this.logger.debug(m) );
         this.link_manager.start();
         this.link_manager.on("msg", this.update_value.bind(this));
         this.link_manager.on("channel_new", this._start.bind(this));

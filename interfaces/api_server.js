@@ -8,7 +8,8 @@ class API_Server
 {   
     constructor()
     {
-        this.link_manager = new Link_manager("API_SERVER", "api_queue", (msg) => interfaceLogger.debug(msg));
+        this.logger = interfaceLogger("HTTP_API");
+        this.link_manager = new Link_manager("API_SERVER", "api_queue", (msg) => this.logger.debug(msg));
         this.link_manager.start();
         this.link_manager.on("msg", this.update_value.bind(this));
         this.link_manager.on("channel_new", this._start.bind(this));
@@ -31,7 +32,7 @@ class API_Server
         this.app.get('/get_water_pump_status', this.get_water_pump_status.bind(this));
         this.app.get('/get_water_pump_ambient_temp', this.get_water_pump_ambient_temp.bind(this));
 
-        this.app.listen(process.env.API_PORT, () => interfaceLogger.info("API Server started"));
+        this.app.listen(process.env.API_PORT, () => this.logger.info("API Server started"));
 
         this.redValue=0;
         this.greenValue=0;
@@ -69,7 +70,7 @@ class API_Server
 
     handle_led_req(req,res)
     {
-        interfaceLogger.info("API request:" + req);
+        this.logger.info("API request:" + req);
         var redValue = 0;
         var greenValue = 0;
         var blueValue = 0;
@@ -148,7 +149,7 @@ class API_Server
 
         this.inter = setInterval(
             function(){
-                interfaceLogger.info("INSIDE", this.last)
+                this.logger.info("INSIDE", this.last)
                 if (this.last == null)
                     return;
                 res.send(this.last);
@@ -159,7 +160,7 @@ class API_Server
 
     handle_set_rainbow(req, res)
     {
-        interfaceLogger.info(req.body)
+        this.logger.info(req.body)
         var j_cmd = {
                 "type": "request", 
                 "command": "",
@@ -179,7 +180,7 @@ class API_Server
 
         this.inter = setInterval(
             function(){
-                interfaceLogger.info("INSIDE", this.last)
+                this.logger.info("INSIDE", this.last)
                 if (this.last == null)
                     return;
                 res.setHeader('Content-Type', 'application/json');
@@ -192,7 +193,7 @@ class API_Server
 
     handle_set_relay(req, res)
     {
-        interfaceLogger.info(req.body)
+        this.logger.info(req.body)
         var j_cmd = {
                 "type": "request", 
                 "command": "set_relay",
@@ -206,7 +207,7 @@ class API_Server
 
         this.inter = setInterval(
             function(){
-                interfaceLogger.info("INSIDE", this.last)
+                this.logger.info("INSIDE", this.last)
                 if (this.last == null)
                     return;
                 res.setHeader('Content-Type', 'application/json');
@@ -227,7 +228,7 @@ class API_Server
         
         this.inter = setInterval(
             function(){
-                interfaceLogger.info("INSIDE", this.last)
+                this.logger.info("INSIDE", this.last)
                 if (this.last == null)
                     return;
                 res.send(this.last);
@@ -247,7 +248,7 @@ class API_Server
         
         this.inter = setInterval(
             function(){
-                interfaceLogger.info("INSIDE", this.last)
+                this.logger.info("INSIDE", this.last)
                 if (this.last == null)
                     return;
                 res.send(this.last);
@@ -267,7 +268,7 @@ class API_Server
         
         this.inter = setInterval(
             function(){
-                interfaceLogger.info("INSIDE", this.last)
+                this.logger.info("INSIDE", this.last)
                 if (this.last == null)
                     return;
                 res.send(this.last);
@@ -287,7 +288,7 @@ class API_Server
         
         this.inter = setInterval(
             function(){
-                interfaceLogger.info("INSIDE", this.last)
+                this.logger.info("INSIDE", this.last)
                 if (this.last == null)
                     return;
                 res.send(this.last);
@@ -299,7 +300,7 @@ class API_Server
     help(req, res)  
     {
         var route,routes = [];
-        process.env.DEBUG?interfaceLogger.info("Get help request"):"";
+        process.env.DEBUG?this.logger.info("Get help request"):"";
         try
         {
             this.app._router.stack.forEach(function(middleware)
@@ -318,7 +319,7 @@ class API_Server
                 }
             });
 
-            process.env.DEBUG?interfaceLogger.info(routes):"";
+            process.env.DEBUG?this.logger.info(routes):"";
             res.send(routes);
         }
         catch(e)

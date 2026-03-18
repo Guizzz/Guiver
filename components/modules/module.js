@@ -1,4 +1,5 @@
 const Link_manager = require("../../utils/link_manager");
+const { moduleLogger } = require('../../utils/logger');
 
 class Module
 {
@@ -7,13 +8,14 @@ class Module
         this.module_name = module_name;
         this.module_queue = module_queue;
 
+        this.moduleLogger = moduleLogger(this.module_name);
+
         this.CONFIG = config;
         if(this.CONFIG != {})
-            console.log("["+this.module_name+"] Config loaded:", config);
-
+            this.moduleLogger.info("Config loaded:" + JSON.stringify(config));
 
         this.commands_handled = new Object();
-        this.link_manager = new Link_manager(module_name, module_queue);
+        this.link_manager = new Link_manager(module_name, module_queue, (m) => this.moduleLogger.info(m));
         this.link_manager.on("msg", this.manage_request.bind(this));
         this.link_manager.start();
     }
@@ -40,7 +42,7 @@ class Module
 
     async manage_request(message)
     {
-        console.log("["+this.module_name+"] Message recived: ", message);
+        this.moduleLogger.debug("["+this.module_name+"] Message recived: ", message);
         var j_msg = JSON.parse(message);
         var req_cmd = j_msg.command = j_msg.command.trim();
         if(this.commands_handled.hasOwnProperty(req_cmd))
@@ -52,7 +54,7 @@ class Module
             return;
         }
 
-        console.log("["+this.module_name+"] Command ["+req_cmd+"] not implemented error");
+        this.moduleLogger.error("Command ["+req_cmd+"] not implemented error");
         j_msg.payload = "ERROR: Command ["+req_cmd+"] not implemented";
         j_msg.error = 500;
         this.link_manager.to_core("core_queue", JSON.stringify(j_msg));
