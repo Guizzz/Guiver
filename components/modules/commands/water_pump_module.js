@@ -32,7 +32,7 @@ class Water_pump_module extends Module {
     } 
     catch (err) 
     {
-      return this.sendError(commandName, err);
+      return this.sendError(commandName, err.message);
     }
   }
 }

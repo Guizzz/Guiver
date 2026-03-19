@@ -46,7 +46,7 @@ class Weather_module extends Module {
     } 
     catch (err) 
     {
-      return this.sendError(commandName, err);
+      return this.sendError(commandName, err.message);
     }
   }
 }

@@ -8,14 +8,14 @@ class Module
         this.module_name = module_name;
         this.module_queue = module_queue;
 
-        this.moduleLogger = moduleLogger(this.module_name);
+        this.log = moduleLogger(this.module_name);
 
         this.CONFIG = config;
         if(this.CONFIG != {})
-            this.moduleLogger.info("Config loaded:" + JSON.stringify(config));
+            this.log.info("Config loaded:" + JSON.stringify(config));
 
         this.commands_handled = new Object();
-        this.link_manager = new Link_manager(module_name, module_queue, (m) => this.moduleLogger.info(m));
+        this.link_manager = new Link_manager(module_name, module_queue, (m) => this.log.info(m));
         this.link_manager.on("msg", this.manage_request.bind(this));
         this.link_manager.start();
     }
@@ -42,7 +42,7 @@ class Module
 
     async manage_request(message)
     {
-        this.moduleLogger.debug("["+this.module_name+"] Message recived: " + message);
+        this.log.debug("Message recived: " + message);
         var j_msg = JSON.parse(message);
         var req_cmd = j_msg.command = j_msg.command.trim();
         if(this.commands_handled.hasOwnProperty(req_cmd))
@@ -54,7 +54,7 @@ class Module
             return;
         }
 
-        this.moduleLogger.error("Command ["+req_cmd+"] not implemented error");
+        this.log.error("Command ["+req_cmd+"] not implemented error");
         j_msg.payload = "ERROR: Command ["+req_cmd+"] not implemented";
         j_msg.error = 500;
         this.link_manager.to_core("core_queue", JSON.stringify(j_msg));
@@ -62,26 +62,37 @@ class Module
 
     sendResponse(command, payload) 
     {
-    const resp = {
-        type: "response",
-        command,
-        payload,
-        timestamp: Date.now(),
-    };
+        const resp = {
+            type: "response",
+            command,
+            payload,
+            timestamp: Date.now(),
+        };
 
-    this.link_manager.to_core("core_queue", JSON.stringify(resp));
+        this.link_manager.to_core("core_queue", JSON.stringify(resp));
+    }
+
+    sendRequest(command, payload) 
+    {
+        const resp = {
+            type: "request",
+            command,
+            payload
+        };
+
+        this.link_manager.to_core("core_queue", JSON.stringify(resp));
     }
 
     sendError(command, err) 
     {
-    const resp = {
-        type: "response",
-        command,
-        error: err.message,
-        timestamp: Date.now(),
-    };
+        const resp = {
+            type: "response",
+            command,
+            error: err,
+            timestamp: Date.now(),
+        };
 
-    this.link_manager.to_core("core_queue", JSON.stringify(resp));
+        this.link_manager.to_core("core_queue", JSON.stringify(resp));
     }
     
 }

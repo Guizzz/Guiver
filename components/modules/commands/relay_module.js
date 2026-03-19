@@ -1,23 +1,16 @@
 const Module = require("../module");
-var Gpio = null;
 
-try
-{
-    Gpio = require('pigpio').Gpio;
-}
-catch
-{
-    console.log("ERORE")
-}
+let Gpio = null;
 
-var REALAY_PIN = 2;
+const RELAY_PIN = 2;
 
-var pin_map = {
-    light: {
-        "status": false,
-        "pin": REALAY_PIN
-    }
-}
+const pin_map = {
+  light: {
+    status: false,
+    pin: RELAY_PIN,
+    GPIO: null,
+  },
+};
 
 /*
 request: 
@@ -32,70 +25,86 @@ request:
 
 */
 
+class Relay_module extends Module {
+  constructor(config) {
+    super("RELAY_MODULE", "relay_queue", config);
 
-class Relay_module extends Module
-{
-    constructor(config)
-    {
-        super("RELAY_MODULE", "relay_queue", config);
-        this.set_handled_cmds({
-            "set_relay": this.set_relay.bind(this),
-            "relay_status": this.relay_status.bind(this)
+    this.set_handled_cmds({
+      set_relay: this.set_relay.bind(this),
+      relay_status: this.relay_status.bind(this),
+    });
+
+    try {
+        Gpio = require("pigpio").Gpio;
+    } catch {
+        this.log.error("pigpio not available - mock mode");
+    }
+
+    this._init_pin();
+  }
+
+  _init_pin() {
+    for (const key in pin_map) {
+      if (Gpio) {
+        pin_map[key].GPIO = new Gpio(pin_map[key].pin, {
+          mode: Gpio.OUTPUT,
         });
-        this._init_pin();
+
+        pin_map[key].GPIO.digitalWrite(0);
+      }
+    }
+  }
+
+  async set_relay(command) {
+    const commandName = "set_relay";
+
+    try {
+      const { relay, set_relay } = command.payload || {};
+
+      if (set_relay === undefined) {
+        throw new Error("set_relay missing");
+      }
+
+      if (!relay) {
+        throw new Error("relay missing");
+      }
+
+      if (!pin_map[relay]) {
+        throw new Error(`relay '${relay}' not found`);
+      }
+
+      pin_map[relay].status = !!set_relay;
+
+      if (pin_map[relay].GPIO) {
+        pin_map[relay].GPIO.digitalWrite(pin_map[relay].status ? 1 : 0);
+      }
+
+      return this.sendResponse(commandName, this._getStatusPayload());
+
+    } catch (err) {
+      return this.sendError(commandName, err);
+    }
+  }
+
+  async relay_status() {
+    const commandName = "relay_status";
+
+    try {
+      return this.sendResponse(commandName, this._getStatusPayload());
+    } catch (err) {
+      return this.sendError(commandName, err);
+    }
+  }
+
+  _getStatusPayload() {
+    const payload = {};
+
+    for (const key in pin_map) {
+      payload[key] = pin_map[key].status;
     }
 
-    _init_pin()
-    {
-        for (var p in pin_map)
-        {
-            console.log(pin_map[p]);
-            pin_map[p]["GPIO"] = new Gpio(pin_map[p].pin, {mode: Gpio.OUTPUT});
-            pin_map[p]["GPIO"].digitalWrite(false,10);
-        }
-    }
-
-    set_relay(request) {
-
-        if(request.payload.set_relay === undefined)
-            return this.relay_error("set_relay not found in payload");
-
-        if(request.payload.relay === undefined || request.payload.relay === "")
-            return this.relay_error("relay not found in payload or is empty");
-        
-        var pin_ID = request.payload.relay;
-
-        pin_map[pin_ID]["status"] = request.payload.set_relay;
-        pin_map[pin_ID]["GPIO"].digitalWrite(pin_map[pin_ID]["status"], 10);
-        return this.relay_status();
-    }
-
-    relay_error(msg)
-    {
-        var resp = {
-            "type": "response",
-            "command": "relay_status",
-            "payload": {
-                "ERROR": msg
-            }
-        }
-    }
-
-    relay_status()
-    {
-        var resp = {
-            "type": "response",
-            "command": "relay_status",
-            "payload": {}
-        }
-
-        for (var p in pin_map)
-        {
-            resp["payload"][p] = pin_map[p]["status"]
-        }
-        
-        return resp;
-    }
+    return payload;
+  }
 
 }
 
