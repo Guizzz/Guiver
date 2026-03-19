@@ -60,6 +60,29 @@ class Module
         this.link_manager.to_core("core_queue", JSON.stringify(j_msg));
     }
 
+    sendResponse(command, payload) 
+    {
+    const resp = {
+        type: "response",
+        command,
+        payload,
+        timestamp: Date.now(),
+    };
+
+    this.link_manager.to_core("core_queue", JSON.stringify(resp));
+    }
+
+    sendError(command, err) 
+    {
+    const resp = {
+        type: "response",
+        command,
+        error: err.message,
+        timestamp: Date.now(),
+    };
+
+    this.link_manager.to_core("core_queue", JSON.stringify(resp));
+    }
     
 }
 

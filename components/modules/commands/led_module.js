@@ -7,7 +7,7 @@ try
 }
 catch
 {
-    console.log("ERORE")
+    console.log("ERORE pigpio");
 }
 
 
@@ -18,7 +18,7 @@ class Led_module extends Module
         super("LED_MODULE", "led_queue", config);
         if(Gpio == null)
         {
-            console.log("Led Module do not loaded")
+            this.moduleLogger.info("Led Module do not loaded")
             return;
         }
 
@@ -40,9 +40,9 @@ class Led_module extends Module
         this.redValue=0;
         this.greenValue=0;
         this.blueValue=0;
-        this.RedLed = new Gpio(4, {mode: Gpio.OUTPUT});
-        this.GreenLed = new Gpio(17, {mode: Gpio.OUTPUT});
-        this.BlueLed = new Gpio(18, {mode: Gpio.OUTPUT});
+        this.RedLed   = new Gpio(this.CONFIG.red_pin, {mode: Gpio.OUTPUT});
+        this.GreenLed = new Gpio(this.CONFIG.green_pin, {mode: Gpio.OUTPUT});
+        this.BlueLed  = new Gpio(this.CONFIG.blue_pin, {mode: Gpio.OUTPUT});
         
     }
 
@@ -145,7 +145,7 @@ class Led_module extends Module
 
     async _startRainbow()
     {
-        console.log("Starting Rainbow, rainbowBrightness:", this.rainbowBrightness);
+        this.moduleLogger.info("Starting Rainbow, rainbowBrightness:", this.rainbowBrightness);
         for(; this.redValue<this.rainbowBrightness; this.redValue++)
         {
             this.RedLed.pwmWrite(parseInt(this.redValue,10));

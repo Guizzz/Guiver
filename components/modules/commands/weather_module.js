@@ -1,47 +1,54 @@
 const Module = require("../module");
-const Https = require("../../../utils/https");
+const axios = require("axios");
 
-class Weather_module extends Module
-{
-    constructor()
+class Weather_module extends Module {
+  constructor() {
+    super("WEATHER_MODULE", "weather_queue");
+
+    this.set_handled_cmds({
+      get_weather: this.get_weather.bind(this),
+    });
+
+    this.client = axios.create({
+      baseURL: "https://api.openweathermap.org/data/2.5",
+      timeout: 3000,
+    });
+  }
+
+  async get_weather(command) {
+    return this.fetchAndRespond("/weather", "get_weather", command);
+  }
+
+  async fetchAndRespond(endpoint, commandName, command) 
+  {
+    try {
+      const city = command?.payload?.city || "latina";
+      const apiKey = process.env.WEATHER_KEY;
+
+      const { data } = await this.client.get(endpoint, {
+        params: {
+          q: city,
+          units: "metric",
+          appid: apiKey,
+        },
+      });
+
+      // payload ridotto (molto importante)
+      const payload = {
+        city: data.name,
+        temp: data.main.temp,
+        humidity: data.main.humidity,
+        weather: data.weather[0].description,
+      };
+
+      return this.sendResponse(commandName, payload);
+
+    } 
+    catch (err) 
     {
-        super("WEATHER_MODULE", "weather_queue");
-        this.set_handled_cmds({
-            "get_weather": this.get_weather.bind(this)
-        });
-        this.https = new Https();
+      return this.sendError(commandName, err);
     }
-
-    get_weather(command)
-    {
-        var url = "https://api.openweathermap.org/data/2.5/weather?q=latina&units=metric&appid=" + process.env.WEATHER_KEY; // TODO
-
-        this.https.get(url,function(res){
-            let data = [];
-            // const headerDate = res.headers && res.headers.date ? res.headers.date : 'no response date';
-            // console.log('Status Code:', res.statusCode);
-            // console.log('Date in Response header:', headerDate);
-          
-            res.on('data', chunk => {
-              data.push(chunk);
-            });
-          
-            res.on('end', function(){
-              // console.log('Response ended: ');
-              // console.log(Buffer.concat(data).toString());
-              var resp = new Object();
-
-              var resp = {
-                "type" : "response",
-                "command": "get_weather",
-                "payload": JSON.parse(Buffer.concat(data).toString()),
-              }
-              
-              this.link_manager.to_core("core_queue", JSON.stringify(resp));
-            }.bind(this));
-          }.bind(this))
-    }
-    
+  }
 }
 
 module.exports = Weather_module;
