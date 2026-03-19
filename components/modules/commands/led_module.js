@@ -130,44 +130,42 @@ class Led_module extends Module {
 
     while (this.rainbowRunning) 
     {
+        for(; this.greenValue<this.rainbowBrightness && this.rainbowRunning; this.greenValue++)
+        {
+            this._apply_led_values();
+            await this._sleep(this.time);
+        }
+        
+        for(; this.redValue>0 && this.rainbowRunning; this.redValue--)
+        {
+            this._apply_led_values();
+            await this._sleep(this.time);
+        }
 
+        for(; this.blueValue<this.rainbowBrightness && this.rainbowRunning; this.blueValue++)
+        {
+            this._apply_led_values();
+            await this._sleep(this.time);
+        }
 
-         for(; this.greenValue<this.rainbowBrightness && this.rainbowRunning; this.greenValue++)
-            {
-                this._apply_led_values();
-                await this._sleep(this.time);
-            }
-            
-            for(; this.redValue>0 && this.rainbowRunning; this.redValue--)
-            {
-                this._apply_led_values();
-                await this._sleep(this.time);
-            }
+        for(; this.greenValue>0 && this.rainbowRunning; this.greenValue--)
+        {
+            this._apply_led_values();
+            await this._sleep(this.time);
+        }
 
-            for(; this.blueValue<this.rainbowBrightness && this.rainbowRunning; this.blueValue++)
-            {
-                this._apply_led_values();
-                await this._sleep(this.time);
-            }
+        for(; this.redValue<this.rainbowBrightness && this.rainbowRunning; this.redValue++)
+        {
+            this._apply_led_values();
+            await this._sleep(this.time);
+        }
 
-            for(; this.greenValue>0 && this.rainbowRunning; this.greenValue--)
-            {
-                this._apply_led_values();
-                await this._sleep(this.time);
-            }
-
-            for(; this.redValue<this.rainbowBrightness && this.rainbowRunning; this.redValue++)
-            {
-                this._apply_led_values();
-                await this._sleep(this.time);
-            }
-
-            for(; this.blueValue>0 && this.rainbowRunning; this.blueValue--)
-            {
-                this._apply_led_values();
-                await this._sleep(this.time);
-            }
-    }
+        for(; this.blueValue>0 && this.rainbowRunning; this.blueValue--)
+        {
+            this._apply_led_values();
+            await this._sleep(this.time);
+        }
+  }
 
     // fade out all
     while (this.redValue || this.greenValue || this.blueValue) 

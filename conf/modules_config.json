@@ -11,6 +11,9 @@
     "weather_module": {
         "path": "./components/modules/commands/weather_module"
     },
+    "crypto_module": {
+        "path": "./components/modules/commands/crypto_module"
+    },
     "water_pump_module": {
         "path": "./components/modules/commands/water_pump_module",
         "config": {

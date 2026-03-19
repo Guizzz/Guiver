@@ -119,6 +119,10 @@ function handleCommand(input) {
       send("get_water_pump_status");
       break;
 
+    case "crypto":
+      send("get_crypto_data");
+      break;
+
     case "color":
       runColorCycle(parseInt(arg) || 5);
       break;
