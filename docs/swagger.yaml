@@ -29,6 +29,9 @@ paths:
 
   /set_relay:
     $ref: './paths/relay.yaml#/set_relay'
+  
+  /get_relay_status:
+    $ref: './paths/relay.yaml#/get_relay_status'
 
   /get_water_pump_status:
     $ref: './paths/pump.yaml#/get_water_pump_status'

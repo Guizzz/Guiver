@@ -11,3 +11,11 @@ set_relay:
     responses:
       200:
         description: Stato relay aggiornato
+
+get_relay_status:
+  get:
+    summary: Get all relay info
+    tags: [Relay]
+    responses:
+      200:
+        description: All relay info

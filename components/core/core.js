@@ -46,6 +46,14 @@ class Core
         coreLogger.debug("Message recived: " + message);
         var j_msg = JSON.parse(message);
 
+        if(!j_msg.hasOwnProperty("command"))
+        {
+            coreLogger.info("wrong message")
+            return;
+        }
+
+        var req_cmd = j_msg.command = j_msg.command.trim();
+
         if(j_msg.hasOwnProperty("error"))
         {
             coreLogger.error("Command <"+req_cmd+"> has failed: " + j_msg.error);
@@ -54,14 +62,6 @@ class Core
             this.send_response(j_msg);
             return;
         }
-
-        if(!j_msg.hasOwnProperty("command"))
-        {
-            coreLogger.info("wrong message")
-            return;
-        }
-
-        var req_cmd = j_msg.command = j_msg.command.trim();
 
         if(j_msg.type == "request")
         {

@@ -35,6 +35,7 @@ class API_Server {
         this.app.post('/manual_led', this.handle_led_req.bind(this));
         this.app.post('/set_rainbow', this.handle_set_rainbow.bind(this));
         this.app.post('/set_relay', this.handle_set_relay.bind(this));
+        this.app.get('/get_relay_status', this.handle_get_relay.bind(this));
         this.app.get('/get_water_pump_status', this.get_water_pump_status.bind(this));
         this.app.get('/get_water_pump_ambient_temp', this.get_water_pump_ambient_temp.bind(this));
 
@@ -189,6 +190,11 @@ class API_Server {
             payload: { set_relay, relay },
         });
 
+        this.waitForResponse(res);
+    }
+
+    handle_get_relay(req, res) {
+        this.sendCommand({ type: "request", command: "relay_status" });
         this.waitForResponse(res);
     }
 
