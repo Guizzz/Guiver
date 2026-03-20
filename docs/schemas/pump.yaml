@@ -1,0 +1,9 @@
+PumpStatus:
+  type: object
+  properties:
+    status:
+      type: string
+      example: ON
+    temperature:
+      type: number
+      example: 25.3

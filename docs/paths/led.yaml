@@ -1,0 +1,41 @@
+manual_led:
+  post:
+    tags:
+      - LED
+    summary: Imposta LED manualmente
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/led.yaml#/LedColor'
+    responses:
+      200:
+        description: OK
+
+get_led_status:
+  get:
+    tags:
+      - LED
+    summary: Stato LED
+    responses:
+      200:
+        description: OK
+
+set_rainbow:
+  post:
+    tags:
+      - LED
+    summary: Attiva/disattiva rainbow
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              run_rainbow:
+                type: boolean
+    responses:
+      200:
+        description: OK

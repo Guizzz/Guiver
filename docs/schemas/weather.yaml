@@ -1,0 +1,12 @@
+Weather:
+  type: object
+  properties:
+    temperature:
+      type: number
+      example: 22.5
+    humidity:
+      type: number
+      example: 60
+    condition:
+      type: string
+      example: Sunny

@@ -1,335 +1,221 @@
 const Link_manager = require("../utils/link_manager");
 const { interfaceLogger } = require('../utils/logger');
-const express = require('express')
-const bodyParser = require('body-parser');
+const express = require('express');
 const cors = require('cors');
 
-class API_Server
-{   
-    constructor()
-    {
+const swaggerUi = require('swagger-ui-express');
+const SwaggerParser = require('@apidevtools/swagger-parser');
+const path = require('path');
+
+class API_Server {   
+    constructor() {
         this.logger = interfaceLogger("HTTP_API");
-        this.link_manager = new Link_manager("API_SERVER", "api_queue", (msg) => this.logger.debug(msg));
+
+        this.link_manager = new Link_manager(
+            "API_SERVER",
+            "api_queue",
+            (msg) => this.logger.debug(msg)
+        );
+
         this.link_manager.start();
         this.link_manager.on("msg", this.update_value.bind(this));
         this.link_manager.on("channel_new", this._start.bind(this));
 
         this.app = express();
         this.app.use(cors());
-        this.app.use(bodyParser.urlencoded({ extended: false }));
-        this.app.use(bodyParser.json());
+        this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended: false }));
 
+        this._initSwagger(this.app);
+
+        // ROUTES
         this.app.get('/help', this.help.bind(this));
-        
         this.app.get('/get_weather', this.handle_weather.bind(this));
-        
         this.app.get('/get_led_status', this.handle_led_status.bind(this));
         this.app.post('/manual_led', this.handle_led_req.bind(this));
         this.app.post('/set_rainbow', this.handle_set_rainbow.bind(this));
-        
         this.app.post('/set_relay', this.handle_set_relay.bind(this));
-
         this.app.get('/get_water_pump_status', this.get_water_pump_status.bind(this));
         this.app.get('/get_water_pump_ambient_temp', this.get_water_pump_ambient_temp.bind(this));
 
-        this.app.listen(process.env.API_PORT, () => this.logger.info("API Server started"));
+        const port = process.env.API_PORT || 8080;
+        this.app.listen(port, () =>
+            this.logger.info("API Server started on " + port)
+        );
 
-        this.redValue=0;
-        this.greenValue=0;
-        this.blueValue=0;
-        this.last = null
+        this.redValue = 0;
+        this.greenValue = 0;
+        this.blueValue = 0;
+        this.last = null;
     }
 
-    _start()
-    {
-        var j_msg = {
-            "type": "managment",
-            "command": "response_config",
-            "module": "API_SERVER",
-            "module_queue": "api_queue",
+    /* ================= SWAGGER ================= */
+
+    async _initSwagger(app) {
+        try {
+            const bundled = await SwaggerParser.bundle(
+                path.resolve(__dirname, '../docs/swagger.yaml')
+            );
+
+            app.use('/docs', swaggerUi.serve, swaggerUi.setup(bundled));
+
+            this.logger.info("✅ Swagger pronto su /docs");
+        } catch (err) {
+            this.logger.error("❌ Errore Swagger: " + err.message);
         }
+    }
+
+    /* ================= CORE ================= */
+
+    _start() {
+        const j_msg = {
+            type: "managment",
+            command: "response_config",
+            module: "API_SERVER",
+            module_queue: "api_queue",
+        };
         this.link_manager.to_core("core_queue", JSON.stringify(j_msg));
     }
 
-    update_value(data)
-    {
+    update_value(data) {
         this.last = data;
         data = JSON.parse(data);
-        if(data.hasOwnProperty("payload"))
-        {
-            if(data.payload.hasOwnProperty("redValue"))
-                this.redValue=data.payload.redValue;
-            
-            if(data.payload.hasOwnProperty("greenValue"))
-                this.greenValue=data.payload.greenValue;
-            
-            if(data.payload.hasOwnProperty("blueValue"))
-                this.blueValue=data.payload.blueValue;
+
+        if (data.payload) {
+            this.redValue = data.payload.redValue ?? this.redValue;
+            this.greenValue = data.payload.greenValue ?? this.greenValue;
+            this.blueValue = data.payload.blueValue ?? this.blueValue;
         }
     }
 
-    handle_led_req(req,res)
-    {
-        this.logger.info("API request:" + req);
-        var redValue = 0;
-        var greenValue = 0;
-        var blueValue = 0;
-        var error = "";
+    waitForResponse(res) {
+        const interval = setInterval(() => {
+            if (!this.last) return;
 
-        if(req.query.redValue)
-        {
-            try
-            {
-                var req_val = parseInt(req.query.redValue);
-                if (req_val>=0 && req_val < 256)
-                    redValue = req_val
-                else
-                    error = "Led value must be between 0 and 255";
-            }
-            catch
-            {
-                error = "Led value can only be numbers";
-            }
-        }
-        if(req.query.greenValue)
-        {
-            try
-            {
-                var req_val = parseInt(req.query.greenValue);
-                if (req_val>=0 && req_val < 256)
-                    greenValue = req_val
-                else
-                    error = "Led value must be between 0 and 255";
-            }
-            catch
-            {
-                error = "Led value can only be numbers";
-            }
-
-        }
-        if(req.query.blueValue)
-        {
-            try
-            {
-                var req_val = parseInt(req.query.blueValue);
-                if (req_val>=0 && req_val < 256)
-                    blueValue = req_val
-                else
-                    error = "Led value must be between 0 and 255";
-            }
-            catch
-            {
-                error = "Led value can only be numbers";
-            }
-
-        }
-
-        var j_cmd = {
-            "type": "request",
-            "command": "led_manual",
-            "payload": {
-                "redValue": parseInt(redValue),
-                "greenValue": parseInt(greenValue),
-                "blueValue": parseInt(blueValue),
-            }
-        }
-
-        if (error != "")
-        {
-            res.send(error);
-            return;
-        }
-        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-        
-        var resp_data = {
-            "redValue": this.redValue,
-            "greenValue": this.greenValue,
-            "blueValue": this.blueValue,
-        }
-
-        this.inter = setInterval(
-            function(){
-                this.logger.info("INSIDE", this.last)
-                if (this.last == null)
-                    return;
-                res.send(this.last);
-                this.last = null;
-                clearInterval(this.inter);
-            }.bind(this), 10);
+            res.json(JSON.parse(this.last));
+            this.last = null;
+            clearInterval(interval);
+        }, 10);
     }
 
-    handle_set_rainbow(req, res)
-    {
-        this.logger.info(req.body)
-        var j_cmd = {
-                "type": "request", 
-                "command": "",
-            };
-        if(req.body.run_rainbow)
-        {
-            j_cmd["command"] = "rainbow_start"
-            j_cmd["payload"] ={
-                "time": 40,
-                "brightnes":254
-            }
-        }
-        else
-            j_cmd["command"] = "rainbow_stop"
-        
-        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-
-        this.inter = setInterval(
-            function(){
-                this.logger.info("INSIDE", this.last)
-                if (this.last == null)
-                    return;
-                res.setHeader('Content-Type', 'application/json');
-                res.send(this.last);
-                this.last = null;
-                clearInterval(this.inter);
-            }.bind(this), 10);
-
+    sendCommand(command) {
+        this.link_manager.to_core("core_queue", JSON.stringify(command));
     }
 
-    handle_set_relay(req, res)
-    {
-        this.logger.info(req.body)
-        var j_cmd = {
-                "type": "request", 
-                "command": "set_relay",
-                "payload" : {
-                    "set_relay": req.body.set_relay,
-                    "relay": req.body.relay
-                }
+    /* ================= ROUTES ================= */
+
+    /**
+     * @swagger
+     * /get_weather:
+     *   get:
+     *     summary: Ottiene meteo
+     */
+    handle_weather(req, res) {
+        this.sendCommand({ type: "request", command: "get_weather" });
+        this.waitForResponse(res);
+    }
+
+    /**
+     * @swagger
+     * /get_led_status:
+     *   get:
+     *     summary: Stato LED
+     */
+    handle_led_status(req, res) {
+        this.sendCommand({ type: "request", command: "led_status" });
+        this.waitForResponse(res);
+    }
+
+    /**
+     * @swagger
+     * /manual_led:
+     *   post:
+     *     summary: Imposta LED manualmente
+     */
+    handle_led_req(req, res) {
+        const { redValue = 0, greenValue = 0, blueValue = 0 } = req.body;
+
+        const isValid = [redValue, greenValue, blueValue].every(
+            v => Number.isInteger(v) && v >= 0 && v < 256
+        );
+
+        if (!isValid) {
+            return res.status(400).send("Valori LED non validi (0-255)");
+        }
+
+        this.sendCommand({
+            type: "request",
+            command: "led_manual",
+            payload: { redValue, greenValue, blueValue },
+        });
+
+        this.waitForResponse(res);
+    }
+
+    /**
+     * @swagger
+     * /set_rainbow:
+     *   post:
+     *     summary: Attiva/disattiva rainbow
+     */
+    handle_set_rainbow(req, res) {
+        const cmd = req.body.run_rainbow
+            ? {
+                type: "request",
+                command: "rainbow_start",
+                payload: { time: 40, brightnes: 254 },
+            }
+            : {
+                type: "request",
+                command: "rainbow_stop",
             };
 
-        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-
-        this.inter = setInterval(
-            function(){
-                this.logger.info("INSIDE", this.last)
-                if (this.last == null)
-                    return;
-                res.setHeader('Content-Type', 'application/json');
-                res.send(this.last);
-                this.last = null;
-                clearInterval(this.inter);
-            }.bind(this), 10);
+        this.sendCommand(cmd);
+        this.waitForResponse(res);
     }
 
-    handle_weather(req,res)
-    {
-        var j_cmd = {
-            "type": "request", 
-            "command": "get_weather",
-        };
+    /**
+     * @swagger
+     * /set_relay:
+     *   post:
+     *     summary: Controlla relay
+     */
+    handle_set_relay(req, res) {
+        const { set_relay, relay } = req.body;
 
-        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-        
-        this.inter = setInterval(
-            function(){
-                this.logger.info("INSIDE", this.last)
-                if (this.last == null)
-                    return;
-                res.send(this.last);
-                this.last = null;
-                clearInterval(this.inter);
-            }.bind(this), 10);
+        this.sendCommand({
+            type: "request",
+            command: "set_relay",
+            payload: { set_relay, relay },
+        });
+
+        this.waitForResponse(res);
     }
 
-    handle_led_status(req,res)
-    {
-        var j_cmd = {
-            "type": "request", 
-            "command": "led_status",
-        };
-
-        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-        
-        this.inter = setInterval(
-            function(){
-                this.logger.info("INSIDE", this.last)
-                if (this.last == null)
-                    return;
-                res.send(this.last);
-                this.last = null;
-                clearInterval(this.inter);
-            }.bind(this), 10);
+    handle_water(req, res, command) {
+        this.sendCommand({ type: "request", command });
+        this.waitForResponse(res);
     }
 
-    get_water_pump_status(req,res)
-    {
-        var j_cmd = {
-            "type": "request", 
-            "command": "get_water_pump_status",
-        };
-
-        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-        
-        this.inter = setInterval(
-            function(){
-                this.logger.info("INSIDE", this.last)
-                if (this.last == null)
-                    return;
-                res.send(this.last);
-                this.last = null;
-                clearInterval(this.inter);
-            }.bind(this), 10);
+    get_water_pump_status(req, res) {
+        this.handle_water(req, res, "get_water_pump_status");
     }
 
-    get_water_pump_ambient_temp(req,res)
-    {
-        var j_cmd = {
-            "type": "request", 
-            "command": "get_water_pump_ambient_temp",
-        };
-
-        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
-        
-        this.inter = setInterval(
-            function(){
-                this.logger.info("INSIDE", this.last)
-                if (this.last == null)
-                    return;
-                res.send(this.last);
-                this.last = null;
-                clearInterval(this.inter);
-            }.bind(this), 10);
+    get_water_pump_ambient_temp(req, res) {
+        this.handle_water(req, res, "get_water_pump_ambient_temp");
     }
 
-    help(req, res)  
-    {
-        var route,routes = [];
-        process.env.DEBUG?this.logger.info("Get help request"):"";
-        try
-        {
-            this.app._router.stack.forEach(function(middleware)
-            {
-                if(middleware.route)
-                { // routes registered directly on the app
-                    routes.push(middleware.route);
-                } 
-                else if(middleware.name === 'router')
-                { // router middleware 
-                    middleware.handle.stack.forEach(function(handler)
-                    {
-                        route = handler.route;
-                        route && routes.push(route);
-                    });
-                }
-            });
+    help(req, res) {
+        const routes = [];
 
-            process.env.DEBUG?this.logger.info(routes):"";
-            res.send(routes);
-        }
-        catch(e)
-        {
-            console.error("Error: "+e);
-            jres = {success:"0", value: {error: e} }
-            res.send(jres);
-        }
+        this.app._router.stack.forEach((middleware) => {
+            if (middleware.route) {
+                routes.push(middleware.route.path);
+            }
+        });
+
+        res.json(routes);
     }
 }
 
-
-module.exports = API_Server
+module.exports = API_Server;

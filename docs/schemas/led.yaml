@@ -1,0 +1,12 @@
+LedColor:
+  type: object
+  properties:
+    redValue:
+      type: integer
+      example: 255
+    greenValue:
+      type: integer
+      example: 100
+    blueValue:
+      type: integer
+      example: 50

@@ -1,0 +1,13 @@
+set_relay:
+  post:
+    summary: Controlla relay
+    tags: [Relay]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/relay.yaml#/Relay'
+    responses:
+      200:
+        description: Stato relay aggiornato

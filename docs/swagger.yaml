@@ -1,0 +1,48 @@
+openapi: 3.0.0
+
+info:
+  title: API Server
+  version: 1.0.0
+  description: API per controllo dispositivi IoT
+
+servers:
+  - url: http://localhost:8080 
+
+tags:
+  - name: LED
+  - name: Relay
+  - name: Weather
+  - name: Pump
+
+paths:
+  /manual_led:
+    $ref: './paths/led.yaml#/manual_led'
+
+  /get_led_status:
+    $ref: './paths/led.yaml#/get_led_status'
+
+  /set_rainbow:
+    $ref: './paths/led.yaml#/set_rainbow'
+
+  /get_weather:
+    $ref: './paths/weather.yaml#/get_weather'
+
+  /set_relay:
+    $ref: './paths/relay.yaml#/set_relay'
+
+  /get_water_pump_status:
+    $ref: './paths/pump.yaml#/get_water_pump_status'
+
+  /get_water_pump_ambient_temp:
+    $ref: './paths/pump.yaml#/get_water_pump_ambient_temp'
+
+components:
+  schemas:
+    LedColor:
+      $ref: './schemas/led.yaml#/LedColor'
+    Relay:
+      $ref: './schemas/relay.yaml#/Relay'
+    Weather:
+      $ref: './schemas/weather.yaml#/Weather'
+    PumpStatus:
+      $ref: './schemas/pump.yaml#/PumpStatus'

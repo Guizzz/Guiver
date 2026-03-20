@@ -1,0 +1,9 @@
+Relay:
+  type: object
+  properties:
+    relay:
+      type: integer
+      example: 1
+    set_relay:
+      type: boolean
+      example: true

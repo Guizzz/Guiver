@@ -1,0 +1,11 @@
+get_weather:
+  get:
+    summary: Ottieni dati meteo
+    tags: [Weather]
+    responses:
+      200:
+        description: Dati meteo
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/weather.yaml#/Weather'
