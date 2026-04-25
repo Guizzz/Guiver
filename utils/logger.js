@@ -19,7 +19,14 @@ function createModuleLogger(moduleName, fileName) {
   });
 }
 
-export const coreLogger = createModuleLogger('CORE', 'core.log');
-export const moduleLogger = (module) => createModuleLogger(module, 'modules.log');
-export const interfaceLogger = (module) => createModuleLogger(module, 'interfaces.log');
-export const taskLogger = createModuleLogger('TASK', 'tasks.log');
+const coreLogger = createModuleLogger('CORE', 'core.log');
+const moduleLogger = (module) => createModuleLogger(module, 'modules.log');
+const interfaceLogger = (module) => createModuleLogger(module, 'interfaces.log');
+const taskLogger = createModuleLogger('TASK', 'tasks.log');
+
+module.exports = {
+  coreLogger,
+  moduleLogger,
+  interfaceLogger,
+  taskLogger
+};
