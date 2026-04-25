@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@apidevtools/swagger-parser": "^12.1.0",
     "amqplib": "^1.0.3",
     "axios": "^1.13.6",
     "body-parser": "^2.2.0",
