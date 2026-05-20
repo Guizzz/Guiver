@@ -10,3 +10,64 @@ LedColor:
     blueValue:
       type: integer
       example: 50
+    
+LedStatusResponse:
+  type: object
+  properties:
+    type:
+      type: string
+      example: response
+
+    command:
+      type: string
+      example: led_status
+
+    payload:
+      $ref: '#/LedPayload'
+
+    timestamp:
+      type: integer
+      format: int64
+      example: 1779300550485
+
+LedPayload:
+  type: object
+  properties:
+    rainbow_status:
+      $ref: '#/RainbowStatus'
+
+    redValue:
+      type: integer
+      minimum: 0
+      maximum: 255
+      example: 0
+
+    greenValue:
+      type: integer
+      minimum: 0
+      maximum: 255
+      example: 0
+
+    blueValue:
+      type: integer
+      minimum: 0
+      maximum: 255
+      example: 128
+
+RainbowStatus:
+  type: object
+  properties:
+    rainbowRunning:
+      type: boolean
+      example: false
+
+    time:
+      description: lower the number faster is the cycle
+      type: integer
+      example: 40
+
+    brightnes:
+      type: integer
+      minimum: 0
+      maximum: 255
+      example: 255

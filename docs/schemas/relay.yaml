@@ -7,3 +7,29 @@ Relay:
     set_relay:
       type: boolean
       example: true
+
+RelayStatusResponse:
+  type: object
+  properties:
+    type:
+      type: string
+      example: response
+
+    command:
+      type: string
+      example: relay_status
+
+    payload:
+      $ref: '#/RelayPayload'
+
+    timestamp:
+      type: integer
+      format: int64
+      example: 1779301116449
+
+RelayPayload:
+  type: object
+  properties:
+    light:
+      type: boolean
+      example: false

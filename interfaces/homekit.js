@@ -21,7 +21,9 @@ class Homekit_Server
 
         this.tempService = new Service.TemperatureSensor("Temp Test");
         this.onCharacteristic_temp = this.tempService.getCharacteristic(Characteristic.CurrentTemperature);
+        this.onCharacteristic_hum = this.tempService.getCharacteristic(Characteristic.CurrentRelativeHumidity);
         this.onCharacteristic_temp.on(CharacteristicEventTypes.GET, this._getTemp.bind(this));
+        this.onCharacteristic_hum.on(CharacteristicEventTypes.GET, this._getHum.bind(this));
 
         
         this.onCharacteristic_onoff = this.lightService.getCharacteristic(Characteristic.On);
@@ -57,6 +59,7 @@ class Homekit_Server
         
         this.currentLightStatus = false; // on or off
         this.currentTemperature = 0;
+        this.currentHumidity = 0;
         
         console.log("Accessory setup finished!");
     }

@@ -19,8 +19,12 @@ get_led_status:
       - LED
     summary: Stato LED
     responses:
-      200:
-        description: OK
+        '200':
+          description: Stato corrente del LED
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/led.yaml#/LedStatusResponse'
 
 set_rainbow:
   post:

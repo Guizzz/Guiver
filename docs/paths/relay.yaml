@@ -17,5 +17,9 @@ get_relay_status:
     summary: Get all relay info
     tags: [Relay]
     responses:
-      200:
+      '200':
         description: All relay info
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/relay.yaml#/RelayStatusResponse'

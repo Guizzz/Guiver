@@ -33,7 +33,6 @@ class Weather_module extends Module {
         },
       });
 
-      // payload ridotto (molto importante)
       const payload = {
         city: data.name,
         temp: data.main.temp,
