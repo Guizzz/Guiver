@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import fs from 'fs'
 import process from 'process'
+import { API_Server } from './interfaces/api/api_server'
 
 interface ModuleConfig {
     path: string
@@ -44,6 +45,9 @@ for (const mod in modules)
         modules[mod].value = new NewModule()
     }
 }
+
+
+const NewInt = new API_Server()
 
 for (const intf in interfaces) 
 {

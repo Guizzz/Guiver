@@ -55,11 +55,12 @@ class Relay_module extends Module {
     }
   }
 
-  async set_relay(command) {
+  async set_relay(request) {
     const commandName = "set_relay";
+    const id = request.id;
 
     try {
-      const { relay, set_relay } = command.payload || {};
+      const { relay, set_relay } = request.payload || {};
 
       if (set_relay === undefined) {
         throw new Error("set_relay missing");
@@ -79,18 +80,18 @@ class Relay_module extends Module {
         pin_map[relay].GPIO.digitalWrite(pin_map[relay].status ? 1 : 0);
       }
 
-      return this.sendResponse(commandName, this._getStatusPayload());
+      return this.sendResponse(commandName, id, this._getStatusPayload());
 
     } catch (err) {
-      return this.sendError(commandName, err);
+      return this.sendError(commandName, id, err);
     }
   }
 
-  async relay_status() {
+  async relay_status(request) {
     const commandName = "relay_status";
 
     try {
-      return this.sendResponse(commandName, this._getStatusPayload());
+      return this.sendResponse(commandName, request.id, this._getStatusPayload());
     } catch (err) {
       return this.sendError(commandName, err);
     }

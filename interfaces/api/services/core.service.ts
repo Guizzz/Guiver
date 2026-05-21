@@ -23,8 +23,7 @@ export class CoreService {
         this.link_manager = new LinkManager(
             'API_SERVER',
             'api_queue',
-            (msg: string) =>
-                this.logger.debug(msg)
+            (msg: string) => this.logger.debug(msg)
         )
 
         this.link_manager.start()

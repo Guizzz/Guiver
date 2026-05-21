@@ -16,14 +16,14 @@ class TempStation_module extends Module {
   }
 
   async get_room_temp(command) {
-    return this.fetchAndRespond("/get_temp", "get_room_temp");
+    return this.fetchAndRespond("/get_temp", "get_room_temp", command.id);
   }
 
-  async fetchAndRespond(endpoint, commandName) 
+  async fetchAndRespond(endpoint, commandName, id) 
   {
     try {
       const { data } = await this.client.get(endpoint);
-      return this.sendResponse(commandName, data);
+      return this.sendResponse(commandName, id, data);
     } 
     catch (err) 
     {

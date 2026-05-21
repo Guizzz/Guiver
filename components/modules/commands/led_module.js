@@ -59,7 +59,7 @@ class Led_module extends Module {
 
   // ================= Responses =================
 
-  led_status() 
+  led_status(request) 
   {
     const status = {
       rainbow_status: {
@@ -72,7 +72,7 @@ class Led_module extends Module {
       blueValue: this.blueValue,
     };
 
-    return this.sendResponse("led_status", status);
+    return this.sendResponse("led_status", request.id, status);
   }
 
   led_manual_mgmt(request) 
@@ -85,7 +85,7 @@ class Led_module extends Module {
 
     this._apply_led_values();
 
-    return this.led_status();
+    return this.led_status(request);
   }
 
   rainbow_start(request) 
@@ -111,13 +111,13 @@ class Led_module extends Module {
 
     this._startRainbowAsync();
 
-    return this.led_status();
+    return this.led_status(request);
   }
 
   rainbow_stop() 
   {
     this.rainbowRunning = false;
-    return this.led_status();
+    return this.led_status(request);
   }
 
   // ================= Rainbow loop =================
