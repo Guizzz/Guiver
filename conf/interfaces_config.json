@@ -3,7 +3,7 @@
         "path": "./interfaces/client_manager"
     },
     "api_server": {
-        "path": "./interfaces/api_server"
+        "path": "./interfaces/api/api_server"
     },
     "homekit_server": {
         "path": "./interfaces/homekit"

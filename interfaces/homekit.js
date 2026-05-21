@@ -92,7 +92,6 @@ class Homekit_Server
 
         if(data.payload.hasOwnProperty("temp")) {
             this.currentTemperature = data.payload.temp;
-            // aggiorna HomeKit
             this.onCharacteristic_temp.updateValue(this.currentTemperature);
         }
 
