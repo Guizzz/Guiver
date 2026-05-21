@@ -60,9 +60,10 @@ class Module
         this.link_manager.to_core("core_queue", JSON.stringify(j_msg));
     }
 
-    sendResponse(command, payload) 
+    sendResponse(command, id, payload) 
     {
         const resp = {
+            id: id,
             type: "response",
             command,
             payload,

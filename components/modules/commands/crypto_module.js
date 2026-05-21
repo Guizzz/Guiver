@@ -16,10 +16,10 @@ class Crypto_module extends Module {
   }
 
   async get_crypto_data(command){
-    return this.fetchAndRespond("/getData", "get_crypto_data", command);
+    return this.fetchAndRespond("/getData", "get_crypto_data", command, command.id);
   }
 
-  async fetchAndRespond(endpoint, commandName, command) {
+  async fetchAndRespond(endpoint, commandName, command, id) {
     try {
       const { data } = await this.client.get(endpoint, {
         params: {
@@ -33,7 +33,7 @@ class Crypto_module extends Module {
 
       this.log.debug(JSON.stringify(data.symbols))
 
-      return this.sendResponse(commandName, data.symbols);
+      return this.sendResponse(commandName, id, data.symbols);
     } catch (err) {
       this.log?.error("Error fetching crypto data:", err.message);
       return this.sendError(commandName, err.message);

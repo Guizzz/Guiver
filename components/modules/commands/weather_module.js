@@ -16,10 +16,10 @@ class Weather_module extends Module {
   }
 
   async get_weather(command) {
-    return this.fetchAndRespond("/weather", "get_weather", command);
+    return this.fetchAndRespond("/weather", "get_weather", command, command.id);
   }
 
-  async fetchAndRespond(endpoint, commandName, command) 
+  async fetchAndRespond(endpoint, commandName, command, id) 
   {
     try {
       const city = command?.payload?.city || "latina";
@@ -40,7 +40,7 @@ class Weather_module extends Module {
         weather: data.weather[0].description,
       };
 
-      return this.sendResponse(commandName, payload);
+      return this.sendResponse(commandName, id, payload);
 
     } 
     catch (err) 

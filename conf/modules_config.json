@@ -39,8 +39,5 @@
     },
     "info_point": {
         "path": "./components/info_point/info_point"
-    },
-    "help_module": {
-        "path": "./components/modules/commands/help_module"
     }
 }
