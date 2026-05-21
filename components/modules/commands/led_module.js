@@ -114,7 +114,7 @@ class Led_module extends Module {
     return this.led_status(request);
   }
 
-  rainbow_stop() 
+  rainbow_stop(request) 
   {
     this.rainbowRunning = false;
     return this.led_status(request);
