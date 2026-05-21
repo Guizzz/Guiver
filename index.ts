@@ -49,6 +49,7 @@ for (const mod in modules)
 
 const NewInt = new API_Server()
 
+/*
 for (const intf in interfaces) 
 {
     if (blackList.includes(intf)) {
@@ -59,4 +60,4 @@ for (const intf in interfaces)
     const NewInt = require(interfaces[intf].path)
 
     interfaces[intf].value = new NewInt()
-}
+}*/
