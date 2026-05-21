@@ -62,10 +62,10 @@ export class LedController {
         const cmd: CoreCommand = {
             id : id,
             type: 'request',
-            command: req.body.rainbow_run
+            command: req.body.run_rainbow
                 ? 'rainbow_start'
                 : 'rainbow_stop',
-            payload: req.body.rainbow_run
+            payload: req.body.run_rainbow
                 ? {
                     time: 40,
                     brightnes: 254,
