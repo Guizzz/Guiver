@@ -1,7 +1,6 @@
 import 'dotenv/config'
 import fs from 'fs'
 import process from 'process'
-import { API_Server } from './interfaces/api/api_server'
 
 interface ModuleConfig {
     path: string
@@ -26,38 +25,36 @@ if (!modules.hasOwnProperty('core'))
 
 const blackList: string[] = ['homekit_server']
 
-for (const mod in modules) 
+for (const mod in modules)
 {
-    if (blackList.includes(mod)) 
+    if (blackList.includes(mod))
     {
-        console.log('Ignoring: ' + mod)
-        continue
+        console.log('Ignoring: ' + mod);
+        continue;
     }
 
-    const NewModule = require(modules[mod].path)
+    const ImportedModule = require(modules[mod].path);
+    const NewModule = ImportedModule.default || ImportedModule;
 
-    if (modules[mod].hasOwnProperty('config')) 
+    if (modules[mod].hasOwnProperty('config'))
     {
-        modules[mod].value = new NewModule(modules[mod].config)
-    } 
-    else 
+        modules[mod].value = new NewModule(modules[mod].config);
+    }
+    else
     {
-        modules[mod].value = new NewModule()
+        modules[mod].value = new NewModule();
     }
 }
 
-
-const NewInt = new API_Server()
-
-/*
 for (const intf in interfaces) 
 {
     if (blackList.includes(intf)) {
         console.log('Ignoring: ' + intf)
-        continue
+        continue;
     }
 
-    const NewInt = require(interfaces[intf].path)
+    const ImportedInterface = require(interfaces[intf].path);
+    const NewInterface = ImportedInterface.default || ImportedInterface;
 
-    interfaces[intf].value = new NewInt()
-}*/
+    interfaces[intf].value = new NewInterface()
+}

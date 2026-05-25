@@ -6,14 +6,17 @@ import { registerLedRoutes } from './routes/led.routes'
 import { registerRelayRoutes } from './routes/relay.routes'
 import { registerWeatherRoutes } from './routes/weather.routes'
 import { registerPumpRoutes } from './routes/pump.routes'
+import { initSwagger } from './swagger'
 
-export class API_Server {
+export default class API_Server {
     private app = express()
     private core = new CoreService()
 
     constructor() {
         this.app.use(cors())
         this.app.use(express.json())
+
+        initSwagger(this.app);
 
         registerLedRoutes(this.app, this.core)
         registerRelayRoutes(this.app, this.core)
