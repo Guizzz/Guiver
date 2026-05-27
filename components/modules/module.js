@@ -1,4 +1,4 @@
-const Link_manager = require("../../utils/link_manager");
+const Link_manager = require("../../utils/link_manager").default;
 const { moduleLogger } = require('../../utils/logger');
 
 class Module

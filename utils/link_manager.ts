@@ -2,7 +2,7 @@
 import { EventEmitter } from "events";
 import * as amqp from "amqplib/callback_api";
 
-class LinkManager extends EventEmitter {
+export default class LinkManager extends EventEmitter {
     private caller: string;
     private queueIn: string;
     private logger: (...args: any[]) => void;
@@ -88,5 +88,3 @@ class LinkManager extends EventEmitter {
         );
     }
 }
-
-export default LinkManager;
