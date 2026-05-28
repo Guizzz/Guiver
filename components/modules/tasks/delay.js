@@ -1,9 +1,9 @@
-const Module = require("../module");
+const Module = require("../module").default;
 
 class Delay_module extends Module {
   constructor() {
     super("DELAY_MODULE", "delay_queue");
-    this.set_handled_cmds({
+    this.setHandledCmds({
       delay: this._delay.bind(this),
     });
   }

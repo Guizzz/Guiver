@@ -1,11 +1,11 @@
-const Module = require("../module");
+const Module = require("../module").default;
 const axios = require("axios");
 
 class Water_pump_module extends Module {
   constructor(config) {
     super("WATER_PUMP_MODULE", "water_pump_queue", config);
 
-    this.set_handled_cmds({
+    this.setHandledCmds({
       get_water_pump_status: this.get_water_pump_status.bind(this),
       get_water_pump_ambient_temp: this.get_water_pump_ambient_temp.bind(this),
     });

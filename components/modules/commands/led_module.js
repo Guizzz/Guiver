@@ -1,4 +1,4 @@
-const Module = require("../module");
+const Module = require("../module").default;
 
 let Gpio = null;
 try {
@@ -17,7 +17,7 @@ class Led_module extends Module {
         this.log.error("pigpio not available - LED module will not control hardware (pigpio missing)");
     }
 
-    this.set_handled_cmds({
+    this.setHandledCmds({
       led_manual: this.led_manual_mgmt.bind(this),
       rainbow_start: this.rainbow_start.bind(this),
       rainbow_stop: this.rainbow_stop.bind(this),

@@ -1,11 +1,11 @@
-const Module = require("../module");
+const Module = require("../module").default;
 const axios = require("axios");
 
 class TempStation_module extends Module {
   constructor(config) {
     super("ROOM_TEMP_MODULE", "room_temp_queue", config);
 
-    this.set_handled_cmds({
+    this.setHandledCmds({
       get_room_temp: this.get_room_temp.bind(this)
     });
 

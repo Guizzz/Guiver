@@ -20,7 +20,7 @@
     "hap-nodejs": "^1.2.0",
     "http": "^0.0.1-security",
     "swagger-ui-express": "^5.0.1",
-    "websocket": "^1.0.34",
+    "websocket": "^1.0.35",
     "winston": "^3.19.0",
     "yamljs": "^0.3.0"
   },
@@ -29,6 +29,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^25.9.1",
+    "@types/websocket": "^1.0.10",
     "tsx": "^4.22.3",
     "typescript": "^6.0.3"
   }

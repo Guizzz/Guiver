@@ -1,11 +1,11 @@
-const Module = require("../module");
+const Module = require("../module").default;
 
 class LoopTask_module extends Module
 {
     constructor()
     {
         super("LOOP_MODULE", "loop_queue");
-        this.set_handled_cmds({
+        this.setHandledCmds({
             "add_loop_task": this._add_loop_task.bind(this),
             "delete_loop_task": this._delete_loop_task.bind(this),
         });

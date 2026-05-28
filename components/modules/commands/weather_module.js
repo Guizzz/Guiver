@@ -1,11 +1,11 @@
-const Module = require("../module");
+const Module = require("../module").default;
 const axios = require("axios");
 
 class Weather_module extends Module {
   constructor() {
     super("WEATHER_MODULE", "weather_queue");
 
-    this.set_handled_cmds({
+    this.setHandledCmds({
       get_weather: this.get_weather.bind(this),
     });
 

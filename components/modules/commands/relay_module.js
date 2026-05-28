@@ -1,4 +1,4 @@
-const Module = require("../module");
+const Module = require("../module").default;
 
 let Gpio = null;
 
@@ -29,7 +29,7 @@ class Relay_module extends Module {
   constructor(config) {
     super("RELAY_MODULE", "relay_queue", config);
 
-    this.set_handled_cmds({
+    this.setHandledCmds({
       set_relay: this.set_relay.bind(this),
       relay_status: this.relay_status.bind(this),
     });

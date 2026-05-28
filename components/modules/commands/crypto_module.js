@@ -1,11 +1,11 @@
-const Module = require("../module");
+const Module = require("../module").default;
 const axios = require("axios");
 
 class Crypto_module extends Module {
   constructor() {
     super("CRYPTO_MODULE", "crypto_queue");
 
-    this.set_handled_cmds({
+    this.setHandledCmds({
       get_crypto_data: this.get_crypto_data.bind(this),
     });
 
