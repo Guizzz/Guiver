@@ -11,7 +11,7 @@ class Homekit_Server
 {   
     constructor()
     {
-        this.logger = interfaceLogger("WSS_CLIENTS");
+        this.logger = interfaceLogger("HOMEKIT");
         this.link_manager = new Link_manager("HOMEKIT_SERVER", "homekit_queue", (m) => this.logger.debug(m) );
         this.link_manager.start();
         this.link_manager.on("msg", this.update_value.bind(this));
@@ -72,13 +72,13 @@ class Homekit_Server
             "module": "HOMEKIT_SERVER",
             "module_queue": "homekit_queue",
         }
-        this.link_manager.to_core("core_queue", JSON.stringify(j_msg));
+        this.link_manager.toCore("core_queue", JSON.stringify(j_msg));
 
         var j_cmd = {
             "type": "request",
             "command": "relay_status"
         }
-        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
+        this.link_manager.toCore("core_queue", JSON.stringify(j_cmd));
     }
 
     update_value(data)
@@ -113,7 +113,7 @@ class Homekit_Server
                 "relay": "light",
             }
         };
-        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
+        this.link_manager.toCore("core_queue", JSON.stringify(j_cmd));
         callback();
     }
 
@@ -123,7 +123,7 @@ class Homekit_Server
             "type": "request",
             "command": "get_room_temp"
         }
-        this.link_manager.to_core("core_queue", JSON.stringify(j_cmd));
+        this.link_manager.toCore("core_queue", JSON.stringify(j_cmd));
 
         console.log("Queried current temperature: " + this.currentTemperature);
         callback(null, this.currentTemperature);

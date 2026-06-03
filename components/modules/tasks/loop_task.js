@@ -22,15 +22,14 @@ class LoopTask_module extends Module
        
         if(command.hasOwnProperty("command_to_loop"))
         {
-            command["type"] = "request";
-            command["command"] = command.command_to_loop;
-            command["payload"] = command.payload;
+            var taskCommand = {
+                type: "request",
+                command: command.command_to_loop,
+                payload: command.payload
+            };
             this.tasks[command.command_to_loop] = setInterval(function(){
-                this.link_manager.to_core("core_queue", JSON.stringify(command));
+                this.link_manager.toCore("core_queue", JSON.stringify(taskCommand));
             }.bind(this), delta_time);
-            
-            delete command["delta_time"];
-            delete command["command_to_loop"];
         }
         
 
