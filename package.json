@@ -5,7 +5,9 @@
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx tsx index.ts"
+    "start": "npx tsx index.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",

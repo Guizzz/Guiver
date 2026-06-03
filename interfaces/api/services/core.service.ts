@@ -6,7 +6,7 @@ import { CoreResponse } from '../types/responses'
 
 export class CoreService {
     private logger: any
-    private link_manager: any
+    private linkManager: LinkManager
 
     // RGB state
     public redValue = 0
@@ -20,15 +20,15 @@ export class CoreService {
     {
         this.logger = interfaceLogger('HTTP_API')
 
-        this.link_manager = new LinkManager(
+        this.linkManager = new LinkManager(
             'API_SERVER',
             'api_queue',
             (msg: string) => this.logger.debug(msg)
         )
 
-        this.link_manager.start()
-        this.link_manager.on('msg', this.updateValue.bind(this))
-        this.link_manager.on('channel_new', this.start.bind(this))
+        this.linkManager.start()
+        this.linkManager.on('msg', this.updateValue.bind(this))
+        this.linkManager.on('channel_new', this.start.bind(this))
     }
 
     // ================= CORE INIT =================
@@ -41,7 +41,7 @@ export class CoreService {
             module_queue: 'api_queue',
         }
 
-        this.link_manager.to_core( 'core_queue', JSON.stringify(message))
+        this.linkManager.toCore( 'core_queue', JSON.stringify(message))
     }
 
     // ================= MESSAGE HANDLER =================
@@ -78,7 +78,7 @@ export class CoreService {
 
     sendCommand(command: CoreCommand): void 
     {
-        this.link_manager.to_core('core_queue', JSON.stringify(command))
+        this.linkManager.toCore('core_queue', JSON.stringify(command))
     }
 
     // ================= RESPONSE HANDLER =================

@@ -61,7 +61,7 @@ export default class Core
         for (const resp_manager of this.response_handlers)
         {
             coreLogger.info( "Sending response to " + resp_manager);
-            this.link_manager.to_module( resp_manager, JSON.stringify(j_msg));
+            this.link_manager.toModule( resp_manager, JSON.stringify(j_msg));
         }
     }
 
@@ -103,7 +103,7 @@ export default class Core
             if (this.command_handled.hasOwnProperty(req_cmd))
             {
                 const queue = this.command_handled[req_cmd];
-                this.link_manager.to_module(queue, message);
+                this.link_manager.toModule(queue, message);
                 return;
             }
 
