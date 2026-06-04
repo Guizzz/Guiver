@@ -1,0 +1,14 @@
+Crypto:
+  type: array
+  items:
+    type: object
+    properties:
+      id:
+        type: string
+        example: bitcoin
+      symbol:
+        type: string
+        example: BTC
+      priceUsd:
+        type: string
+        example: "65432.10"

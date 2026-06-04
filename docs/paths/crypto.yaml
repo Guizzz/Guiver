@@ -1,0 +1,11 @@
+get_crypto_data:
+  get:
+    summary: Ottieni dati criptovalute (BTC, SOL)
+    tags: [Crypto]
+    responses:
+      200:
+        description: Lista criptovalute
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/crypto.yaml#/Crypto'

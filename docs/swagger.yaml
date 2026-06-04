@@ -13,6 +13,8 @@ tags:
   - name: Relay
   - name: Weather
   - name: Pump
+  - name: RoomTemp
+  - name: Crypto
 
 paths:
   /manual_led:
@@ -36,6 +38,12 @@ paths:
   /get_water_pump_status:
     $ref: './paths/pump.yaml#/get_water_pump_status'
 
+  /get_room_temp:
+    $ref: './paths/room_temp.yaml#/get_room_temp'
+
+  /get_crypto_data:
+    $ref: './paths/crypto.yaml#/get_crypto_data'
+
 components:
   schemas:
     LedColor:
@@ -46,3 +54,7 @@ components:
       $ref: './schemas/weather.yaml#/Weather'
     PumpStatus:
       $ref: './schemas/pump.yaml#/PumpStatus'
+    RoomTemp:
+      $ref: './schemas/room_temp.yaml#/RoomTemp'
+    Crypto:
+      $ref: './schemas/crypto.yaml#/Crypto'

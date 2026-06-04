@@ -1,0 +1,9 @@
+RoomTemp:
+  type: object
+  properties:
+    temperature:
+      type: number
+      example: 23.5
+    humidity:
+      type: number
+      example: 55

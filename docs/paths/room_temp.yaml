@@ -1,0 +1,11 @@
+get_room_temp:
+  get:
+    summary: Ottieni temperatura e umidità ambiente
+    tags: [RoomTemp]
+    responses:
+      200:
+        description: Dati temperatura
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/room_temp.yaml#/RoomTemp'
