@@ -9,8 +9,8 @@
     "start": "npx tsx index.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc",
-    "setup": "bash scripts/setup.sh",
-    "deploy": "bash scripts/deploy.sh"
+    "setup": "pwsh -NoProfile -File scripts/setup.ps1",
+    "deploy": "pwsh -NoProfile -File scripts/deploy.ps1"
   },
   "author": "",
   "license": "ISC",
