@@ -20,6 +20,8 @@ const endpoints = [
   { method: 'GET', path: '/get_water_pump_status' },
   { method: 'POST', path: '/manual_led', body: { redValue: 0, greenValue: 0, blueValue: 0 } },
   { method: 'POST', path: '/set_relay', body: { set_relay: false, relay: 'light' } },
+  { method: 'GET', path: '/get_room_temp' },
+  { method: 'GET', path: '/get_crypto_data' },
 ]
 
 describe('REST API', () => {

@@ -11,6 +11,8 @@ export type CoreRequestCommand =
     | 'set_relay'
     | 'relay_status'
     | 'get_water_pump_status'
+    | 'get_room_temp'
+    | 'get_crypto_data'
 
 export interface CoreCommand<T = any> {
     id: string
