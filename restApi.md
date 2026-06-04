@@ -4,20 +4,7 @@ This document describes the REST APIs exposed by the Guiver.
 
 ## Available Endpoints
 
-### 1. `GET /help`
-
-* **Description:** Returns a list of all available API routes on the server.
-* **HTTP Method:** `GET`
-* **Input Parameters:** None.
-* **Output:**
-    * **Type:** Array of objects (likely JSON).
-    * **Description:** An array containing information about the routes, including the path and supported HTTP methods for each route.
-* **Example:**
-    ```bash
-    curl http://your_server_address:your_api_port/help
-    ```
-
-### 2. `GET /get_weather`
+### 1. `GET /get_weather`
 
 * **Description:** Requests current weather data. The server sends an internal command and waits for an asynchronous response.
 * **HTTP Method:** `GET`
@@ -30,7 +17,7 @@ This document describes the REST APIs exposed by the Guiver.
     curl http://your_server_address:your_api_port/get_weather
     ```
 
-### 3. `GET /get_led_status`
+### 2. `GET /get_led_status`
 
 * **Description:** Requests the current status of the LEDs. The server sends an internal command and waits for an asynchronous response.
 * **HTTP Method:** `GET`
@@ -43,7 +30,7 @@ This document describes the REST APIs exposed by the Guiver.
     curl http://your_server_address:your_api_port/get_led_status
     ```
 
-### 4. `POST /manual_led`
+### 3. `POST /manual_led`
 
 * **Description:** Manually sets the color of the LEDs. The server sends an internal command with the specified values and waits for an asynchronous response.
 * **HTTP Method:** `POST`
@@ -70,7 +57,7 @@ This document describes the REST APIs exposed by the Guiver.
     curl -X POST "http://your_server_address:your_api_port/manual_led?redValue=abc"
     ```
 
-### 5. `POST /rainbow_start`
+### 4. `POST /rainbow_start`
 
 * **Description:** Starts a "rainbow" effect on the LEDs. The server sends an internal command with predefined parameters (time: 40, brightnes: 254) and waits for an asynchronous response.
 * **HTTP Method:** `POST`
@@ -83,7 +70,7 @@ This document describes the REST APIs exposed by the Guiver.
     curl -X POST http://your_server_address:your_api_port/rainbow_start
     ```
 
-### 6. `POST /rainbow_stop`
+### 5. `POST /rainbow_stop`
 
 * **Description:** Stops the "rainbow" effect on the LEDs. The server sends an internal command and waits for an asynchronous response.
 * **HTTP Method:** `POST`
@@ -96,7 +83,7 @@ This document describes the REST APIs exposed by the Guiver.
     curl -X POST http://your_server_address:your_api_port/rainbow_stop
     ```
 
-### 7. `GET /get_water_pump_status`
+### 6. `GET /get_water_pump_status`
 
 * **Description:** Requests the current status of the water pump. The server sends an internal command and waits for an asynchronous response.
 * **HTTP Method:** `GET`
@@ -109,7 +96,7 @@ This document describes the REST APIs exposed by the Guiver.
     curl http://your_server_address:your_api_port/get_water_pump_status
     ```
 
-### 8. `GET /get_water_pump_ambient_temp`
+### 7. `GET /get_water_pump_ambient_temp`
 
 * **Description:** Requests the ambient temperature related to the water pump. The server sends an internal command and waits for an asynchronous response.
 * **HTTP Method:** `GET`
@@ -124,6 +111,6 @@ This document describes the REST APIs exposed by the Guiver.
 
 ## General Notes
 
-* Responses for endpoints requesting data (excluding `/help` and errors in `/manual_led`) depend on asynchronous messages received internally. The server briefly waits (`setInterval` with 10ms delay) for the first available message after sending the internal command and returns it.
+* Responses for endpoints requesting data (excluding errors in `/manual_led`) depend on asynchronous messages received internally. The server briefly waits (`setInterval` with 10ms delay) for the first available message after sending the internal command and returns it.
 * The exact structure of the response payload for endpoints other than `/manual_led` and `/get_led_status` is not fully defined by the provided code, but is expected to be JSON.
 * Replace `your_server_address:your_api_port` with the actual address and port where your API server is running.
