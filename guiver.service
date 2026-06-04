@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=guizz
 WorkingDirectory=/home/guizz/progetti/Guiver
-ExecStart=/usr/bin/npm start
+ExecStart=sudo /usr/bin/npm start
 Restart=on-failure
 RestartSec=5
 

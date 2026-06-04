@@ -9,6 +9,7 @@
     "start": "npx tsx index.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc",
+    "cleanup": "node scripts/cleanup.js",
     "ssh-setup": "node scripts/ssh-setup.js",
     "setup": "node scripts/setup.js",
     "deploy": "node scripts/deploy.js"
