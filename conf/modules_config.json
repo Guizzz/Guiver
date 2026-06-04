@@ -36,6 +36,5 @@
         "config": {
             "light_pin": 3
         }
-    },
-
+    }
 }
