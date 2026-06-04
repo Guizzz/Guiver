@@ -8,7 +8,9 @@
     "test:watch": "vitest",
     "start": "npx tsx index.ts",
     "typecheck": "tsc --noEmit",
-    "build": "tsc"
+    "build": "tsc",
+    "setup": "bash scripts/setup.sh",
+    "deploy": "bash scripts/deploy.sh"
   },
   "author": "",
   "license": "ISC",
