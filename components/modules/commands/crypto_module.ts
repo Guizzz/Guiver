@@ -12,30 +12,26 @@ class Crypto_module extends Module {
     });
 
     this.client = axios.create({
-      baseURL: "https://api.freecryptoapi.com/v1",
+      baseURL: "https://api.coincap.io/v2",
       timeout: 3000,
     });
   }
 
   async get_crypto_data(command: any) {
-    return this.fetchAndRespond("/getData", "get_crypto_data", command, command.id);
+    return this.fetchAndRespond("get_crypto_data", command, command.id);
   }
 
-  async fetchAndRespond(endpoint: string, commandName: string, command: any, id: string) {
+  async fetchAndRespond(commandName: string, command: any, id: string) {
     try {
-      const { data } = await this.client.get(endpoint, {
+      const { data } = await this.client.get("/assets", {
         params: {
-          symbol: "BTC + SOL",
-        },
-        headers: {
-          Authorization: `Bearer ${process.env.CRYPTO_API_KEY || ""}`,
-          Accept: "*/*",
+          ids: "bitcoin,solana",
         },
       });
 
-      this.log.debug(JSON.stringify(data.symbols));
+      this.log.debug(JSON.stringify(data.data));
 
-      return this.sendResponse(commandName, id, data.symbols);
+      return this.sendResponse(commandName, id, data.data);
     } catch (err: any) {
       this.log?.error("Error fetching crypto data:", err.message);
       return this.sendError(commandName, err.message);

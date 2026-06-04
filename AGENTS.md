@@ -37,14 +37,14 @@ Central hub for home automation. Born to coordinate software modules that contro
 | 3 | **API `/help` documented but not implemented** | `interfaces/api/routes/` + `restApi.md` | `restApi.md` lists `/help` as endpoint, but no route, controller, or module handles it. |
 | 4 | **`wether_test.js` wrong import path** | `tests/wether_test.js` | `require("../modules/wether_modules")` doesn't exist. Should be `../components/modules/commands/weather_module`. |
 | 5 | **HomeKit log label wrong** | `interfaces/homekit.js:14` | Uses `"WSS_CLIENTS"` as logger label instead of `"HOMEKIT"` (copy-paste). |
-| 6 | **`CRYPTO_API_KEY` not documented** | `components/modules/commands/crypto_module.js` | Env var required but not listed in README, AGENTS.md, or any docs. |
+| 6 | ~~**`CRYPTO_API_KEY` not documented**~~ | ~~`components/modules/commands/crypto_module.js`~~ | **RESOLVED**: API key no longer needed, migrated to CoinCap.io. |
 | 7 | **No `.env.example`** | root | Anyone forking/cloning the project doesn't know which env vars are needed (missing `INFO_PORT`, `CRYPTO_API_KEY`). |
 | 8 | **`package-lock.json` in `.gitignore`** | `.gitignore:4` | Prevents reproducible installs. Should be committed. |
 | 9 | ~~**`info_point` loaded as module but does NOT extend Module**~~ | ~~`conf/modules_config.json`~~ + ~~`components/info_point/info_point.js`~~ | **RESOLVED**: Removed from `modules_config.json`, loaded separately in `index.ts` as standalone service. |
 | 10 | **Temp station: filename and module name diverge** | `temp_station_module.js` vs `ROOM_TEMP_MODULE` | File is called `temp_station` but registers as `ROOM_TEMP_MODULE` on `room_temp_queue`. Confusing. |
 | 11 | **Swagger and code diverge on `relay` type** | `docs/schemas/relay.yaml` vs `relay_module.js` | Swagger says `integer`, the module expects a string (`"light"`). |
 | 12 | **`opencode.json` contains hardcoded GitHub PAT** | `opencode.json:10` | Personal access token exposed in the repository. |
-| 13 | **Crypto module uses external freecryptoapi.com** | `components/modules/commands/crypto_module.js` | Third-party API no longer necessarily active/reliable. |
+| 13 | ~~**Crypto module uses external freecryptoapi.com**~~ | ~~`components/modules/commands/crypto_module.js`~~ | **RESOLVED**: Migrated to CoinCap.io (free, no API key, reliable). |
 
 ### 🔮 Future Implementations
 
