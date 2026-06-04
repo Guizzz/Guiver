@@ -3,7 +3,7 @@ module.exports = {
     name: 'guiver',
     script: 'npm',
     args: 'start',
-    cwd: '/home/pi/guiver',
+    cwd: '/home/guizz/progetti/Guiver',
     env: {
       NODE_ENV: 'production',
     },

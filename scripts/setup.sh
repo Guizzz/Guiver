@@ -2,8 +2,8 @@
 set -e
 
 PI_HOST="${PI_HOST:-192.168.1.109}"
-PI_USER="${PI_USER:-pi}"
-PI_PATH="${PI_PATH:-/home/pi/guiver}"
+PI_USER="${PI_USER:-guizz}"
+PI_PATH="${PI_PATH:-/home/guizz/progetti/Guiver}"
 
 echo "=== Setting up Guiver on Raspberry Pi ==="
 echo ""
@@ -37,16 +37,17 @@ ssh "$PI_USER@$PI_HOST" "
     fi
 "
 
-# 5. Install PM2 and start
-echo "[5/5] Starting with PM2..."
+# 5. Install systemd service
+echo "[5/5] Installing systemd service..."
+scp "guiver.service" "$PI_USER@$PI_HOST:/tmp/guiver.service"
 ssh "$PI_USER@$PI_HOST" "
-    npm install -g pm2 2>/dev/null
-    cd '$PI_PATH'
-    pm2 start npm --name guiver -- start 2>/dev/null || pm2 restart guiver --update-env
-    pm2 save
+    sudo mv /tmp/guiver.service /lib/systemd/system/guiver.service &&
+    sudo systemctl daemon-reload &&
+    sudo systemctl enable guiver &&
+    sudo systemctl restart guiver
 "
 
 echo ""
 echo "=== Setup complete! ==="
-echo "Check status: pm2 status"
-echo "View logs:    pm2 logs guiver"
+echo "Check status: sudo systemctl status guiver"
+echo "View logs:    sudo journalctl -u guiver -f"

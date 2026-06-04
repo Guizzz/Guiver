@@ -1,0 +1,14 @@
+[Unit]
+Description=Guiver - Home Automation Server
+After=network.target
+
+[Service]
+Type=simple
+User=guizz
+WorkingDirectory=/home/guizz/progetti/Guiver
+ExecStart=/usr/bin/npm start
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
