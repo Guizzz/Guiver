@@ -9,8 +9,8 @@ console.log(`Deploying to ${USER}@${HOST}:${PATH}`)
 
 const cmd = [
   `cd '${PATH}'`,
-  'sudo git fetch origin',
-  'sudo git reset --hard origin/main',
+  'git fetch origin',
+  'git reset --hard origin/main',
   'npm install',
   'sudo systemctl restart guiver',
 ].join(' && ')
