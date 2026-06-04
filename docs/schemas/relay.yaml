@@ -2,8 +2,8 @@ Relay:
   type: object
   properties:
     relay:
-      type: integer
-      example: 1
+      type: string
+      example: "light"
     set_relay:
       type: boolean
       example: true

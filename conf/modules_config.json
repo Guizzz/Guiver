@@ -20,8 +20,8 @@
             "pump_ip": "192.168.1.25"
         }
     },
-    "temp_station_module": {
-        "path": "./components/modules/commands/temp_station_module"
+    "room_temp_module": {
+        "path": "./components/modules/commands/room_temp_module"
     },
     "led_module": {
         "path": "./components/modules/commands/led_module",

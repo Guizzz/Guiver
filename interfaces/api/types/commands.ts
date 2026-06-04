@@ -11,7 +11,6 @@ export type CoreRequestCommand =
     | 'set_relay'
     | 'relay_status'
     | 'get_water_pump_status'
-    | 'get_water_pump_ambient_temp'
 
 export interface CoreCommand<T = any> {
     id: string

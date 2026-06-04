@@ -36,9 +36,6 @@ paths:
   /get_water_pump_status:
     $ref: './paths/pump.yaml#/get_water_pump_status'
 
-  /get_water_pump_ambient_temp:
-    $ref: './paths/pump.yaml#/get_water_pump_ambient_temp'
-
 components:
   schemas:
     LedColor:

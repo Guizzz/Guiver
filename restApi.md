@@ -96,19 +96,6 @@ This document describes the REST APIs exposed by the Guiver.
     curl http://your_server_address:your_api_port/get_water_pump_status
     ```
 
-### 7. `GET /get_water_pump_ambient_temp`
-
-* **Description:** Requests the ambient temperature related to the water pump. The server sends an internal command and waits for an asynchronous response.
-* **HTTP Method:** `GET`
-* **Input Parameters:** None.
-* **Output:**
-    * **Type:** JSON.
-    * **Description:** The most recent response received internally by the system (`this.last`), expected as JSON.
-* **Example:**
-    ```bash
-    curl http://your_server_address:your_api_port/get_water_pump_ambient_temp
-    ```
-
 ## General Notes
 
 * Responses for endpoints requesting data (excluding errors in `/manual_led`) depend on asynchronous messages received internally. The server briefly waits (`setInterval` with 10ms delay) for the first available message after sending the internal command and returns it.

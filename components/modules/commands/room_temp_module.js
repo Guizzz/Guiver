@@ -1,7 +1,7 @@
 const Module = require("../module").default;
 const axios = require("axios");
 
-class TempStation_module extends Module {
+class RoomTemp_module extends Module {
   constructor(config) {
     super("ROOM_TEMP_MODULE", "room_temp_queue", config);
 
@@ -32,4 +32,4 @@ class TempStation_module extends Module {
   }
 }
 
-module.exports = TempStation_module;
+module.exports = RoomTemp_module;

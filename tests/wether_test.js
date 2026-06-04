@@ -1,5 +1,5 @@
-Wether = require("../modules/wether_modules")
+const Weather = require("../components/modules/commands/weather_module");
 
-var w = new Wether();
+const w = new Weather();
 
-w.get_wether()
+w.get_weather();

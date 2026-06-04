@@ -9,15 +9,3 @@ get_water_pump_status:
           application/json:
             schema:
               $ref: '../schemas/pump.yaml#/PumpStatus'
-
-get_water_pump_ambient_temp:
-  get:
-    summary: Temperatura ambiente pompa
-    tags: [Pump]
-    responses:
-      200:
-        description: Temperatura ambiente
-        content:
-          application/json:
-            schema:
-              $ref: '../schemas/pump.yaml#/PumpStatus'

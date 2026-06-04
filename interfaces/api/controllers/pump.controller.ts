@@ -21,19 +21,5 @@ export class WaterController {
         res.json(response)
     }
 
-    async getPumpAmbientTemp(req: Request, res: Response): Promise<void> 
-    {
-        const id = crypto.randomUUID();
-        const cmd: CoreCommand = {
-            id: id,
-            type: 'request',
-            command:
-                'get_water_pump_ambient_temp',
-        }
-        this.core.sendCommand(cmd)
 
-        const response = await this.core.waitForResponse(id)
-
-        res.json(response)
-    }
 }

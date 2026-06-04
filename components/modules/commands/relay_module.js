@@ -2,16 +2,6 @@ const Module = require("../module").default;
 
 let Gpio = null;
 
-const RELAY_PIN = 2;
-
-const pin_map = {
-  light: {
-    status: false,
-    pin: RELAY_PIN,
-    GPIO: null,
-  },
-};
-
 /*
 request: 
 {
@@ -40,17 +30,25 @@ class Relay_module extends Module {
         this.log.error("pigpio not available - mock mode");
     }
 
+    this.pin_map = {
+      light: {
+        status: false,
+        pin: this.config?.light_pin ?? 2,
+        GPIO: null,
+      },
+    };
+
     this._init_pin();
   }
 
   _init_pin() {
-    for (const key in pin_map) {
+    for (const key in this.pin_map) {
       if (Gpio) {
-        pin_map[key].GPIO = new Gpio(pin_map[key].pin, {
+        this.pin_map[key].GPIO = new Gpio(this.pin_map[key].pin, {
           mode: Gpio.OUTPUT,
         });
 
-        pin_map[key].GPIO.digitalWrite(0);
+        this.pin_map[key].GPIO.digitalWrite(0);
       }
     }
   }
@@ -70,14 +68,14 @@ class Relay_module extends Module {
         throw new Error("relay missing");
       }
 
-      if (!pin_map[relay]) {
+      if (!this.pin_map[relay]) {
         throw new Error(`relay '${relay}' not found`);
       }
 
-      pin_map[relay].status = !!set_relay;
+      this.pin_map[relay].status = !!set_relay;
 
-      if (pin_map[relay].GPIO) {
-        pin_map[relay].GPIO.digitalWrite(pin_map[relay].status ? 1 : 0);
+      if (this.pin_map[relay].GPIO) {
+        this.pin_map[relay].GPIO.digitalWrite(this.pin_map[relay].status ? 1 : 0);
       }
 
       return this.sendResponse(commandName, id, this._getStatusPayload());
@@ -100,8 +98,8 @@ class Relay_module extends Module {
   _getStatusPayload() {
     const payload = {};
 
-    for (const key in pin_map) {
-      payload[key] = pin_map[key].status;
+    for (const key in this.pin_map) {
+      payload[key] = this.pin_map[key].status;
     }
 
     return payload;
