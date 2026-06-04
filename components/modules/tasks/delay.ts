@@ -1,4 +1,4 @@
-const Module = require("../module").default;
+import Module from "../module";
 
 class Delay_module extends Module {
   constructor() {
@@ -8,8 +8,7 @@ class Delay_module extends Module {
     });
   }
 
-  async _delay(command) 
-  {
+  async _delay(command: any) {
     try {
       const delay_time = parseInt(command.payload.delay_time, 10) || 0;
       const cmd_to_delay = command.payload.command_to_delay;
@@ -17,23 +16,22 @@ class Delay_module extends Module {
       if (!cmd_to_delay) {
         return this.sendError("delay", "Missing 'command_to_delay'");
       }
-      
+
       this.log.debug(`Delaying command '${cmd_to_delay}' for ${delay_time} ms`);
-      this.sendResponse(command.command, {});
+      this.sendResponse(command.command, command.id || "", {});
       await this._sleep(delay_time);
 
       this.log.info(`Delay done for command '${cmd_to_delay}'`);
-      return this.sendRequest(cmd_to_delay, command.payload.payload_to_dealy);
+      return this.sendRequest(cmd_to_delay, command.payload.payload_to_delay);
 
-    } catch (err) {
+    } catch (err: any) {
       return this.sendError("delay", err.message);
     }
   }
 
-  _sleep(ms) {
+  _sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
-
 }
 
-module.exports = Delay_module;
+export default Delay_module;

@@ -1,7 +1,9 @@
-const Module = require("../module").default;
-const axios = require("axios");
+import Module from "../module";
+import axios from "axios";
 
 class Crypto_module extends Module {
+  private client: any;
+
   constructor() {
     super("CRYPTO_MODULE", "crypto_queue");
 
@@ -15,31 +17,30 @@ class Crypto_module extends Module {
     });
   }
 
-  async get_crypto_data(command){
+  async get_crypto_data(command: any) {
     return this.fetchAndRespond("/getData", "get_crypto_data", command, command.id);
   }
 
-  async fetchAndRespond(endpoint, commandName, command, id) {
+  async fetchAndRespond(endpoint: string, commandName: string, command: any, id: string) {
     try {
       const { data } = await this.client.get(endpoint, {
         params: {
           symbol: "BTC + SOL",
         },
         headers: {
-          Authorization: `Bearer ${process.env.CRYPTO_API_KEY}`,
+          Authorization: `Bearer ${process.env.CRYPTO_API_KEY || ""}`,
           Accept: "*/*",
         },
       });
 
-      this.log.debug(JSON.stringify(data.symbols))
+      this.log.debug(JSON.stringify(data.symbols));
 
       return this.sendResponse(commandName, id, data.symbols);
-    } catch (err) {
+    } catch (err: any) {
       this.log?.error("Error fetching crypto data:", err.message);
       return this.sendError(commandName, err.message);
     }
   }
-
 }
 
-module.exports = Crypto_module;
+export default Crypto_module;

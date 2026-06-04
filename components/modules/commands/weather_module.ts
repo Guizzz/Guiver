@@ -1,7 +1,9 @@
-const Module = require("../module").default;
-const axios = require("axios");
+import Module from "../module";
+import axios from "axios";
 
 class Weather_module extends Module {
+  private client: any;
+
   constructor() {
     super("WEATHER_MODULE", "weather_queue");
 
@@ -15,15 +17,14 @@ class Weather_module extends Module {
     });
   }
 
-  async get_weather(command) {
+  async get_weather(command: any) {
     return this.fetchAndRespond("/weather", "get_weather", command, command.id);
   }
 
-  async fetchAndRespond(endpoint, commandName, command, id) 
-  {
+  async fetchAndRespond(endpoint: string, commandName: string, command: any, id: string) {
     try {
       const city = command?.payload?.city || "latina";
-      const apiKey = process.env.WEATHER_KEY;
+      const apiKey = process.env.WEATHER_KEY || "";
 
       const { data } = await this.client.get(endpoint, {
         params: {
@@ -41,13 +42,10 @@ class Weather_module extends Module {
       };
 
       return this.sendResponse(commandName, id, payload);
-
-    } 
-    catch (err) 
-    {
+    } catch (err: any) {
       return this.sendError(commandName, err.message);
     }
   }
 }
 
-module.exports = Weather_module;
+export default Weather_module;

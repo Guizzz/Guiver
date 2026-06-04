@@ -1,6 +1,6 @@
-const Module = require("../module").default;
+import Module from "../module";
 
-let Gpio = null;
+let Gpio: any = null;
 try {
   Gpio = require("pigpio").Gpio;
 } catch {
@@ -8,13 +8,23 @@ try {
 }
 
 class Led_module extends Module {
-  constructor(config) {
+  private redValue: number;
+  private greenValue: number;
+  private blueValue: number;
+  private rainbowRunning: boolean;
+  private rainbowBrightness: number;
+  private time: number;
+  private RedLed: any;
+  private GreenLed: any;
+  private BlueLed: any;
+
+  constructor(config: any) {
     super("LED_MODULE", "led_queue", config);
 
     try {
-        Gpio = require("pigpio").Gpio;
+      Gpio = require("pigpio").Gpio;
     } catch {
-        this.log.error("pigpio not available - LED module will not control hardware (pigpio missing)");
+      this.log.error("pigpio not available - LED module will not control hardware (pigpio missing)");
     }
 
     this.setHandledCmds({
@@ -30,37 +40,36 @@ class Led_module extends Module {
 
     this.rainbowRunning = false;
     this.rainbowBrightness = 255;
-    this.time = 50; // default sleep
+    this.time = 50;
+
+    this.RedLed = null;
+    this.GreenLed = null;
+    this.BlueLed = null;
 
     this._init_led();
   }
 
-  _init_led() 
-  {
-    if(!Gpio)
-        return;
-    
-    this.RedLed   = new Gpio(this.CONFIG.red_pin, { mode: Gpio.OUTPUT });
+  _init_led() {
+    if (!Gpio)
+      return;
+
+    this.RedLed = new Gpio(this.CONFIG.red_pin, { mode: Gpio.OUTPUT });
     this.GreenLed = new Gpio(this.CONFIG.green_pin, { mode: Gpio.OUTPUT });
-    this.BlueLed  = new Gpio(this.CONFIG.blue_pin, { mode: Gpio.OUTPUT });
+    this.BlueLed = new Gpio(this.CONFIG.blue_pin, { mode: Gpio.OUTPUT });
 
     this._apply_led_values();
   }
 
-  _apply_led_values() 
-  {
-    if(!Gpio)
-        return;
-        
+  _apply_led_values() {
+    if (!Gpio)
+      return;
+
     this.RedLed.pwmWrite(this.redValue);
     this.GreenLed.pwmWrite(this.greenValue);
     this.BlueLed.pwmWrite(this.blueValue);
   }
 
-  // ================= Responses =================
-
-  led_status(request) 
-  {
+  led_status(request: any) {
     const status = {
       rainbow_status: {
         rainbowRunning: this.rainbowRunning,
@@ -75,8 +84,7 @@ class Led_module extends Module {
     return this.sendResponse("led_status", request.id, status);
   }
 
-  led_manual_mgmt(request) 
-  {
+  led_manual_mgmt(request: any) {
     const { redValue, greenValue, blueValue } = request.payload || {};
 
     if (redValue !== undefined) this.redValue = redValue;
@@ -88,8 +96,7 @@ class Led_module extends Module {
     return this.led_status(request);
   }
 
-  rainbow_start(request) 
-  {
+  rainbow_start(request: any) {
     const time = parseInt(request.payload?.time);
     const brightnes = parseInt(request.payload?.brightnes);
 
@@ -114,75 +121,60 @@ class Led_module extends Module {
     return this.led_status(request);
   }
 
-  rainbow_stop(request) 
-  {
+  rainbow_stop(request: any) {
     this.rainbowRunning = false;
     return this.led_status(request);
   }
 
-  // ================= Rainbow loop =================
-
-  async _startRainbowAsync() 
-  {
+  async _startRainbowAsync() {
     this.log?.info("Starting rainbow loop");
 
-    const step = 1;
+    while (this.rainbowRunning) {
+      for (; this.greenValue < this.rainbowBrightness && this.rainbowRunning; this.greenValue++) {
+        this._apply_led_values();
+        await this._sleep(this.time);
+      }
 
-    while (this.rainbowRunning) 
-    {
-        for(; this.greenValue<this.rainbowBrightness && this.rainbowRunning; this.greenValue++)
-        {
-            this._apply_led_values();
-            await this._sleep(this.time);
-        }
-        
-        for(; this.redValue>0 && this.rainbowRunning; this.redValue--)
-        {
-            this._apply_led_values();
-            await this._sleep(this.time);
-        }
+      for (; this.redValue > 0 && this.rainbowRunning; this.redValue--) {
+        this._apply_led_values();
+        await this._sleep(this.time);
+      }
 
-        for(; this.blueValue<this.rainbowBrightness && this.rainbowRunning; this.blueValue++)
-        {
-            this._apply_led_values();
-            await this._sleep(this.time);
-        }
+      for (; this.blueValue < this.rainbowBrightness && this.rainbowRunning; this.blueValue++) {
+        this._apply_led_values();
+        await this._sleep(this.time);
+      }
 
-        for(; this.greenValue>0 && this.rainbowRunning; this.greenValue--)
-        {
-            this._apply_led_values();
-            await this._sleep(this.time);
-        }
+      for (; this.greenValue > 0 && this.rainbowRunning; this.greenValue--) {
+        this._apply_led_values();
+        await this._sleep(this.time);
+      }
 
-        for(; this.redValue<this.rainbowBrightness && this.rainbowRunning; this.redValue++)
-        {
-            this._apply_led_values();
-            await this._sleep(this.time);
-        }
+      for (; this.redValue < this.rainbowBrightness && this.rainbowRunning; this.redValue++) {
+        this._apply_led_values();
+        await this._sleep(this.time);
+      }
 
-        for(; this.blueValue>0 && this.rainbowRunning; this.blueValue--)
-        {
-            this._apply_led_values();
-            await this._sleep(this.time);
-        }
-  }
+      for (; this.blueValue > 0 && this.rainbowRunning; this.blueValue--) {
+        this._apply_led_values();
+        await this._sleep(this.time);
+      }
+    }
 
-    // fade out all
-    while (this.redValue || this.greenValue || this.blueValue) 
-    {
+    while (this.redValue || this.greenValue || this.blueValue) {
       if (this.redValue > 0) this.redValue--;
       if (this.greenValue > 0) this.greenValue--;
       if (this.blueValue > 0) this.blueValue--;
       this._apply_led_values();
-      await this._sleep(parseInt(this.time/2, 10));
+      await this._sleep(parseInt(String(this.time / 2), 10));
     }
 
     this.log?.info("Rainbow stopped");
   }
 
-  _sleep(ms) {
+  _sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
 
-module.exports = Led_module;
+export default Led_module;

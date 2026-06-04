@@ -1,12 +1,14 @@
-const Module = require("../module").default;
-const axios = require("axios");
+import Module from "../module";
+import axios from "axios";
 
 class RoomTemp_module extends Module {
-  constructor(config) {
+  private client: any;
+
+  constructor(config: any) {
     super("ROOM_TEMP_MODULE", "room_temp_queue", config);
 
     this.setHandledCmds({
-      get_room_temp: this.get_room_temp.bind(this)
+      get_room_temp: this.get_room_temp.bind(this),
     });
 
     this.client = axios.create({
@@ -15,21 +17,18 @@ class RoomTemp_module extends Module {
     });
   }
 
-  async get_room_temp(command) {
+  async get_room_temp(command: any) {
     return this.fetchAndRespond("/get_temp", "get_room_temp", command.id);
   }
 
-  async fetchAndRespond(endpoint, commandName, id) 
-  {
+  async fetchAndRespond(endpoint: string, commandName: string, id: string) {
     try {
       const { data } = await this.client.get(endpoint);
       return this.sendResponse(commandName, id, data);
-    } 
-    catch (err) 
-    {
+    } catch (err: any) {
       return this.sendError(commandName, err.message);
     }
   }
 }
 
-module.exports = RoomTemp_module;
+export default RoomTemp_module;

@@ -1,8 +1,10 @@
-const Module = require("../module").default;
-const axios = require("axios");
+import Module from "../module";
+import axios from "axios";
 
 class Water_pump_module extends Module {
-  constructor(config) {
+  private client: any;
+
+  constructor(config: any) {
     super("WATER_PUMP_MODULE", "water_pump_queue", config);
 
     this.setHandledCmds({
@@ -15,21 +17,18 @@ class Water_pump_module extends Module {
     });
   }
 
-  async get_water_pump_status(command) {
+  async get_water_pump_status(command: any) {
     return this.fetchAndRespond("/get_status", "get_water_pump_status", command.id);
   }
 
-  async fetchAndRespond(endpoint, commandName, id) 
-  {
+  async fetchAndRespond(endpoint: string, commandName: string, id: string) {
     try {
       const { data } = await this.client.get(endpoint);
       return this.sendResponse(commandName, id, data);
-    } 
-    catch (err) 
-    {
+    } catch (err: any) {
       return this.sendError(commandName, err.message);
     }
   }
 }
 
-module.exports = Water_pump_module;
+export default Water_pump_module;

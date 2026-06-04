@@ -1,22 +1,16 @@
-const Module = require("../module").default;
+import Module from "../module";
 
-let Gpio = null;
-
-/*
-request: 
-{
-    "type": "request",
-    "command": "set_relay",
-    "payload" :{
-        "set_relay": true, <---------- value to set
-        "relay": "light",  <---------- name of the relay on pin_map
-    }
+let Gpio: any = null;
+try {
+  Gpio = require("pigpio").Gpio;
+} catch {
+  console.log("pigpio not available - relay module mock mode");
 }
 
-*/
-
 class Relay_module extends Module {
-  constructor(config) {
+  private pin_map: Record<string, { status: boolean; pin: number; GPIO: any }>;
+
+  constructor(config: any) {
     super("RELAY_MODULE", "relay_queue", config);
 
     this.setHandledCmds({
@@ -25,15 +19,15 @@ class Relay_module extends Module {
     });
 
     try {
-        Gpio = require("pigpio").Gpio;
+      Gpio = require("pigpio").Gpio;
     } catch {
-        this.log.error("pigpio not available - mock mode");
+      this.log.error("pigpio not available - relay module mock mode");
     }
 
     this.pin_map = {
       light: {
         status: false,
-        pin: this.config?.light_pin ?? 2,
+        pin: this.CONFIG?.light_pin ?? 2,
         GPIO: null,
       },
     };
@@ -53,7 +47,7 @@ class Relay_module extends Module {
     }
   }
 
-  async set_relay(request) {
+  async set_relay(request: any) {
     const commandName = "set_relay";
     const id = request.id;
 
@@ -80,23 +74,23 @@ class Relay_module extends Module {
 
       return this.sendResponse(commandName, id, this._getStatusPayload());
 
-    } catch (err) {
-      return this.sendError(commandName, id, err);
+    } catch (err: any) {
+      return this.sendError(commandName, err);
     }
   }
 
-  async relay_status(request) {
+  async relay_status(request: any) {
     const commandName = "relay_status";
 
     try {
       return this.sendResponse(commandName, request.id, this._getStatusPayload());
-    } catch (err) {
+    } catch (err: any) {
       return this.sendError(commandName, err);
     }
   }
 
   _getStatusPayload() {
-    const payload = {};
+    const payload: Record<string, boolean> = {};
 
     for (const key in this.pin_map) {
       payload[key] = this.pin_map[key].status;
@@ -104,7 +98,6 @@ class Relay_module extends Module {
 
     return payload;
   }
-
 }
 
-module.exports = Relay_module;
+export default Relay_module;
