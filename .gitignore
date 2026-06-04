@@ -1,9 +1,9 @@
 
 node_modules/
 persist/
-package-lock.json
 .env
 */.env
 /.git-credentials
 .vscode/ftp-sync.json
 logs/
+opencode.json
