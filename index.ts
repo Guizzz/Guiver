@@ -46,6 +46,9 @@ for (const mod in modules)
     }
 }
 
+const { default: InfoPoint } = require('./components/info_point/info_point');
+new InfoPoint();
+
 for (const intf in interfaces) 
 {
     if (blackList.includes(intf)) {

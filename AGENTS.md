@@ -40,7 +40,7 @@ Central hub for home automation. Born to coordinate software modules that contro
 | 6 | **`CRYPTO_API_KEY` not documented** | `components/modules/commands/crypto_module.js` | Env var required but not listed in README, AGENTS.md, or any docs. |
 | 7 | **No `.env.example`** | root | Anyone forking/cloning the project doesn't know which env vars are needed (missing `INFO_PORT`, `CRYPTO_API_KEY`). |
 | 8 | **`package-lock.json` in `.gitignore`** | `.gitignore:4` | Prevents reproducible installs. Should be committed. |
-| 9 | **`info_point` loaded as module but does NOT extend Module** | `conf/modules_config.json` + `components/info_point/info_point.js` | It's a standalone class without RabbitMQ. Works but is incongruent with the modular system. |
+| 9 | ~~**`info_point` loaded as module but does NOT extend Module**~~ | ~~`conf/modules_config.json`~~ + ~~`components/info_point/info_point.js`~~ | **RESOLVED**: Removed from `modules_config.json`, loaded separately in `index.ts` as standalone service. |
 | 10 | **Temp station: filename and module name diverge** | `temp_station_module.js` vs `ROOM_TEMP_MODULE` | File is called `temp_station` but registers as `ROOM_TEMP_MODULE` on `room_temp_queue`. Confusing. |
 | 11 | **Swagger and code diverge on `relay` type** | `docs/schemas/relay.yaml` vs `relay_module.js` | Swagger says `integer`, the module expects a string (`"light"`). |
 | 12 | **`opencode.json` contains hardcoded GitHub PAT** | `opencode.json:10` | Personal access token exposed in the repository. |
@@ -76,7 +76,7 @@ npm start          # npx tsx index.ts — launches core, loads modules + interfa
 ## Architecture
 
 - **TypeScript + JavaScript mixed** — `.ts` files use ESM `import`, `.js` modules use `require`. The base `Module` class is TS but JS modules import it via `require("../module").default`.
-- **Config-driven boot** — `index.ts` loads `conf/modules_config.json` and `conf/interfaces_config.json`, instantiates every entry dynamically.
+- **Config-driven boot** — `index.ts` loads `conf/modules_config.json` and `conf/interfaces_config.json`, instantiates every entry dynamically. `info_point` (UDP discovery) is loaded separately as a standalone service, not as a module.
 - **Message bus** — RabbitMQ (`amqplib/callback_api`). Each component has its own queue (declared in `LinkManager` constructor). `Core` routes requests from interfaces to modules and responses back.
 - **Standard internal message format:**
   ```json

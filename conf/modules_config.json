@@ -37,7 +37,5 @@
             "light_pin": 3
         }
     },
-    "info_point": {
-        "path": "./components/info_point/info_point"
-    }
+
 }
