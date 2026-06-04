@@ -34,7 +34,7 @@
     "relay_module": {
         "path": "./components/modules/commands/relay_module",
         "config": {
-            "light_pin": 3
+            "light_pin": 2
         }
     }
 }
