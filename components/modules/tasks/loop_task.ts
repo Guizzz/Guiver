@@ -1,4 +1,5 @@
 import Module from "../module";
+import EventBus from "../../../utils/event_bus";
 
 class LoopTask_module extends Module {
   private tasks: Record<string, any>;
@@ -25,7 +26,7 @@ class LoopTask_module extends Module {
         payload: command.payload,
       };
       this.tasks[command.command_to_loop] = setInterval(() => {
-        this.linkManager.toCore("core_queue", JSON.stringify(taskCommand));
+        EventBus.publish("core:request", taskCommand);
       }, delta_time);
     }
 

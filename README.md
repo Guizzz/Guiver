@@ -25,11 +25,13 @@
     API_PORT=
     INFO_PORT=
     WEATHER_KEY=
-    RABBITMQ_IP=
-    RABBITMQ_USR=
-    RABBITMQ_PSW=
     ```
 5. Start the application using `npm start`.
+
+## Architecture
+
+- **EventBus** (`utils/event_bus.ts`) — in-process EventEmitter singleton for all internal communication (Core ↔ Modules ↔ Interfaces). No external broker required.
+- **MQTT** (optional) — `components/mqtt/mqtt_bridge.ts` connects to an external Mosquitto broker for ESP communication.
 
 ## Pinout Information 🖥️
 

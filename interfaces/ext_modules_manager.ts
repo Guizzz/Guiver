@@ -1,22 +1,20 @@
 import WssManager from "../utils/wss_manager";
-import LinkManager from "../utils/link_manager";
+import EventBus from "../utils/event_bus";
 import { interfaceLogger } from "../utils/logger";
 
 class ExtModuleManager {
   private logger: any;
-  private linkManager: LinkManager;
   private wssManager: WssManager;
 
   constructor() {
     this.logger = interfaceLogger("WSS_MODULES");
-    this.linkManager = new LinkManager("MODULES_MGMT", "modules_queue", (msg: string) => this.logger.debug(msg));
     this.wssManager = new WssManager(process.env.WSS_MDL_PORT!, "mdl_ws_msg", (msg: string) => this.logger.debug(msg));
-    this.linkManager.start();
     this.wssManager.start();
 
     this.wssManager.on("mdl_ws_msg", this.from_client.bind(this));
-    this.linkManager.on("msg", this.send_client.bind(this));
-    this.linkManager.on("channel_new", this._start.bind(this));
+    EventBus.subscribe("core:response", this.send_client.bind(this));
+
+    this._start();
   }
 
   _start() {
@@ -26,15 +24,20 @@ class ExtModuleManager {
       module: "MODULES_MGMT",
       module_queue: "modules_queue",
     };
-    this.linkManager.toCore("core_queue", JSON.stringify(j_msg));
+    EventBus.publish("core:register_handler", j_msg);
   }
 
   from_client(msg: string) {
-    return this.linkManager.toCore("core_queue", msg);
+    try {
+      const parsed = JSON.parse(msg);
+      EventBus.publish("core:request", parsed);
+    } catch {
+      this.logger.error("Invalid JSON from external module");
+    }
   }
 
-  send_client(msg: string) {
-    return this.wssManager.sendResponse(msg);
+  send_client(msg: any) {
+    this.wssManager.sendResponse(JSON.stringify(msg));
   }
 }
 

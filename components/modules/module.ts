@@ -1,4 +1,4 @@
-import LinkManager from "../../utils/link_manager";
+import EventBus from "../../utils/event_bus";
 import { moduleLogger } from "../../utils/logger";
 import { Logger } from "winston";
 
@@ -13,8 +13,6 @@ class Module {
     protected CONFIG: Record<string, any>;
 
     protected commandsHandled: Record< string, CommandHandler >;
-
-    protected linkManager: LinkManager;
 
     constructor( moduleName: string, moduleQueue: string, config: Record<string, any> = {}) 
     {
@@ -33,19 +31,6 @@ class Module {
         }
 
         this.commandsHandled = {};
-
-        this.linkManager = new LinkManager(
-            moduleName,
-            moduleQueue,
-            (m: string) => this.log.info(m)
-        );
-
-        this.linkManager.on(
-            "msg",
-            this.manageRequest.bind(this)
-        );
-
-        this.linkManager.start();
     }
 
     protected setHandledCmds(
@@ -56,10 +41,12 @@ class Module {
     ): void {
         this.commandsHandled = commandsHandled;
 
-        this.linkManager.on(
-            "channel_new",
-            this._start.bind(this)
+        EventBus.subscribe(
+            "module:" + this.moduleQueue,
+            this.manageRequest.bind(this)
         );
+
+        this._start();
     }
 
     private _start(): void {
@@ -75,20 +62,15 @@ class Module {
             commands_handled: cmds
         };
 
-        this.linkManager.toCore(
-            "core_queue",
-            JSON.stringify(j_msg)
-        );
+        EventBus.publish("core:register", j_msg);
     }
 
     protected async manageRequest(
-        message: string
+        j_msg: any
     ): Promise<void> {
         this.log.debug(
-            "Message received: " + message
+            "Message received: " + JSON.stringify(j_msg)
         );
-
-        const j_msg = JSON.parse(message);
 
         const req_cmd =
             j_msg.command.trim();
@@ -109,10 +91,7 @@ class Module {
                 data !== undefined &&
                 JSON.stringify(data) !== "{}"
             ) {
-                this.linkManager.toCore(
-                    "core_queue",
-                    JSON.stringify(data)
-                );
+                EventBus.publish("core:request", data);
             }
 
             return;
@@ -127,10 +106,7 @@ class Module {
 
         j_msg.error = 500;
 
-        this.linkManager.toCore(
-            "core_queue",
-            JSON.stringify(j_msg)
-        );
+        EventBus.publish("core:request", j_msg);
     }
 
     protected sendResponse(
@@ -146,10 +122,7 @@ class Module {
             timestamp: Date.now()
         };
 
-        this.linkManager.toCore(
-            "core_queue",
-            JSON.stringify(resp)
-        );
+        EventBus.publish("core:request", resp);
     }
 
     protected sendRequest(
@@ -162,10 +135,7 @@ class Module {
             payload
         };
 
-        this.linkManager.toCore(
-            "core_queue",
-            JSON.stringify(resp)
-        );
+        EventBus.publish("core:request", resp);
     }
 
     protected sendError(
@@ -179,10 +149,7 @@ class Module {
             timestamp: Date.now()
         };
 
-        this.linkManager.toCore(
-            "core_queue",
-            JSON.stringify(resp)
-        );
+        EventBus.publish("core:request", resp);
     }
 }
 

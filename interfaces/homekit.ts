@@ -1,5 +1,5 @@
 import hap from "hap-nodejs";
-import LinkManager from "../utils/link_manager";
+import EventBus from "../utils/event_bus";
 import { interfaceLogger } from "../utils/logger";
 
 const Accessory = hap.Accessory;
@@ -8,7 +8,6 @@ const Service = hap.Service;
 
 class HomekitServer {
   private logger: any;
-  private linkManager: LinkManager;
   private last: any;
   private lightService: any;
   private tempService: any;
@@ -25,10 +24,7 @@ class HomekitServer {
 
   constructor() {
     this.logger = interfaceLogger("HOMEKIT");
-    this.linkManager = new LinkManager("HOMEKIT_SERVER", "homekit_queue", (m: string) => this.logger.debug(m));
-    this.linkManager.start();
-    this.linkManager.on("msg", this.update_value.bind(this));
-    this.linkManager.on("channel_new", this._start.bind(this));
+    EventBus.subscribe("core:response", this.update_value.bind(this));
 
     this.lightService = new Service.Lightbulb("Lightbulb Test");
 
@@ -68,6 +64,8 @@ class HomekitServer {
     this.currentTemperature = 0;
     this.currentHumidity = 0;
 
+    this._start();
+
     console.log("Accessory setup finished!");
   }
 
@@ -78,18 +76,17 @@ class HomekitServer {
       module: "HOMEKIT_SERVER",
       module_queue: "homekit_queue",
     };
-    this.linkManager.toCore("core_queue", JSON.stringify(j_msg));
+    EventBus.publish("core:register_handler", j_msg);
 
     const j_cmd = {
       type: "request",
       command: "relay_status",
     };
-    this.linkManager.toCore("core_queue", JSON.stringify(j_cmd));
+    EventBus.publish("core:request", j_cmd);
   }
 
-  update_value(data: string) {
-    this.last = data;
-    const parsed = JSON.parse(data);
+  update_value(parsed: any) {
+    this.last = parsed;
     if (!parsed.hasOwnProperty("payload"))
       return;
     if (parsed.payload.hasOwnProperty("light"))
@@ -117,7 +114,7 @@ class HomekitServer {
         relay: "light",
       },
     };
-    this.linkManager.toCore("core_queue", JSON.stringify(j_cmd));
+    EventBus.publish("core:request", j_cmd);
     callback();
   }
 
@@ -130,7 +127,7 @@ class HomekitServer {
       type: "request",
       command: "get_room_temp",
     };
-    this.linkManager.toCore("core_queue", JSON.stringify(j_cmd));
+    EventBus.publish("core:request", j_cmd);
 
     console.log("Queried current temperature: " + this.currentTemperature);
     callback(null, this.currentTemperature);

@@ -53,15 +53,23 @@ class Led_module extends Module {
     if (!Gpio)
       return;
 
-    this.RedLed = new Gpio(this.CONFIG.red_pin, { mode: Gpio.OUTPUT });
-    this.GreenLed = new Gpio(this.CONFIG.green_pin, { mode: Gpio.OUTPUT });
-    this.BlueLed = new Gpio(this.CONFIG.blue_pin, { mode: Gpio.OUTPUT });
+    try {
+      this.RedLed = new Gpio(this.CONFIG.red_pin, { mode: Gpio.OUTPUT });
+      this.GreenLed = new Gpio(this.CONFIG.green_pin, { mode: Gpio.OUTPUT });
+      this.BlueLed = new Gpio(this.CONFIG.blue_pin, { mode: Gpio.OUTPUT });
+    } catch {
+      this.log.error("pigpio not available - LED module will not control hardware (Gpio init failed)");
+      this.RedLed = null;
+      this.GreenLed = null;
+      this.BlueLed = null;
+      return;
+    }
 
     this._apply_led_values();
   }
 
   _apply_led_values() {
-    if (!Gpio)
+    if (!Gpio || !this.RedLed)
       return;
 
     this.RedLed.pwmWrite(this.redValue);

@@ -1,4 +1,4 @@
-import LinkManager from '../../../utils/link_manager'
+import EventBus from '../../../utils/event_bus'
 import { interfaceLogger } from '../../../utils/logger'
 import { CoreCommand } from '../types/commands'
 import { CoreResponse } from '../types/responses'
@@ -6,7 +6,6 @@ import { CoreResponse } from '../types/responses'
 
 export class CoreService {
     private logger: any
-    private linkManager: LinkManager
 
     // RGB state
     public redValue = 0
@@ -20,20 +19,13 @@ export class CoreService {
     {
         this.logger = interfaceLogger('HTTP_API')
 
-        this.linkManager = new LinkManager(
-            'API_SERVER',
-            'api_queue',
-            (msg: string) => this.logger.debug(msg)
-        )
-
-        this.linkManager.start()
-        this.linkManager.on('msg', this.updateValue.bind(this))
-        this.linkManager.on('channel_new', this.start.bind(this))
+        EventBus.subscribe('core:response', this.updateValue.bind(this))
+        this._start()
     }
 
     // ================= CORE INIT =================
 
-    private start(): void {
+    private _start(): void {
         const message = {
             type: 'managment',
             command: 'response_config',
@@ -41,36 +33,34 @@ export class CoreService {
             module_queue: 'api_queue',
         }
 
-        this.linkManager.toCore( 'core_queue', JSON.stringify(message))
+        EventBus.publish('core:register_handler', message)
     }
 
     // ================= MESSAGE HANDLER =================
 
-    private updateValue(data: string): void 
+    private updateValue(data: CoreResponse): void 
     {
-        const parsed: CoreResponse = JSON.parse(data)
-
         // aggiorna stato RGB
-        if (parsed.payload) {
+        if (data.payload) {
             this.redValue =
-                parsed.payload.redValue ??
+                data.payload.redValue ??
                 this.redValue
 
             this.greenValue =
-                parsed.payload.greenValue ??
+                data.payload.greenValue ??
                 this.greenValue
 
             this.blueValue =
-                parsed.payload.blueValue ??
+                data.payload.blueValue ??
                 this.blueValue
         }
 
         // risolvi la prossima promise in attesa
-        const resolver = this.pending.get(parsed.id)
+        const resolver = this.pending.get(data.id)
 
         if (resolver) {
-            resolver(parsed)
-            this.pending.delete(parsed.id)
+            resolver(data)
+            this.pending.delete(data.id)
         }
     }
 
@@ -78,7 +68,7 @@ export class CoreService {
 
     sendCommand(command: CoreCommand): void 
     {
-        this.linkManager.toCore('core_queue', JSON.stringify(command))
+        EventBus.publish('core:request', command)
     }
 
     // ================= RESPONSE HANDLER =================

@@ -37,12 +37,16 @@ class Relay_module extends Module {
 
   _init_pin() {
     for (const key in this.pin_map) {
-      if (Gpio) {
+      if (!Gpio) continue;
+
+      try {
         this.pin_map[key].GPIO = new Gpio(this.pin_map[key].pin, {
           mode: Gpio.OUTPUT,
         });
-
         this.pin_map[key].GPIO.digitalWrite(0);
+      } catch {
+        this.log.error("pigpio not available - relay module mock mode (Gpio init failed)");
+        this.pin_map[key].GPIO = null;
       }
     }
   }
@@ -69,7 +73,11 @@ class Relay_module extends Module {
       this.pin_map[relay].status = !!set_relay;
 
       if (this.pin_map[relay].GPIO) {
-        this.pin_map[relay].GPIO.digitalWrite(this.pin_map[relay].status ? 1 : 0);
+        try {
+          this.pin_map[relay].GPIO.digitalWrite(this.pin_map[relay].status ? 1 : 0);
+        } catch {
+          this.log.error("pigpio write failed (mock mode)");
+        }
       }
 
       return this.sendResponse(commandName, id, this._getStatusPayload());

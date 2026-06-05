@@ -18,22 +18,22 @@
   "license": "ISC",
   "dependencies": {
     "@apidevtools/swagger-parser": "^12.1.0",
-    "amqplib": "^2.0.1",
     "axios": "^1.13.6",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "dotenv": "^17.0.0",
-    "pigpio": "^3.3.1",
     "express": "^5.2.1",
     "hap-nodejs": "^1.2.0",
-    "http": "^0.0.1-security",
+    "http": "^0.0.1-security"
+  },
+  "optionalDependencies": {
+    "pigpio": "^3.3.1",
     "swagger-ui-express": "^5.0.1",
     "websocket": "^1.0.35",
     "winston": "^3.19.0",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "@types/amqplib": "^0.10.8",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^25.9.1",

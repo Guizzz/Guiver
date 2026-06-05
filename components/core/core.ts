@@ -1,4 +1,4 @@
-import LinkManager from "../../utils/link_manager";
+import EventBus from "../../utils/event_bus";
 import { coreLogger } from "../../utils/logger";
 
 interface MessagePayload
@@ -17,17 +17,12 @@ type ManagementHandler = (config: MessagePayload) => void;
 
 export default class Core
 {
-    private link_manager: LinkManager;
     private command_handled: Record<string, string>;
     private response_handlers: string[];
     private managment_handlers: Record<string, ManagementHandler>;
 
     constructor()
     {
-        this.link_manager = new LinkManager( "CORE", "core_queue", (msg: string) => coreLogger.debug(msg));
-        this.link_manager.start();
-        this.link_manager.on( "msg", this.manage_request.bind(this));
-
         this.command_handled = {};
         this.response_handlers = [];
 
@@ -35,6 +30,10 @@ export default class Core
             module_config: this.commands_management.bind(this),
             response_config: this.response_management.bind(this)
         };
+
+        EventBus.subscribe("core:request", this.manage_request.bind(this));
+        EventBus.subscribe("core:register", this.commands_management.bind(this));
+        EventBus.subscribe("core:register_handler", this.response_management.bind(this));
     }
 
     private commands_management(new_config: MessagePayload): void
@@ -58,26 +57,17 @@ export default class Core
 
     private send_response(j_msg: MessagePayload): void
     {
-        for (const resp_manager of this.response_handlers)
-        {
-            coreLogger.info( "Sending response to " + resp_manager);
-            this.link_manager.toModule( resp_manager, JSON.stringify(j_msg));
-        }
+        coreLogger.info("Sending response to " + this.response_handlers.join(", "));
+        EventBus.publish("core:response", j_msg);
     }
 
-    private manage_request(message: string): void
+    private manage_request(j_msg: MessagePayload): void
     {
-        coreLogger.debug("Message received: " + message);
+        coreLogger.debug("Message received: " + JSON.stringify(j_msg));
 
-        let j_msg: MessagePayload;
-
-        try
+        if (!j_msg || typeof j_msg !== "object")
         {
-            j_msg = JSON.parse(message);
-        }
-        catch (err)
-        {
-            coreLogger.error("Invalid JSON message");
+            coreLogger.error("Invalid message");
             return;
         }
 
@@ -103,7 +93,7 @@ export default class Core
             if (this.command_handled.hasOwnProperty(req_cmd))
             {
                 const queue = this.command_handled[req_cmd];
-                this.link_manager.toModule(queue, message);
+                EventBus.publish("module:" + queue, j_msg);
                 return;
             }
 
