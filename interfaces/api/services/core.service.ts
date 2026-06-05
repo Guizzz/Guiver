@@ -66,16 +66,11 @@ export class CoreService {
 
     // ================= COMMAND API =================
 
-    sendCommand(command: CoreCommand): void 
+    sendCommand(command: CoreCommand): Promise<any> 
     {
-        EventBus.publish('core:request', command)
-    }
-
-    // ================= RESPONSE HANDLER =================
-
-    waitForResponse(id: string): Promise<any> {
         return new Promise((resolve) => {
-            this.pending.set(id, resolve)
+            this.pending.set(command.id, resolve)
+            EventBus.publish('core:request', command)
         })
     }
 }

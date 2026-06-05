@@ -83,7 +83,7 @@ class Relay_module extends Module {
       return this.sendResponse(commandName, id, this._getStatusPayload());
 
     } catch (err: any) {
-      return this.sendError(commandName, err);
+      return this.sendError(commandName, id, err);
     }
   }
 
@@ -93,7 +93,7 @@ class Relay_module extends Module {
     try {
       return this.sendResponse(commandName, request.id, this._getStatusPayload());
     } catch (err: any) {
-      return this.sendError(commandName, err);
+      return this.sendError(commandName, request.id, err);
     }
   }
 

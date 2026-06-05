@@ -109,15 +109,15 @@ class Led_module extends Module {
     const brightnes = parseInt(request.payload?.brightnes);
 
     if (this.rainbowRunning) {
-      return this.sendError("rainbow_start", "Rainbow already running");
+      return this.sendError("rainbow_start", request.id, "Rainbow already running");
     }
 
     if (!time || !brightnes) {
-      return this.sendError("rainbow_start", "Missing time or brightness");
+      return this.sendError("rainbow_start", request.id, "Missing time or brightness");
     }
 
     if (time < 20) {
-      return this.sendError("rainbow_start", "Time frequency too high");
+      return this.sendError("rainbow_start", request.id, "Time frequency too high");
     }
 
     this.rainbowBrightness = brightnes;

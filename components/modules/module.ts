@@ -140,14 +140,17 @@ class Module {
 
     protected sendError(
         command: string,
+        id: string | undefined,
         err: any
     ): void {
-        const resp = {
+        const resp: Record<string, any> = {
             type: "response",
             command,
             error: err,
             timestamp: Date.now()
         };
+
+        if (id) { resp.id = id; }
 
         EventBus.publish("core:request", resp);
     }

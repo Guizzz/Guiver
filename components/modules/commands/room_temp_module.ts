@@ -26,7 +26,7 @@ class RoomTemp_module extends Module {
       const { data } = await this.client.get(endpoint);
       return this.sendResponse(commandName, id, data);
     } catch (err: any) {
-      return this.sendError(commandName, err.message);
+      return this.sendError(commandName, id, err.message);
     }
   }
 }

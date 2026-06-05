@@ -1,6 +1,5 @@
 import type {Request,Response} from 'express'
 import { CoreService } from '../services/core.service'
-import { CoreCommand } from '../types/commands';
 
 
 export class WeatherController 
@@ -9,15 +8,11 @@ export class WeatherController
 
     async getWeather(req: Request,res: Response): Promise<void> 
     {
-        const id = crypto.randomUUID();
-        const cmd : CoreCommand = {
-            id: id,
+        const response = await this.core.sendCommand({
+            id: crypto.randomUUID(),
             type: 'request',
             command: 'get_weather',
-        }
-
-        this.core.sendCommand(cmd);
-        const response = await this.core.waitForResponse(id)
+        })
         res.json(response)
     }
 }

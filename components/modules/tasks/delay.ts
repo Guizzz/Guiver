@@ -14,7 +14,7 @@ class Delay_module extends Module {
       const cmd_to_delay = command.payload.command_to_delay;
 
       if (!cmd_to_delay) {
-        return this.sendError("delay", "Missing 'command_to_delay'");
+        return this.sendError("delay", command.id, "Missing 'command_to_delay'");
       }
 
       this.log.debug(`Delaying command '${cmd_to_delay}' for ${delay_time} ms`);
@@ -25,7 +25,7 @@ class Delay_module extends Module {
       return this.sendRequest(cmd_to_delay, command.payload.payload_to_delay);
 
     } catch (err: any) {
-      return this.sendError("delay", err.message);
+      return this.sendError("delay", command.id, err.message);
     }
   }
 

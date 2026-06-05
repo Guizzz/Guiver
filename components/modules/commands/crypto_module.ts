@@ -34,7 +34,7 @@ class Crypto_module extends Module {
       return this.sendResponse(commandName, id, data.data);
     } catch (err: any) {
       this.log?.error("Error fetching crypto data:", err.message);
-      return this.sendError(commandName, err.message);
+      return this.sendError(commandName, id, err.message);
     }
   }
 }

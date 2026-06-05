@@ -22,7 +22,8 @@ function waitForOpen(ws: WebSocket): Promise<void> {
 function send(command: string, payload: any = {}): Promise<any> {
   return new Promise((resolve, reject) => {
     const id = crypto.randomUUID()
-    const msg = { id, type: 'request', command, payload }
+    const client_id = 'test-client'
+    const msg = { client_id, id, type: 'request', command, payload }
 
     const timeout = setTimeout(() => {
       reject(new Error(`Timeout waiting for response to ${command}`))
