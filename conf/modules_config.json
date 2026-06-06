@@ -36,5 +36,8 @@
         "config": {
             "light_pin": 2
         }
+    },
+    "esp_manager": {
+        "path": "./components/modules/esp_manager/esp_manager"
     }
 }

@@ -8,6 +8,7 @@ import { registerWeatherRoutes } from './routes/weather.routes'
 import { registerPumpRoutes } from './routes/pump.routes'
 import { registerRoomTempRoutes } from './routes/room_temp.routes'
 import { registerCryptoRoutes } from './routes/crypto.routes'
+import { registerEspRoutes } from './routes/esp.routes'
 import { initSwagger } from './swagger'
 
 export default class API_Server {
@@ -26,6 +27,7 @@ export default class API_Server {
         registerPumpRoutes(this.app, this.core)
         registerRoomTempRoutes(this.app, this.core)
         registerCryptoRoutes(this.app, this.core)
+        registerEspRoutes(this.app, this.core)
 
         const port = process.env.API_PORT || 8080
 

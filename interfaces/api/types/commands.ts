@@ -13,6 +13,8 @@ export type CoreRequestCommand =
     | 'get_water_pump_status'
     | 'get_room_temp'
     | 'get_crypto_data'
+    | 'esp_list'
+    | 'esp_command'
 
 export interface CoreCommand<T = any> {
     id: string
