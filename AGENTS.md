@@ -13,46 +13,6 @@
 
 Central hub for home automation. Born to coordinate software modules that control physical devices (RGB LEDs, relays, water pumps, temperature sensors) and expandable with external modules via WebSocket. Interfaces with ESP8266/ESP32 units around the house via HTTP, with future plans for MQTT.
 
----
-
-## Project Analysis
-
-### 🚨 Critical issues (blocking)
-
-| # | Issue | File | Detail |
-|---|-------|------|--------|
-| 1 | **`.env` missing** | root | File doesn't exist. App crashes on startup if `RABBITMQ_IP` is not defined. At least a `.env.example` is needed. |
-
-### ⚠️ Deficiencies (serious but non-blocking)
-
-| # | Deficiency | File | Detail |
-|---|-----------|------|--------|
-| 1 | **No linter/formatter/typecheck** | `package.json` | `strict: true` in tsconfig but no `tsc` build step. Type errors are never discovered. |
-| 2 | **Relay module ignores `light_pin` config** | `components/modules/commands/relay_module.js` | `modules_config.json` passes `light_pin: 3` but the code uses hardcoded `const RELAY_PIN = 2`. |
-| 3 | **API `/help` documented but not implemented** | `interfaces/api/routes/` + `restApi.md` | `restApi.md` lists `/help` as endpoint, but no route, controller, or module handles it. |
-| 4 | **`wether_test.js` wrong import path** | `tests/wether_test.js` | `require("../modules/wether_modules")` doesn't exist. Should be `../components/modules/commands/weather_module`. |
-| 5 | **HomeKit log label wrong** | `interfaces/homekit.js:14` | Uses `"WSS_CLIENTS"` as logger label instead of `"HOMEKIT"` (copy-paste). |
-| 6 | ~~**`CRYPTO_API_KEY` not documented**~~ | ~~`components/modules/commands/crypto_module.js`~~ | **RESOLVED**: API key no longer needed, migrated to CoinCap.io. |
-| 7 | **No `.env.example`** | root | Anyone forking/cloning the project doesn't know which env vars are needed (missing `INFO_PORT`). |
-| 8 | **`package-lock.json` in `.gitignore`** | `.gitignore:4` | Prevents reproducible installs. Should be committed. |
-| 9 | ~~**`info_point` loaded as module but does NOT extend Module**~~ | ~~`conf/modules_config.json`~~ + ~~`components/info_point/info_point.js`~~ | **RESOLVED**: Removed from `modules_config.json`, loaded separately in `index.ts` as standalone service. |
-| 10 | **Temp station: filename and module name diverge** | `temp_station_module.js` vs `ROOM_TEMP_MODULE` | File is called `temp_station` but registers as `ROOM_TEMP_MODULE` on `room_temp_queue`. Confusing. |
-| 11 | **Swagger and code diverge on `relay` type** | `docs/schemas/relay.yaml` vs `relay_module.js` | Swagger says `integer`, the module expects a string (`"light"`). |
-| 12 | **`opencode.json` contains hardcoded GitHub PAT** | `opencode.json:10` | Personal access token exposed in the repository. |
-| 13 | ~~**Crypto module uses external freecryptoapi.com**~~ | ~~`components/modules/commands/crypto_module.js`~~ | **RESOLVED**: Migrated to CoinCap.io (free, no API key, reliable). |
-
-### Resolved critical issues
-
-The following blocking issues from the original analysis have been resolved:
-
-| # | Issue | Resolution |
-|---|-------|------------|
-| 2 | **`to_core()` snake_case in loop_task** | Migrated to TypeScript + EventBus (`#15`, `#24-#27`) |
-| 3 | **`to_core()` in homekit** | Migrated to EventBus (`#27`/`#30`) |
-| 4 | **`to_core()` in ext_modules_manager** | Migrated to EventBus (`#27`) |
-| 5 | **`ext_modules_manager` doesn't register `response_config`** | Fixed in `#15` (TS migration + EventBus) |
-| 6 | **`loop_task` mutates received message** | Fixed in `#15` (TS migration) |
-
 ### 🔮 Future Implementations
 
 | # | Feature | Description |
@@ -78,6 +38,7 @@ The following blocking issues from the original analysis have been resolved:
 npm start          # npx tsx index.ts — launches core, loads modules + interfaces
 npm run typecheck  # tsc --noEmit
 npm run build      # tsc
+npm run setup-dev  # scripts/setup-dev.js — one-shot dev environment setup
 ```
 
 `npm test` uses Vitest (configured, no test files yet). Legacy scripts in `tests/` are manual WebSocket utilities.

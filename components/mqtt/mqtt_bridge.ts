@@ -9,7 +9,8 @@ class MqttBridge {
   private subscribers: Map<string, Array<(topic: string, message: Buffer) => void>>;
   private brokerUrl: string;
   private reconnectAttempts: number = 0;
-  private maxReconnectDelay: number = 30000;
+  private maxReconnectAttempts: number = 5;
+  private offline: boolean = false;
 
   private constructor() {
     this.logger = interfaceLogger("MQTT_BRIDGE");
@@ -33,6 +34,7 @@ class MqttBridge {
     this.client.on("connect", () => {
       this.logger.info("Connected to MQTT broker at " + this.brokerUrl);
       this.reconnectAttempts = 0;
+      this.offline = false;
       for (const [topic] of this.subscribers) {
         this.client?.subscribe(topic);
       }
@@ -47,25 +49,26 @@ class MqttBridge {
       }
     });
 
-    this.client.on("error", (error: Error) => {
-      this.logger.error("MQTT error: " + error.message);
-    });
+    this.client.on("error", () => {});
 
     this.client.on("reconnect", () => {
       this.reconnectAttempts++;
-      const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), this.maxReconnectDelay);
-      if (this.client) {
-        this.client.options.reconnectPeriod = delay;
+      if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+        this.offline = true;
+        this.client?.end(true);
+        this.client = null;
+        this.logger.warn("MQTT broker at " + this.brokerUrl + " not reachable — offline mode, continuing without MQTT");
+        return;
       }
-      this.logger.info("Reconnecting (attempt " + this.reconnectAttempts + ", delay " + delay + "ms)...");
     });
 
-    this.client.on("close", () => {
-      this.logger.info("Connection to MQTT broker closed");
-    });
+    this.client.on("close", () => {});
   }
 
   publish(topic: string, message: string | Buffer): void {
+    if (this.offline) {
+      return;
+    }
     if (!this.client || !this.client.connected) {
       this.logger.warn("Cannot publish to " + topic + ": not connected");
       return;
@@ -74,6 +77,9 @@ class MqttBridge {
   }
 
   subscribe(topic: string, callback: (topic: string, message: Buffer) => void): void {
+    if (this.offline) {
+      return;
+    }
     if (!this.subscribers.has(topic)) {
       this.subscribers.set(topic, []);
       if (this.client?.connected) {
@@ -84,6 +90,9 @@ class MqttBridge {
   }
 
   unsubscribe(topic: string, callback?: (topic: string, message: Buffer) => void): void {
+    if (this.offline) {
+      return;
+    }
     if (!callback) {
       this.subscribers.delete(topic);
       if (this.client?.connected) {
