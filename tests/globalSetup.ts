@@ -33,6 +33,16 @@ function waitForServer(url: string, timeout = 30000): Promise<void> {
 }
 
 export async function setup(): Promise<() => void> {
+  if (process.env.PI_HOST) {
+    const host = process.env.PI_HOST;
+    const port = process.env.PI_API_PORT || process.env.API_PORT || "8080";
+    const url = `http://${host}:${port}`;
+    console.log(`[remote] Waiting for server at ${url}...`);
+    await waitForServer(url);
+    console.log("[remote] Server reachable");
+    return () => {};
+  }
+
   return new Promise((resolve, reject) => {
     serverProcess = spawn(process.execPath, ["--import", "tsx", "index.ts"], {
       cwd: process.cwd(),

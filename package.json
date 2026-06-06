@@ -5,6 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "test": "vitest run",
+    "test:remote": "PI_HOST=192.168.1.109 npx vitest run",
     "test:watch": "vitest",
     "start": "npx tsx index.ts",
     "typecheck": "tsc --noEmit",
