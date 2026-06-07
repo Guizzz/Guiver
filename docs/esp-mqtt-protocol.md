@@ -232,3 +232,236 @@ Once discovered, ESP data is accessible via:
 | GET    | `/esp`                       | List all devices                   |
 | GET    | `/esp/temperature`           | Filter by type                     |
 | POST   | `/esp/<id>/command`          | Send command to a specific device  |
+
+---
+
+## Firmware Implementation Guide (Arduino / ESP8266 / ESP32)
+
+### Required Libraries
+
+| Library         | Purpose                |
+|-----------------|------------------------|
+| `PubSubClient`  | MQTT client            |
+| `ArduinoJson`   | JSON serialization     |
+
+### Boot Sequence (pseudocodice)
+
+```
+setup():
+  1. connect WiFi
+  2. configure MQTT (server, client ID)
+  3. configure LWT  →  guiver/<id>/online  retain  QOS1
+  4. connect MQTT
+  5. publish announce (retained)  →  guiver/<id>/announce  QOS1
+  6. publish online=1 (retained)  →  guiver/<id>/online     QOS1
+  7. subscribe command            →  guiver/<id>/command    QOS1
+
+loop():
+  - maintain MQTT connection
+  - every `interval` seconds: publish status  →  guiver/<id>/status  QOS0
+  - handle incoming commands via callback
+```
+
+### Template — Device generico
+
+```cpp
+#include <ESP8266WiFi.h>
+#include <PubSubClient.h>
+#include <ArduinoJson.h>
+
+const char* WIFI_SSID     = "your_ssid";
+const char* WIFI_PASSWORD = "your_password";
+const char* MQTT_HOST     = "192.168.1.109";
+const int   MQTT_PORT     = 1883;
+
+#define DEVICE_ID  "luci_garden"    // unico per ogni ESP
+#define INTERVAL   30               // secondi tra status
+
+WiFiClient wifiClient;
+PubSubClient client(wifiClient);
+
+unsigned long lastStatus = 0;
+
+// ── helper publish con JSON ──────────────────────────────────────
+void publishJson(const char* topic, JsonDocument& doc, bool retained, int qos) {
+  char buffer[256];
+  size_t n = serializeJson(doc, buffer);
+  client.publish(topic, buffer, retained ? 1 : 0, retained);
+}
+
+// ── publish announce (boot) ──────────────────────────────────────
+void publishAnnounce() {
+  StaticJsonDocument<256> doc;
+  doc["type"]      = "relay";
+  doc["name"]      = "Luci Garden";
+
+  JsonArray actuators = doc.createNestedArray("actuators");
+  JsonObject r1 = actuators.createNestedObject();
+  r1["name"]  = "relay1";
+  r1["label"] = "Relè 1";
+
+  doc["interval"] = INTERVAL;
+
+  char topic[64];
+  snprintf(topic, sizeof(topic), "guiver/%s/announce", DEVICE_ID);
+  publishJson(topic, doc, true, 1);
+}
+
+// ── publish status (periodico) ───────────────────────────────────
+void publishStatus() {
+  StaticJsonDocument<128> doc;
+  doc["relay1"] = digitalRead(D1);   // true/false
+
+  char topic[64];
+  snprintf(topic, sizeof(topic), "guiver/%s/status", DEVICE_ID);
+  publishJson(topic, doc, false, 0);
+}
+
+// ── publish response (dopo un comando) ───────────────────────────
+void publishResponse(const char* status, JsonDocument* state = nullptr) {
+  StaticJsonDocument<128> doc;
+  doc["status"] = status;
+  if (state) doc["state"] = *state;
+
+  char topic[64];
+  snprintf(topic, sizeof(topic), "guiver/%s/response", DEVICE_ID);
+  publishJson(topic, doc, false, 1);
+}
+
+// ── MQTT callback ────────────────────────────────────────────────
+void callback(char* topic, byte* payload, unsigned int length) {
+  StaticJsonDocument<128> doc;
+  DeserializationError err = deserializeJson(doc, payload, length);
+  if (err) return;
+
+  const char* cmd = doc["cmd"];
+
+  if (strcmp(cmd, "set_relay") == 0) {
+    bool value = doc["value"];
+    digitalWrite(D1, value ? HIGH : LOW);
+
+    StaticJsonDocument<64> state;
+    state["relay1"] = value;
+    publishResponse("ok", &state);
+  }
+}
+
+// ── reconnect MQTT con LWT ───────────────────────────────────────
+void mqttReconnect() {
+  char willTopic[64];
+  snprintf(willTopic, sizeof(willTopic), "guiver/%s/online", DEVICE_ID);
+
+  if (client.connect(DEVICE_ID, willTopic, 1, true, "0")) {
+    publishAnnounce();
+
+    char onlineTopic[64];
+    snprintf(onlineTopic, sizeof(onlineTopic), "guiver/%s/online", DEVICE_ID);
+    client.publish(onlineTopic, "1", 1, true);
+
+    char cmdTopic[64];
+    snprintf(cmdTopic, sizeof(cmdTopic), "guiver/%s/command", DEVICE_ID);
+    client.subscribe(cmdTopic, 1);
+  }
+}
+
+// ── setup ────────────────────────────────────────────────────────
+void setup() {
+  pinMode(D1, OUTPUT);
+  digitalWrite(D1, LOW);
+
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  client.setServer(MQTT_HOST, MQTT_PORT);
+  client.setCallback(callback);
+}
+
+// ── loop ─────────────────────────────────────────────────────────
+void loop() {
+  if (!client.connected()) mqttReconnect();
+  client.loop();
+
+  if (millis() - lastStatus > INTERVAL * 1000UL) {
+    publishStatus();
+    lastStatus = millis();
+  }
+}
+```
+
+### Template — Temperature sensor (sola lettura)
+
+Stessa struttura, cambiano `announce` e `status`:
+
+```cpp
+void publishAnnounce() {
+  StaticJsonDocument<256> doc;
+  doc["type"]      = "temperature";
+  doc["name"]      = "Serra";
+
+  JsonArray sensors = doc.createNestedArray("sensors");
+  sensors.add("temperature");
+  sensors.add("humidity");
+
+  doc["interval"] = 30;
+
+  char topic[64];
+  snprintf(topic, sizeof(topic), "guiver/%s/announce", DEVICE_ID);
+  publishJson(topic, doc, true, 1);
+}
+
+void publishStatus() {
+  StaticJsonDocument<128> doc;
+  doc["temperature"] = 23.5;   // dal sensore
+  doc["humidity"]    = 62.0;
+
+  char topic[64];
+  snprintf(topic, sizeof(topic), "guiver/%s/status", DEVICE_ID);
+  publishJson(topic, doc, false, 0);
+}
+```
+
+> **Nota:** i sensori temperatura non si sottoscrivono al topic `command` né pubblicano `response`.
+
+### Template — Pompa (attuatore)
+
+```cpp
+void publishAnnounce() {
+  StaticJsonDocument<256> doc;
+  doc["type"]      = "pump";
+  doc["name"]      = "Pozzo";
+
+  JsonArray actuators = doc.createNestedArray("actuators");
+  JsonObject p = actuators.createNestedObject();
+  p["name"]  = "pump";
+  p["label"] = "Pompa acqua";
+
+  doc["interval"] = 30;
+  // ... publish come sopra
+}
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  StaticJsonDocument<128> doc;
+  deserializeJson(doc, payload, length);
+
+  if (strcmp(doc["cmd"], "set_pump") == 0) {
+    digitalWrite(D1, doc["value"] ? HIGH : LOW);
+
+    StaticJsonDocument<64> state;
+    state["running"] = doc["value"];
+    publishResponse("ok", &state);
+  }
+}
+```
+
+### Checklist verifica firmware
+
+Prima di considerare il firmware pronto, verificare:
+
+| # | Test | Cosa controllare |
+|---|------|-----------------|
+| 1 | **WiFi + MQTT connect** | ESP si connette al broker con Client ID = `<device_id>` |
+| 2 | **LWT** | `guiver/<id>/online` con retain, QoS 1, payload `0` |
+| 3 | **Announce** | `guiver/<id>/announce` pubblicato retained, QoS 1 — Guiver registra il device |
+| 4 | **Online** | `guiver/<id>/online` = `1` retained — Guiver vede online |
+| 5 | **Status periodico** | `guiver/<id>/status` ogni `interval` s, QoS 0 — Guiver aggiorna dati |
+| 6 | **Subscribe command** | ESP riceve `guiver/<id>/command` |
+| 7 | **Response** | ESP pubblica `guiver/<id>/response` dopo ogni comando |
+| 8 | **Disconnessione** | Spegnere ESP → LWT pubblica `0` → Guiver segna offline
