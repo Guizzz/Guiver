@@ -62,7 +62,7 @@ try {
   console.log('  ! MQTT pub/sub test skipped (subscriber timeout — broker works)')
 }
 
-ssh(`cd '${PATH}' && sed -i 's|.*MQTT_BROKER_URL=.*|MQTT_BROKER_URL=mqtt://192.168.1.109:1883|' .env`)
+ssh(`cd '${PATH}' && sed -i 's|.*MQTT_BROKER_URL=.*|MQTT_BROKER_URL=mqtt://localhost:1883|' .env`)
 
 console.log('\n=== Setup complete! ===')
 console.log('Check status: ssh ' + USER + '@' + HOST + ' "sudo systemctl status guiver"')
