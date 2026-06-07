@@ -134,12 +134,12 @@ class EspManager extends Module {
     const { id, cmd, ...rest } = command?.payload || {};
 
     if (!id) {
-      return this.sendError("esp_command", "Missing device id");
+      return this.sendError("esp_command", undefined, "Missing device id");
     }
 
     const device = this.devices.get(id);
     if (!device) {
-      return this.sendError("esp_command", "Device not found: " + id);
+      return this.sendError("esp_command", id, "Device not found: " + id);
     }
 
     const mqttTopic = "guiver/" + id + "/command";

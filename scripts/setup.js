@@ -15,7 +15,7 @@ function scp(local, remote) {
 
 console.log('=== Setting up Guiver on Raspberry Pi ===\n')
 
-console.log('[1/5] Testing SSH connection...')
+console.log('[1/6] Testing SSH connection...')
 try {
   execSync(`ssh -o BatchMode=yes "${USER}@${HOST}" "echo OK"`, { stdio: 'pipe' })
 } catch {
@@ -23,23 +23,40 @@ try {
   process.exit(1)
 }
 
-console.log('[2/5] Ensuring repo is cloned...')
+console.log('[2/6] Ensuring repo is cloned...')
 ssh(`if [ ! -d '${PATH}' ]; then git clone https://github.com/Guizzz/Guiver.git '${PATH}'; fi`)
 ssh(`cd '${PATH}' && sudo git fetch origin && sudo git reset --hard origin/main`)
 
-console.log('[3/5] Installing npm dependencies...')
+console.log('[3/6] Installing npm dependencies...')
 ssh(`cd '${PATH}' && npm install`)
 
-console.log('[4/5] Setting up .env...')
+console.log('[4/6] Setting up .env...')
 ssh(`if [ ! -f '${PATH}/.env' ]; then cp '${PATH}/.env.example' '${PATH}/.env'; fi`)
 
-console.log('[5/5] Installing systemd service...')
+console.log('[5/6] Installing systemd service...')
 scp('guiver.service', '/tmp/guiver.service')
 ssh([
   'sudo mv /tmp/guiver.service /lib/systemd/system/guiver.service',
   'sudo systemctl daemon-reload',
   'sudo systemctl enable guiver',
   'sudo systemctl restart guiver',
+].join(' && '))
+
+console.log('[6/6] Installing Mosquitto MQTT broker...')
+ssh([
+  'sudo apt update -qq',
+  'sudo apt install -y mosquitto mosquitto-clients',
+  'sudo ufw allow from 192.168.1.0/24 to any port 1883 proto tcp 2>/dev/null || true',
+  'sudo systemctl enable mosquitto',
+  'sudo systemctl start mosquitto',
+  'sleep 2',
+  'echo "Verifica pub/sub MQTT..."',
+  'timeout 5 mosquitto_sub -t guiver/setup-test -C 1 &',
+  'sleep 1',
+  'mosquitto_pub -t guiver/setup-test -m "ok"',
+  'wait',
+  'echo "MQTT funzionante!"',
+  `cd '${PATH}' && sed -i 's|.*MQTT_BROKER_URL=.*|MQTT_BROKER_URL=mqtt://192.168.1.109:1883|' .env`,
 ].join(' && '))
 
 console.log('\n=== Setup complete! ===')

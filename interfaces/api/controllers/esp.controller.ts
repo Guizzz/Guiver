@@ -12,8 +12,7 @@ export class EspController {
             type: 'request',
             command: 'esp_list',
         };
-        this.core.sendCommand(cmd);
-        const response = await this.core.waitForResponse(id);
+        const response = await this.core.sendCommand(cmd);
         res.json(response);
     }
 
@@ -25,8 +24,7 @@ export class EspController {
             command: 'esp_list',
             payload: { type: req.params.type },
         };
-        this.core.sendCommand(cmd);
-        const response = await this.core.waitForResponse(id);
+        const response = await this.core.sendCommand(cmd);
         res.json(response);
     }
 
@@ -45,8 +43,7 @@ export class EspController {
             command: 'esp_command',
             payload: { id: deviceId, cmd, ...payload },
         };
-        this.core.sendCommand(coreCmd);
-        const response = await this.core.waitForResponse(id);
+        const response = await this.core.sendCommand(coreCmd);
         res.json(response);
     }
 }
