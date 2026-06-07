@@ -41,10 +41,11 @@ class MqttBridge {
     });
 
     this.client.on("message", (topic: string, message: Buffer) => {
-      const handlers = this.subscribers.get(topic);
-      if (handlers) {
-        for (const cb of handlers) {
-          cb(topic, message);
+      for (const [pattern, handlers] of this.subscribers) {
+        if (this.topicMatches(pattern, topic)) {
+          for (const cb of handlers) {
+            cb(topic, message);
+          }
         }
       }
     });
@@ -115,6 +116,25 @@ class MqttBridge {
 
   isConnected(): boolean {
     return this.client?.connected ?? false;
+  }
+
+  private topicMatches(pattern: string, topic: string): boolean {
+    const patSegs = pattern.split("/");
+    const topSegs = topic.split("/");
+
+    for (let i = 0; i < patSegs.length; i++) {
+      if (patSegs[i] === "#") {
+        return true;
+      }
+      if (patSegs[i] === "+") {
+        continue;
+      }
+      if (i >= topSegs.length || patSegs[i] !== topSegs[i]) {
+        return false;
+      }
+    }
+
+    return patSegs.length === topSegs.length;
   }
 }
 

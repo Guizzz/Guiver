@@ -76,6 +76,7 @@ class EspManager extends Module {
       device.data = { ...device.data, ...payload };
       device.lastSeen = Date.now();
       device.online = true;
+      this.log.debug("Status from " + id + ": " + JSON.stringify(payload));
     } catch (err: any) {
       this.log.error("Failed to parse status message: " + err.message);
     }
@@ -90,7 +91,7 @@ class EspManager extends Module {
     }
 
     const status = message.toString().trim();
-    device.online = status === "true";
+    device.online = status === "true" || status === "1";
     device.lastSeen = Date.now();
 
     if (!device.online) {
@@ -102,7 +103,7 @@ class EspManager extends Module {
     this.offlineCheckInterval = setInterval(() => {
       const now = Date.now();
       for (const [id, device] of this.devices) {
-        if (device.online && now - device.lastSeen > device.interval * 3) {
+        if (device.online && now - device.lastSeen > device.interval * 3 * 1000) {
           device.online = false;
           this.log.warn("ESP marked offline (timeout): " + id);
         }
