@@ -25,7 +25,7 @@ try {
 
 console.log('[2/6] Ensuring repo is cloned...')
 ssh(`if [ ! -d '${PATH}' ]; then git clone https://github.com/Guizzz/Guiver.git '${PATH}'; fi`)
-ssh(`cd '${PATH}' && sudo git fetch origin && sudo git reset --hard origin/main`)
+ssh(`cd '${PATH}' && sudo git fetch origin && sudo git reset --hard origin/main && sudo chown -R ${USER}:${USER} .`)
 
 console.log('[3/6] Installing npm dependencies...')
 ssh(`cd '${PATH}' && npm install`)
