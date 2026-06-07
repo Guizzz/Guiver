@@ -48,7 +48,7 @@ const TOTAL_STEPS = 5
 
 async function main() {
   console.log(`\n${BOLD}${CYAN}╔══════════════════════════════════════════╗${RESET}`)
-  console.log(`${BOLD}${CYAN}║     Guiver — Setup ambiente di sviluppo   ║${RESET}`)
+  console.log(`${BOLD}${CYAN}║     Guiver — Setup ambiente di sviluppo  ║${RESET}`)
   console.log(`${BOLD}${CYAN}╚══════════════════════════════════════════╝${RESET}\n`)
 
   const platform = process.platform
@@ -213,7 +213,7 @@ try {
 
   // ── Summary ────────────────────────────────────────────────────
   console.log(`\n${BOLD}${GREEN}╔══════════════════════════════════════════╗${RESET}`)
-  console.log(`${BOLD}${GREEN}║        Setup completato con successo!      ║${RESET}`)
+  console.log(`${BOLD}${GREEN}║        Setup completato con successo!    ║${RESET}`)
   console.log(`${BOLD}${GREEN}╚══════════════════════════════════════════╝${RESET}`)
   console.log(``)
   console.log(`  ${BOLD}Per avviare Guiver:${RESET}`)
