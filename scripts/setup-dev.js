@@ -1,5 +1,5 @@
 const { execSync, spawnSync } = require('child_process')
-const { existsSync, copyFileSync, mkdirSync } = require('fs')
+const { existsSync, copyFileSync, mkdirSync, writeFileSync, unlinkSync } = require('fs')
 const { resolve } = require('path')
 
 const ROOT = resolve(__dirname, '..')
@@ -33,7 +33,9 @@ function run(cmd, opts = {}) {
   return result
 }
 
-function which(cmd) {
+function which(prog) {
+  const isWin = process.platform === 'win32'
+  const cmd = isWin ? `where ${prog} >nul 2>&1` : `which ${prog} >/dev/null 2>&1`
   try {
     execSync(cmd, { stdio: 'pipe' })
     return true
@@ -55,12 +57,12 @@ async function main() {
   // ── Step 1: Mosquitto ──────────────────────────────────────────
   step(1, TOTAL_STEPS, "Mosquitto broker")
 
-  if (which("mosquitto -h >/dev/null 2>&1")) {
+  if (which("mosquitto")) {
     ok("Mosquitto già installato")
   } else {
     info("Mosquitto non trovato, procedo con l'installazione...")
     if (platform === "darwin") {
-      if (!which("brew -v >/dev/null 2>&1")) {
+      if (!which("brew")) {
         warn("Homebrew non trovato. Installalo da https://brew.sh e riprova.")
         process.exit(1)
       }
@@ -78,14 +80,62 @@ async function main() {
         warn("Distro non riconosciuta (" + distro + "). Installa Mosquitto manualmente: https://mosquitto.org/download/")
       }
     } else if (platform === "win32") {
-      if (which("choco -v >nul 2>&1")) {
-        run("choco install mosquitto -y")
-        ok("Mosquitto installato via Chocolatey")
-      } else if (which("winget --version >nul 2>&1")) {
-        run("winget install EclipseMosquitto.Mosquitto")
-        ok("Mosquitto installato via winget")
+      // helper per aggiungere al PATH se installato in path standard
+      function ensureMqttInPath() {
+        const mqttPath = "C:\\Program Files\\mosquitto"
+        if (existsSync(resolve(mqttPath, "mosquitto.exe")) &&
+            !process.env.PATH.toLowerCase().includes(mqttPath.toLowerCase())) {
+          process.env.PATH = `${mqttPath};${process.env.PATH}`
+        }
+      }
+      ensureMqttInPath()
+
+      let installed = which("mosquitto")
+
+      if (!installed && which("choco")) {
+        info("Tentativo con Chocolatey...")
+        run("choco install mosquitto -y", { ignoreExit: true })
+        ensureMqttInPath()
+        installed = which("mosquitto")
+      }
+
+      if (!installed && which("winget")) {
+        info("Tentativo con winget...")
+        run("winget install EclipseMosquitto.Mosquitto --accept-package-agreements --accept-source-agreements", { ignoreExit: true })
+        ensureMqttInPath()
+        installed = which("mosquitto")
+      }
+
+      if (!installed) {
+        info("Download installer da mosquitto.org...")
+        const psFile = resolve(ROOT, 'scripts', '_install_mosquitto.ps1')
+        writeFileSync(psFile, `
+$url = "https://mosquitto.org/files/binary/win64/mosquitto-2.1.2-install-windows-x64.exe"
+$out = "$env:TEMP\\mosquitto-installer.exe"
+try {
+  Write-Host "Scaricamento..."
+  Invoke-WebRequest -Uri $url -OutFile $out -UseBasicParsing
+  Write-Host "Eseguo installazione silenziosa..."
+  Start-Process -FilePath $out -ArgumentList "/S" -Wait
+  Write-Host "Installazione completata"
+} catch {
+  Write-Host "Download/installazione fallita: $_"
+  exit 1
+}
+`.trim())
+        run(`powershell -ExecutionPolicy Bypass -File "${psFile}"`, { ignoreExit: true })
+        try { unlinkSync(psFile) } catch { /* ignore */ }
+        ensureMqttInPath()
+        installed = which("mosquitto") || existsSync("C:\\Program Files\\mosquitto\\mosquitto.exe")
+        if (installed && existsSync("C:\\Program Files\\mosquitto\\mosquitto.exe")) {
+          ensureMqttInPath()
+        }
+      }
+
+      if (installed) {
+        ok("Mosquitto installato")
       } else {
-        warn("Installa Mosquitto manualmente da https://mosquitto.org/download/ oppure installa Chocolatey e riavvia")
+        warn("Installa Mosquitto manualmente da https://mosquitto.org/download/")
       }
     }
   }
@@ -131,32 +181,35 @@ async function main() {
   // ── Step 5: Test Mosquitto ─────────────────────────────────────
   step(5, TOTAL_STEPS, "Test Mosquitto (avvio e verifica)")
 
-  if (platform === "darwin") {
-    run("brew services start mosquitto", { ignoreExit: true })
-  } else if (platform === "linux") {
-    run("sudo systemctl start mosquitto", { ignoreExit: true })
-  }
+  if (which("mosquitto")) {
+    if (platform === "darwin") {
+      run("brew services start mosquitto", { ignoreExit: true })
+    } else if (platform === "linux") {
+      run("sudo systemctl start mosquitto", { ignoreExit: true })
+    }
 
-  // attendi che si avvii
-  await new Promise(r => setTimeout(r, 2000))
+    // attendi che si avvii
+    await new Promise(r => setTimeout(r, 2000))
 
-  const sub = spawnSync("mosquitto_sub", ["-t", "guiver/setup-test", "-W", "2", "-C", "1"], { stdio: 'pipe', timeout: 5000 })
-  const pub = spawnSync("mosquitto_pub", ["-t", "guiver/setup-test", "-m", "ok"], { stdio: 'pipe', timeout: 3000 })
-  await new Promise(r => setTimeout(r, 500))
+    const sub = spawnSync("mosquitto_sub", ["-t", "guiver/setup-test", "-W", "2", "-C", "1"], { stdio: 'pipe', timeout: 5000 })
+    const pub = spawnSync("mosquitto_pub", ["-t", "guiver/setup-test", "-m", "ok"], { stdio: 'pipe', timeout: 3000 })
+    await new Promise(r => setTimeout(r, 500))
 
-  if (sub.status === 0 || pub.status === 0) {
-    ok("Mosquitto funzionante — pub/sub test passato")
+    if (sub.status === 0 || pub.status === 0) {
+      ok("Mosquitto funzionante — pub/sub test passato")
+    } else {
+      warn("Test pub/sub fallito — Mosquitto potrebbe non essere partito correttamente")
+    }
+
+    if (platform === "darwin") {
+      run("brew services stop mosquitto", { ignoreExit: true })
+    } else if (platform === "linux") {
+      run("sudo systemctl stop mosquitto", { ignoreExit: true })
+    }
+    info("Mosquitto fermato (lo avvierai con 'npm start' quando ti serve MQTT)")
   } else {
-    warn("Test pub/sub fallito — Mosquitto potrebbe non essere partito correttamente")
+    warn("Mosquitto non installato, salto test pub/sub")
   }
-
-  // ferma Mosquitto — non serve come servizio permanente
-  if (platform === "darwin") {
-    run("brew services stop mosquitto", { ignoreExit: true })
-  } else if (platform === "linux") {
-    run("sudo systemctl stop mosquitto", { ignoreExit: true })
-  }
-  info("Mosquitto fermato (lo avvierai con 'npm start' quando ti serve MQTT)")
 
   // ── Summary ────────────────────────────────────────────────────
   console.log(`\n${BOLD}${GREEN}╔══════════════════════════════════════════╗${RESET}`)
