@@ -46,9 +46,10 @@ console.log('[6/6] Installing Mosquitto MQTT broker...')
 ssh([
   'sudo apt update -qq',
   'sudo apt install -y mosquitto mosquitto-clients',
+  "echo -e 'listener 1883\\nallow_anonymous true' | sudo tee /etc/mosquitto/conf.d/guiver.conf",
   'sudo ufw allow from 192.168.1.0/24 to any port 1883 proto tcp 2>/dev/null',
   'sudo systemctl enable mosquitto',
-  'sudo systemctl start mosquitto',
+  'sudo systemctl restart mosquitto',
   'sleep 2',
   'echo OK',
 ].join(' && '), { stdio: 'inherit' })
