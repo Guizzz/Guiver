@@ -14,15 +14,6 @@
     "crypto_module": {
         "path": "./components/modules/commands/crypto_module"
     },
-    "water_pump_module": {
-        "path": "./components/modules/commands/water_pump_module",
-        "config": {
-            "pump_ip": "192.168.1.25"
-        }
-    },
-    "room_temp_module": {
-        "path": "./components/modules/commands/room_temp_module"
-    },
     "led_module": {
         "path": "./components/modules/commands/led_module",
         "config": {

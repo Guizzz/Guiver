@@ -115,10 +115,6 @@ function handleCommand(input) {
       send("list_commands");
       break;
 
-    case "p":
-      send("get_water_pump_status");
-      break;
-
     case "crypto":
       send("get_crypto_data");
       break;

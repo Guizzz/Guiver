@@ -10,8 +10,6 @@ export type CoreRequestCommand =
     | 'rainbow_stop'
     | 'set_relay'
     | 'relay_status'
-    | 'get_water_pump_status'
-    | 'get_room_temp'
     | 'get_crypto_data'
     | 'esp_list'
     | 'esp_command'

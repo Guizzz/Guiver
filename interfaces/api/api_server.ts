@@ -5,8 +5,6 @@ import { CoreService } from './services/core.service'
 import { registerLedRoutes } from './routes/led.routes'
 import { registerRelayRoutes } from './routes/relay.routes'
 import { registerWeatherRoutes } from './routes/weather.routes'
-import { registerPumpRoutes } from './routes/pump.routes'
-import { registerRoomTempRoutes } from './routes/room_temp.routes'
 import { registerCryptoRoutes } from './routes/crypto.routes'
 import { registerEspRoutes } from './routes/esp.routes'
 import { initSwagger } from './swagger'
@@ -24,8 +22,6 @@ export default class API_Server {
         registerLedRoutes(this.app, this.core)
         registerRelayRoutes(this.app, this.core)
         registerWeatherRoutes(this.app, this.core)
-        registerPumpRoutes(this.app, this.core)
-        registerRoomTempRoutes(this.app, this.core)
         registerCryptoRoutes(this.app, this.core)
         registerEspRoutes(this.app, this.core)
 
