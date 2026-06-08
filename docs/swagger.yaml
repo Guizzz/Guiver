@@ -13,6 +13,7 @@ tags:
   - name: Relay
   - name: Weather
   - name: Crypto
+  - name: ESP
 
 paths:
   /manual_led:
@@ -35,6 +36,15 @@ paths:
   /get_crypto_data:
     $ref: './paths/crypto.yaml#/get_crypto_data'
 
+  /esp:
+    $ref: './paths/esp.yaml#/esp_list'
+
+  /esp/{type}:
+    $ref: './paths/esp.yaml#/esp_list_by_type'
+
+  /esp/{id}/command:
+    $ref: './paths/esp.yaml#/esp_command'
+
 components:
   schemas:
     LedColor:
@@ -45,3 +55,15 @@ components:
       $ref: './schemas/weather.yaml#/Weather'
     Crypto:
       $ref: './schemas/crypto.yaml#/Crypto'
+    EspDevice:
+      $ref: './schemas/esp.yaml#/EspDevice'
+    EspListPayload:
+      $ref: './schemas/esp.yaml#/EspListPayload'
+    EspListResponse:
+      $ref: './schemas/esp.yaml#/EspListResponse'
+    EspCommandRequest:
+      $ref: './schemas/esp.yaml#/EspCommandRequest'
+    EspCommandResponsePayload:
+      $ref: './schemas/esp.yaml#/EspCommandResponsePayload'
+    EspCommandResponse:
+      $ref: './schemas/esp.yaml#/EspCommandResponse'

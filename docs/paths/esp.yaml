@@ -1,0 +1,64 @@
+esp_list:
+  get:
+    summary: Lista tutti i device ESP
+    tags: [ESP]
+    parameters:
+      - in: query
+        name: type
+        required: false
+        schema:
+          type: string
+        description: Filtro opzionale per tipo di device
+    responses:
+      200:
+        description: Lista device ESP
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/esp.yaml#/EspListResponse'
+
+esp_list_by_type:
+  get:
+    summary: Lista device ESP per tipo
+    tags: [ESP]
+    parameters:
+      - in: path
+        name: type
+        required: true
+        schema:
+          type: string
+        description: Tipo di device (pump, temperature, etc.)
+    responses:
+      200:
+        description: Lista device filtrata per tipo
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/esp.yaml#/EspListResponse'
+
+esp_command:
+  post:
+    summary: Invia comando a un device ESP
+    tags: [ESP]
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: ID del device (es. pompa, temperatura)
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/esp.yaml#/EspCommandRequest'
+    responses:
+      200:
+        description: Comando inviato al device
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/esp.yaml#/EspCommandResponse'
+      400:
+        description: Richiesta malformata (id o cmd mancante)

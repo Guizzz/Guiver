@@ -1,0 +1,102 @@
+EspDevice:
+  type: object
+  properties:
+    id:
+      type: string
+      example: pompa
+    type:
+      type: string
+      example: pump
+    name:
+      type: string
+      example: Pompa acqua
+    online:
+      type: boolean
+      example: true
+    lastSeen:
+      type: integer
+      format: int64
+      example: 1780957975000
+    data:
+      type: object
+      example: { "running": false }
+
+EspListPayload:
+  type: object
+  properties:
+    total:
+      type: integer
+      example: 2
+    online:
+      type: integer
+      example: 1
+    devices:
+      type: array
+      items:
+        $ref: '#/EspDevice'
+
+EspListResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+    type:
+      type: string
+      example: response
+    command:
+      type: string
+      example: esp_list
+    payload:
+      $ref: '#/EspListPayload'
+    timestamp:
+      type: integer
+      format: int64
+
+EspCommandRequest:
+  type: object
+  required: [id, cmd]
+  properties:
+    id:
+      type: string
+      description: ID del device ESP
+      example: pompa
+    cmd:
+      type: string
+      description: Comando da eseguire
+      example: set_pump
+    value:
+      type: boolean
+      description: Valore opzionale per il comando
+      example: true
+
+EspCommandResponsePayload:
+  type: object
+  properties:
+    status:
+      type: string
+      example: command_sent
+    device:
+      type: string
+      example: pompa
+    topic:
+      type: string
+      example: guiver/pompa/command
+
+EspCommandResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+    type:
+      type: string
+      example: response
+    command:
+      type: string
+      example: esp_command
+    payload:
+      $ref: '#/EspCommandResponsePayload'
+    timestamp:
+      type: integer
+      format: int64
