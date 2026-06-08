@@ -25,6 +25,7 @@ class EspManager extends Module {
 
     this.setHandledCmds({
       esp_list: this.esp_list.bind(this),
+      esp_get: this.esp_get.bind(this),
       esp_command: this.esp_command.bind(this),
     });
 
@@ -129,6 +130,21 @@ class EspManager extends Module {
       online,
       devices,
     });
+  }
+
+  private async esp_get(command: any): Promise<any> {
+    const { id } = command?.payload || {};
+
+    if (!id) {
+      return this.sendError("esp_get", undefined, "Missing device id");
+    }
+
+    const device = this.devices.get(id);
+    if (!device) {
+      return this.sendError("esp_get", id, "Device not found: " + id);
+    }
+
+    return this.sendResponse("esp_get", command.id, { ...device });
   }
 
   private async esp_command(command: any): Promise<any> {

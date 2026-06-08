@@ -83,6 +83,60 @@ EspCommandResponsePayload:
       type: string
       example: guiver/pompa/command
 
+EspGetResponsePayload:
+  type: object
+  properties:
+    id:
+      type: string
+      example: pompa
+    type:
+      type: string
+      example: pump
+    name:
+      type: string
+      example: Pompa acqua
+    online:
+      type: boolean
+      example: true
+    lastSeen:
+      type: integer
+      format: int64
+      example: 1780957975000
+    data:
+      type: object
+      example: { "running": false }
+    sensors:
+      type: array
+      items:
+        type: string
+      example: ["temperature"]
+    actuators:
+      type: array
+      items:
+        type: object
+        properties:
+          name: { type: string }
+          label: { type: string }
+      example: [{ "name": "pump", "label": "Pompa" }]
+
+EspGetResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+    type:
+      type: string
+      example: response
+    command:
+      type: string
+      example: esp_get
+    payload:
+      $ref: '#/EspGetResponsePayload'
+    timestamp:
+      type: integer
+      format: int64
+
 EspCommandResponse:
   type: object
   properties:

@@ -39,6 +39,9 @@ paths:
   /esp:
     $ref: './paths/esp.yaml#/esp_list'
 
+  /esp/device/{id}:
+    $ref: './paths/esp.yaml#/esp_get_by_id'
+
   /esp/{type}:
     $ref: './paths/esp.yaml#/esp_list_by_type'
 
@@ -65,5 +68,9 @@ components:
       $ref: './schemas/esp.yaml#/EspCommandRequest'
     EspCommandResponsePayload:
       $ref: './schemas/esp.yaml#/EspCommandResponsePayload'
+    EspGetResponsePayload:
+      $ref: './schemas/esp.yaml#/EspGetResponsePayload'
+    EspGetResponse:
+      $ref: './schemas/esp.yaml#/EspGetResponse'
     EspCommandResponse:
       $ref: './schemas/esp.yaml#/EspCommandResponse'

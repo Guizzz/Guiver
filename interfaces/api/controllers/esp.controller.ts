@@ -28,6 +28,22 @@ export class EspController {
         res.json(response);
     }
 
+    async getById(req: Request, res: Response): Promise<void> {
+        const id = crypto.randomUUID();
+        const cmd: CoreCommand = {
+            id,
+            type: 'request',
+            command: 'esp_get',
+            payload: { id: req.params.id },
+        };
+        const response = await this.core.sendCommand(cmd);
+        if (response.payload?.error) {
+            res.status(404).json(response);
+            return;
+        }
+        res.json(response);
+    }
+
     async command(req: Request, res: Response): Promise<void> {
         const { id: deviceId, cmd, ...payload } = req.body;
 

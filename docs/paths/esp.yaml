@@ -36,6 +36,27 @@ esp_list_by_type:
             schema:
               $ref: '../schemas/esp.yaml#/EspListResponse'
 
+esp_get_by_id:
+  get:
+    summary: Ottieni un device ESP per ID
+    tags: [ESP]
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: ID del device (es. pompa, temperatura)
+    responses:
+      200:
+        description: Device trovato
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/esp.yaml#/EspGetResponse'
+      404:
+        description: Device non trovato
+
 esp_command:
   post:
     summary: Invia comando a un device ESP

@@ -12,6 +12,7 @@ export type CoreRequestCommand =
     | 'relay_status'
     | 'get_crypto_data'
     | 'esp_list'
+    | 'esp_get'
     | 'esp_command'
 
 export interface CoreCommand<T = any> {
