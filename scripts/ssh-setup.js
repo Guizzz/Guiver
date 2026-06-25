@@ -3,8 +3,10 @@ const { existsSync, readFileSync } = require('fs')
 const { homedir } = require('os')
 const { join } = require('path')
 
-const HOST = process.env.PI_HOST || '192.168.1.109'
-const USER = process.env.PI_USER || 'guizz'
+require('dotenv/config')
+
+const HOST = process.env.HOST || '192.168.1.109'
+const USER = process.env.USER || 'guizz'
 const SSH_DIR = join(homedir(), '.ssh')
 
 function run(cmd, opts = {}) {
@@ -15,7 +17,7 @@ function runCapture(cmd) {
   return execSync(cmd, { stdio: 'pipe', encoding: 'utf8' }).trim()
 }
 
-console.log('=== SSH Setup: PC -> Raspberry Pi ===\n')
+console.log('=== SSH Setup: PC -> server ===\n')
 
 // 1. Find existing key
 const keyTypes = ['id_ed25519', 'id_ecdsa', 'id_rsa']
@@ -38,16 +40,15 @@ if (!keyFile) {
 }
 
 // 3. Copy public key to Pi
-console.log('\n[2/2] Copying public key to Raspberry Pi...')
+console.log(`\n[2/2] Copying public key to ${HOST}...`)
 console.log(`You will be asked for the password of ${USER}@${HOST} (one time only)\n`)
 
+const pipeCmd = process.platform === 'win32' ? 'type' : 'cat'
 try {
   run(`ssh-copy-id "${USER}@${HOST}"`)
 } catch {
-  // Fallback: ssh-copy-id not available (common on Windows)
-  const pubKey = readFileSync(keyFile + '.pub', 'utf8').trim()
-  const escaped = pubKey.replace(/'/g, "'\\''")
-  run(`ssh "${USER}@${HOST}" "mkdir -p ~/.ssh && echo '${escaped}' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"`)
+  const pubKeyFile = keyFile + '.pub'
+  run(`${pipeCmd} "${pubKeyFile}" | ssh "${USER}@${HOST}" "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"`)
 }
 
 // 4. Verify

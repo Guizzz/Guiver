@@ -5,9 +5,9 @@ Wants=mosquitto.service
 
 [Service]
 Type=simple
-User=guizz
-WorkingDirectory=/home/guizz/progetti/Guiver
-ExecStart=sudo /usr/bin/npm start
+User={{USER}}
+WorkingDirectory={{REMOTE_PATH}}
+ExecStart={{NPM_PATH}} start
 Restart=on-failure
 RestartSec=5
 

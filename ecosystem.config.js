@@ -1,9 +1,13 @@
+const user = process.env.USER || 'guizz'
+const remotePath = process.env.REMOTE_PATH || '/home/guizz/progetti/Guiver'
+
 module.exports = {
   apps: [{
     name: 'guiver',
     script: 'npm',
     args: 'start',
-    cwd: '/home/guizz/progetti/Guiver',
+    cwd: remotePath,
+    user: user,
     env: {
       NODE_ENV: 'production',
     },

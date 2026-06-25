@@ -6,7 +6,7 @@ info:
   description: API per controllo dispositivi IoT
 
 servers:
-  - url: http://raspberrypi.local:8080 
+  - url: http://bolide.local:8080 
 
 tags:
   - name: LED

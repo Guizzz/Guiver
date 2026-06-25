@@ -1,14 +1,14 @@
 const { execSync } = require('child_process')
 
-const HOST = process.env.PI_HOST || '192.168.1.109'
-const USER = process.env.PI_USER || 'guizz'
-const PATH = process.env.PI_PATH || '/home/guizz/progetti/Guiver'
+const HOST = process.env.HOST || '192.168.1.109'
+const USER = process.env.USER || 'guizz'
+const PATH = process.env.PATH || '/home/guizz/progetti/Guiver'
 
 function ssh(cmd) {
   execSync(`ssh "${USER}@${HOST}" "${cmd}"`, { stdio: 'inherit' })
 }
 
-console.log('=== Cleanup Raspberry Pi ===\n')
+console.log('=== Cleanup server ===\n')
 
 console.log('[1/4] Fixing file ownership...')
 ssh(`sudo chown -R ${USER}:${USER} '${PATH}'`)
