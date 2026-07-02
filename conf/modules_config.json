@@ -14,20 +14,6 @@
     "crypto_module": {
         "path": "./components/modules/commands/crypto_module"
     },
-    "led_module": {
-        "path": "./components/modules/commands/led_module",
-        "config": {
-            "red_pin": 4,
-            "green_pin": 17,
-            "blue_pin": 18
-        }
-    },
-    "relay_module": {
-        "path": "./components/modules/commands/relay_module",
-        "config": {
-            "light_pin": 2
-        }
-    },
     "esp_manager": {
         "path": "./components/modules/esp_manager/esp_manager"
     }

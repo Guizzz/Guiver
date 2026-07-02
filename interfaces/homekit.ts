@@ -78,11 +78,6 @@ class HomekitServer {
     };
     EventBus.publish("core:register_handler", j_msg);
 
-    const j_cmd = {
-      type: "request",
-      command: "relay_status",
-    };
-    EventBus.publish("core:request", j_cmd);
   }
 
   update_value(parsed: any) {
@@ -106,15 +101,7 @@ class HomekitServer {
   _set(value: any, callback: any) {
     console.log("Setting light state to: " + value);
     this.currentLightStatus = value;
-    const j_cmd = {
-      type: "request",
-      command: "set_relay",
-      payload: {
-        set_relay: value,
-        relay: "light",
-      },
-    };
-    EventBus.publish("core:request", j_cmd);
+    // set_relay rimosso — ora gestito dagli ESP
     callback();
   }
 

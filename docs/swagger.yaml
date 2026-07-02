@@ -9,30 +9,14 @@ servers:
   - url: http://bolide.local:8080 
 
 tags:
-  - name: LED
-  - name: Relay
   - name: Weather
   - name: Crypto
   - name: ESP
 
 paths:
-  /manual_led:
-    $ref: './paths/led.yaml#/manual_led'
-
-  /get_led_status:
-    $ref: './paths/led.yaml#/get_led_status'
-
-  /set_rainbow:
-    $ref: './paths/led.yaml#/set_rainbow'
-
   /get_weather:
     $ref: './paths/weather.yaml#/get_weather'
 
-  /set_relay:
-    $ref: './paths/relay.yaml#/set_relay'
-  
-  /get_relay_status:
-    $ref: './paths/relay.yaml#/get_relay_status'
   /get_crypto_data:
     $ref: './paths/crypto.yaml#/get_crypto_data'
 
@@ -50,10 +34,6 @@ paths:
 
 components:
   schemas:
-    LedColor:
-      $ref: './schemas/led.yaml#/LedColor'
-    Relay:
-      $ref: './schemas/relay.yaml#/Relay'
     Weather:
       $ref: './schemas/weather.yaml#/Weather'
     Crypto:

@@ -4,12 +4,6 @@ export type CoreCommandType =
 
 export type CoreRequestCommand =
     | 'get_weather'
-    | 'led_status'
-    | 'led_manual'
-    | 'rainbow_start'
-    | 'rainbow_stop'
-    | 'set_relay'
-    | 'relay_status'
     | 'get_crypto_data'
     | 'esp_list'
     | 'esp_get'

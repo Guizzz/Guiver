@@ -5,8 +5,6 @@ import { WS_URL, TEST_TIMEOUT } from './helpers'
 let ws: WebSocket
 
 const commands: { command: string; payload?: any }[] = [
-  { command: 'led_status' },
-  { command: 'relay_status' },
   { command: 'get_weather' },
   { command: 'get_crypto_data' },
 ]

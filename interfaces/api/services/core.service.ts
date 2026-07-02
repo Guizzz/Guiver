@@ -7,11 +7,6 @@ import { CoreResponse } from '../types/responses'
 export class CoreService {
     private logger: any
 
-    // RGB state
-    public redValue = 0
-    public greenValue = 0
-    public blueValue = 0
-
     // queue di resolver per le response
     private pending = new Map<string, (v:any)=>void>()
 
@@ -40,21 +35,6 @@ export class CoreService {
 
     private updateValue(data: CoreResponse): void 
     {
-        // aggiorna stato RGB
-        if (data.payload) {
-            this.redValue =
-                data.payload.redValue ??
-                this.redValue
-
-            this.greenValue =
-                data.payload.greenValue ??
-                this.greenValue
-
-            this.blueValue =
-                data.payload.blueValue ??
-                this.blueValue
-        }
-
         // risolvi la prossima promise in attesa
         const resolver = this.pending.get(data.id)
 

@@ -2,8 +2,6 @@ import express from 'express'
 import cors from 'cors'
 
 import { CoreService } from './services/core.service'
-import { registerLedRoutes } from './routes/led.routes'
-import { registerRelayRoutes } from './routes/relay.routes'
 import { registerWeatherRoutes } from './routes/weather.routes'
 import { registerCryptoRoutes } from './routes/crypto.routes'
 import { registerEspRoutes } from './routes/esp.routes'
@@ -19,8 +17,6 @@ export default class API_Server {
 
         initSwagger(this.app);
 
-        registerLedRoutes(this.app, this.core)
-        registerRelayRoutes(this.app, this.core)
         registerWeatherRoutes(this.app, this.core)
         registerCryptoRoutes(this.app, this.core)
         registerEspRoutes(this.app, this.core)
