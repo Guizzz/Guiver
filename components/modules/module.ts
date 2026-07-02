@@ -112,14 +112,16 @@ class Module {
     protected sendResponse(
         command: string,
         id: string,
-        payload: any
+        payload: any,
+        extra?: Record<string, any>
     ): void {
         const resp = {
             id,
             type: "response",
             command,
             payload,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            ...extra
         };
 
         EventBus.publish("core:request", resp);

@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import Module from "../module";
 import MqttBridge from "../../mqtt/mqtt_bridge";
 
@@ -58,6 +59,7 @@ class EspManager extends Module {
       });
 
       this.log.info("ESP announced: " + id + " (" + payload.type + " - " + payload.name + ")");
+      this.sendResponse("esp_announce", crypto.randomUUID(), { device: this.devices.get(id) });
     } catch (err: any) {
       this.log.error("Failed to parse announce message: " + err.message);
     }
@@ -78,6 +80,7 @@ class EspManager extends Module {
       device.lastSeen = Date.now();
       device.online = true;
       this.log.debug("Status from " + id + ": " + JSON.stringify(payload));
+      this.sendResponse("esp_status", crypto.randomUUID(), { id, data: device.data, lastSeen: device.lastSeen });
     } catch (err: any) {
       this.log.error("Failed to parse status message: " + err.message);
     }
@@ -98,6 +101,7 @@ class EspManager extends Module {
     if (!device.online) {
       this.log.warn("ESP went offline: " + id);
     }
+    this.sendResponse("esp_online", crypto.randomUUID(), { id, online: device.online });
   }
 
   private startOfflineCheck(): void {
@@ -107,6 +111,7 @@ class EspManager extends Module {
         if (device.online && now - device.lastSeen > device.interval * 3 * 1000) {
           device.online = false;
           this.log.warn("ESP marked offline (timeout): " + id);
+          this.sendResponse("esp_online", crypto.randomUUID(), { id, online: false });
         }
       }
     }, 15000);
@@ -129,7 +134,7 @@ class EspManager extends Module {
       total: devices.length,
       online,
       devices,
-    });
+    }, { client_id: command.client_id });
   }
 
   private async esp_get(command: any): Promise<any> {

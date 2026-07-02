@@ -96,6 +96,11 @@ class WssManager extends EventEmitter {
                     )}`
                 );
 
+                this.emit("connection_verified", {
+                    client_id: msg.client_id.toString(),
+                    conKey
+                });
+
                 this.emit(
                     this.eventName,
                     message.utf8Data

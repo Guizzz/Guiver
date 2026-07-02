@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import EventBus from "../utils/event_bus";
 import { interfaceLogger } from "../utils/logger";
 import WssManager from "../utils/wss_manager";
@@ -18,6 +19,7 @@ class ClientManager {
         this.wssManager.start();
 
         this.wssManager.on("ws_msg", this.fromClient.bind(this));
+        this.wssManager.on("connection_verified", this.onClientVerified.bind(this));
         EventBus.subscribe("core:response", this.sendClient.bind(this));
 
         this._start();
@@ -32,6 +34,16 @@ class ClientManager {
         };
 
         EventBus.publish("core:register_handler", j_msg);
+    }
+
+    private onClientVerified({ client_id }: { client_id: string }): void {
+        this.logger.info("New client verified, sending ESP list: " + client_id);
+        EventBus.publish("core:request", {
+            type: "request",
+            command: "esp_list",
+            id: crypto.randomUUID(),
+            client_id
+        });
     }
 
     private fromClient(msg: string): void {
