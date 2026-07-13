@@ -38,7 +38,8 @@ class EspManager extends Module {
     this.bridge.subscribe("guiver/+/announce", this.onAnnounce.bind(this));
     this.bridge.subscribe("guiver/+/status", this.onStatus.bind(this));
     this.bridge.subscribe("guiver/+/online", this.onOnline.bind(this));
-    this.log.info("MQTT subscriptions active (guiver/+/announce, guiver/+/status, guiver/+/online)");
+    this.bridge.subscribe("guiver/+/response", this.onResponse.bind(this));
+    this.log.info("MQTT subscriptions active (guiver/+/announce, guiver/+/status, guiver/+/online, guiver/+/response)");
   }
 
   private onAnnounce(topic: string, message: Buffer): void {
@@ -102,6 +103,16 @@ class EspManager extends Module {
       this.log.warn("ESP went offline: " + id);
     }
     this.sendResponse("esp_online", crypto.randomUUID(), { id, online: device.online });
+  }
+
+  private onResponse(topic: string, message: Buffer): void {
+    try {
+      const payload = JSON.parse(message.toString());
+      const id = topic.split("/")[1];
+      this.sendResponse("esp_response", crypto.randomUUID(), { id, ...payload });
+    } catch (err: any) {
+      this.log.error("Failed to parse response: " + err.message);
+    }
   }
 
   private startOfflineCheck(): void {

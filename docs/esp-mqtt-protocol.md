@@ -48,10 +48,14 @@ Published **once** at boot (retained). Describes the device capabilities.
 
 ```json
 {
-  "type": "temperature",
-  "name": "Serra",
+  "type": "generic",
+  "name": "ESPControlBase",
   "sensors": ["temperature", "humidity"],
-  "interval": 30
+  "actuators": [
+    {"name": "set_pompa", "label": "pompa"},
+    {"name": "set_led_mensola", "label": "led_mensola"}
+  ],
+  "interval": 5
 }
 ```
 
@@ -60,16 +64,17 @@ Published **once** at boot (retained). Describes the device capabilities.
 | `type`    | `string`        | ✅       | Device category (see below)                          |
 | `name`    | `string`        | ✅       | Human-readable label                                 |
 | `sensors` | `string[]`      | ❌       | List of sensor names this device publishes           |
-| `actuators` | `{name, label}[]` | ❌    | List of actuator channels (relays, pumps, etc.)      |
+| `actuators` | `{name, label}[]` | ❌    | List of actuators — `name` is the MQTT command name, `label` is human-readable |
 | `interval` | `number`       | ❌       | Status publish interval in seconds (default `60`)    |
 
 **Supported device types:**
 
-| Type          | Sensors (example)                | Actuators (example)          | Read/Write |
-|---------------|----------------------------------|------------------------------|------------|
-| `temperature` | `temperature`, `humidity`        | —                            | Read-only  |
-| `relay`       | —                                | `relay1`, `relay2`           | Read/write |
-| `pump`        | —                                | `pump`                       | Read/write |
+| Type          | Sensors (example)                | Actuators (example)                | Read/Write |
+|---------------|----------------------------------|------------------------------------|------------|
+| `temperature` | `temperature`, `humidity`        | —                                  | Read-only  |
+| `relay`       | —                                | `set_relay`, `set_led`             | Read/write |
+| `pump`        | —                                | `set_pompa`                        | Read/write |
+| `generic`     | configurable                     | configurable                       | Read/write |
 
 #### `guiver/<id>/online`
 
@@ -117,25 +122,36 @@ Periodic data pushed by the ESP. Frequency defined by `interval` in announce.
 
 Commands sent from Guiver to the ESP. The ESP must subscribe to this topic.
 
-**Set relay:**
+The `cmd` value must match one of the `actuators[].name` values declared in the announce message. For example, if the device announced:
+
 ```json
 {
-  "cmd": "set_relay",
+  "actuators": [
+    {"name": "set_pompa", "label": "pompa"},
+    {"name": "set_led_mensola", "label": "led_mensola"}
+  ]
+}
+```
+
+Then valid commands are `set_pompa` and `set_led_mensola`:
+
+```json
+{
+  "cmd": "set_pompa",
   "value": true
 }
 ```
 
-**Start/stop pump:**
 ```json
 {
-  "cmd": "set_pump",
-  "value": true
+  "cmd": "set_led_mensola",
+  "value": false
 }
 ```
 
 | Field   | Type              | Required | Description                     |
 |---------|-------------------|----------|---------------------------------|
-| `cmd`   | `string`          | ✅       | Command name                    |
+| `cmd`   | `string`          | ✅       | Command name (must match `actuators[].name` from announce) |
 | `value` | `boolean|number|string` | ✅ | Command parameter               |
 
 #### `guiver/<id>/response`
@@ -297,7 +313,7 @@ void publishAnnounce() {
 
   JsonArray actuators = doc.createNestedArray("actuators");
   JsonObject r1 = actuators.createNestedObject();
-  r1["name"]  = "relay1";
+  r1["name"]  = "set_relay";   // nome comando MQTT, non canale fisico
   r1["label"] = "Relè 1";
 
   doc["interval"] = INTERVAL;
@@ -430,7 +446,7 @@ void publishAnnounce() {
 
   JsonArray actuators = doc.createNestedArray("actuators");
   JsonObject p = actuators.createNestedObject();
-  p["name"]  = "pump";
+  p["name"]  = "set_pompa";   // nome comando MQTT
   p["label"] = "Pompa acqua";
 
   doc["interval"] = 30;
