@@ -9,5 +9,7 @@ export function registerEspRoutes(app: Express, core: CoreService): void {
     app.get('/esp', controller.list.bind(controller))
     app.get('/esp/device/:id', controller.getById.bind(controller))
     app.get('/esp/:type', controller.listByType.bind(controller))
+    app.post('/esp/purge', controller.purge.bind(controller))
+    app.delete('/esp/device/:id', controller.purgeById.bind(controller))
     app.post('/esp/:id/command', controller.command.bind(controller))
 }

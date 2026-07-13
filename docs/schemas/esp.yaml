@@ -154,3 +154,41 @@ EspCommandResponse:
     timestamp:
       type: integer
       format: int64
+
+EspPurgeResponsePayload:
+  type: object
+  properties:
+    purged:
+      type: integer
+      description: Numero di device rimossi
+      example: 2
+    devices:
+      type: array
+      description: Lista dei device purgati
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            example: vecchio_esp
+          name:
+            type: string
+            example: Vecchio sensore
+
+EspPurgeResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+    type:
+      type: string
+      example: response
+    command:
+      type: string
+      example: esp_purge
+    payload:
+      $ref: '#/EspPurgeResponsePayload'
+    timestamp:
+      type: integer
+      format: int64

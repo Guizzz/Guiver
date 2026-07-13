@@ -62,4 +62,27 @@ export class EspController {
         const response = await this.core.sendCommand(coreCmd);
         res.json(response);
     }
+
+    async purge(req: Request, res: Response): Promise<void> {
+        const id = crypto.randomUUID();
+        const cmd: CoreCommand = {
+            id,
+            type: 'request',
+            command: 'esp_purge',
+        };
+        const response = await this.core.sendCommand(cmd);
+        res.json(response);
+    }
+
+    async purgeById(req: Request, res: Response): Promise<void> {
+        const id = crypto.randomUUID();
+        const cmd: CoreCommand = {
+            id,
+            type: 'request',
+            command: 'esp_purge',
+            payload: { id: req.params.id },
+        };
+        const response = await this.core.sendCommand(cmd);
+        res.json(response);
+    }
 }

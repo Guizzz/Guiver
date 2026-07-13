@@ -8,6 +8,7 @@ export type CoreRequestCommand =
     | 'esp_list'
     | 'esp_get'
     | 'esp_command'
+    | 'esp_purge'
 
 export interface CoreCommand<T = any> {
     id: string

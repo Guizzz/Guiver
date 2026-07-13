@@ -39,6 +39,7 @@ All topics use the `guiver/` prefix and UTF-8 string payloads (JSON).
 | `guiver/<id>/status`               | ESP → Broker   | ❌ No    | 0   | Periodic sensor / state data             |
 | `guiver/<id>/command`              | Broker → ESP   | ❌ No    | 1   | Commands from Guiver                     |
 | `guiver/<id>/response`             | ESP → Broker   | ❌ No    | 1   | Response to a command                    |
+| `guiver/esp/purge`                 | External → Guiver | ❌ No | 0   | Trigger device purge (see below)         |
 
 ### Topic Details
 
@@ -172,6 +173,38 @@ ESP response to a command. Published once after executing.
 | `status` | `string` | ✅       | `"ok"` or `"error"`                 |
 | `state`  | `object` | ❌       | Current device state after command  |
 
+#### `guiver/esp/purge`
+
+System-level topic to trigger device cleanup. Any external client (scripts, MQTT Explorer, etc.) can publish here.
+
+**Purge all offline devices:**
+```json
+{}
+```
+
+**Purge a specific device:**
+```json
+{
+  "id": "device_id"
+}
+```
+
+| Field  | Type     | Required | Description                                   |
+|--------|----------|----------|-----------------------------------------------|
+| `id`   | `string` | ❌       | Target device ID. If omitted, all offline devices are purged. |
+
+**What happens on purge:**
+1. Device is removed from Guiver's in-memory registry
+2. Retained `announce` message is cleared (empty payload published with retain)
+3. Retained `online` message is cleared (empty payload published with retain)
+4. If the device comes back online later, it re-announces normally
+
+**Automatic purge:** Devices offline for >24 hours are purged automatically every 15 seconds.
+
+**HTTP equivalents:**
+- `POST /esp/purge` — purge all offline devices
+- `DELETE /esp/device/:id` — purge a specific device
+
 ---
 
 ## Offline Detection
@@ -185,6 +218,30 @@ Guiver uses two mechanisms:
 
 If no `status` message arrives within `interval × 3` seconds, Guiver marks the
 device as offline regardless of the LWT value.
+
+### Device Lifecycle
+
+```
+ESP boots → announce (retained) → Guiver registers device (online)
+     │
+     ├── status messages every interval → lastSeen refreshed
+     │
+     ├── ESP disconnects → LWT publishes online=0 → Guiver marks offline
+     │         │
+     │         ├── within 24h: device stays in registry (offline)
+     │         │     └── manual purge via MQTT/HTTP removes it immediately
+     │         │
+     │         └── after 24h: auto-purge removes it + clears retained
+     │
+     └── ESP reboots → new announce → re-registered
+```
+
+### Retained Messages & Restart Behavior
+
+When Guiver restarts, it receives all retained MQTT messages from the broker.
+This means stale `announce` messages from disconnected ESPs will temporarily
+appear as registered devices. The auto-purge mechanism (24h threshold) cleans
+these up. For immediate cleanup, use the manual purge commands.
 
 ---
 

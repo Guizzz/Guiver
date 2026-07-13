@@ -2,6 +2,8 @@ import crypto from "crypto";
 import Module from "../module";
 import MqttBridge from "../../mqtt/mqtt_bridge";
 
+const PURGE_AFTER_MS = 24 * 60 * 60 * 1000; // 24h — stale devices are removed from registry
+
 interface EspDevice {
   id: string;
   type: string;
@@ -28,6 +30,7 @@ class EspManager extends Module {
       esp_list: this.esp_list.bind(this),
       esp_get: this.esp_get.bind(this),
       esp_command: this.esp_command.bind(this),
+      esp_purge: this.esp_purge.bind(this),
     });
 
     this.setupMqttSubscriptions();
@@ -39,7 +42,8 @@ class EspManager extends Module {
     this.bridge.subscribe("guiver/+/status", this.onStatus.bind(this));
     this.bridge.subscribe("guiver/+/online", this.onOnline.bind(this));
     this.bridge.subscribe("guiver/+/response", this.onResponse.bind(this));
-    this.log.info("MQTT subscriptions active (guiver/+/announce, guiver/+/status, guiver/+/online, guiver/+/response)");
+    this.bridge.subscribe("guiver/esp/purge", this.onMqttPurge.bind(this));
+    this.log.info("MQTT subscriptions active (guiver/+/announce, guiver/+/status, guiver/+/online, guiver/+/response, guiver/esp/purge)");
   }
 
   private onAnnounce(topic: string, message: Buffer): void {
@@ -115,11 +119,46 @@ class EspManager extends Module {
     }
   }
 
+  private onMqttPurge(topic: string, message: Buffer): void {
+    try {
+      const payload = message.length > 0 ? JSON.parse(message.toString()) : {};
+      const targetId = payload.id;
+      const purged: { id: string; name: string }[] = [];
+
+      for (const [id, device] of this.devices) {
+        if (targetId && id !== targetId) continue;
+        if (!device.online) {
+          purged.push({ id, name: device.name });
+          this.purgeDevice(id, device);
+        }
+      }
+
+      this.log.info("MQTT purge: " + purged.length + " device(s) removed");
+      this.sendResponse("esp_purge", crypto.randomUUID(), { purged: purged.length, devices: purged });
+    } catch (err: any) {
+      this.log.error("Failed to parse purge message: " + err.message);
+    }
+  }
+
+  private purgeDevice(id: string, device: EspDevice): void {
+    this.devices.delete(id);
+    this.log.info("ESP purged: " + id + " (" + device.name + ")");
+    this.bridge.publish("guiver/" + id + "/announce", Buffer.alloc(0), { retain: true });
+    this.bridge.publish("guiver/" + id + "/online", Buffer.alloc(0), { retain: true });
+    this.sendResponse("esp_purge", crypto.randomUUID(), { id, name: device.name });
+  }
+
   private startOfflineCheck(): void {
     this.offlineCheckInterval = setInterval(() => {
       const now = Date.now();
       for (const [id, device] of this.devices) {
-        if (device.online && now - device.lastSeen > device.interval * 3 * 1000) {
+        if (!device.online) {
+          if (now - device.lastSeen > PURGE_AFTER_MS) {
+            this.purgeDevice(id, device);
+          }
+          continue;
+        }
+        if (now - device.lastSeen > device.interval * 3 * 1000) {
           device.online = false;
           this.log.warn("ESP marked offline (timeout): " + id);
           this.sendResponse("esp_online", crypto.randomUUID(), { id, online: false });
@@ -186,6 +225,24 @@ class EspManager extends Module {
       device: id,
       topic: mqttTopic,
     });
+  }
+
+  private async esp_purge(command: any): Promise<any> {
+    const targetId = command?.payload?.id;
+    const purged: { id: string; name: string }[] = [];
+
+    for (const [id, device] of this.devices) {
+      if (targetId && id !== targetId) continue;
+      if (!device.online) {
+        purged.push({ id, name: device.name });
+        this.purgeDevice(id, device);
+      }
+    }
+
+    return this.sendResponse("esp_purge", command.id, {
+      purged: purged.length,
+      devices: purged,
+    }, { client_id: command.client_id });
   }
 }
 

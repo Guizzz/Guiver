@@ -24,13 +24,16 @@ paths:
     $ref: './paths/esp.yaml#/esp_list'
 
   /esp/device/{id}:
-    $ref: './paths/esp.yaml#/esp_get_by_id'
+    $ref: './paths/esp.yaml#/esp_device_by_id'
 
   /esp/{type}:
     $ref: './paths/esp.yaml#/esp_list_by_type'
 
   /esp/{id}/command:
     $ref: './paths/esp.yaml#/esp_command'
+
+  /esp/purge:
+    $ref: './paths/esp.yaml#/esp_purge'
 
 components:
   schemas:
@@ -54,3 +57,7 @@ components:
       $ref: './schemas/esp.yaml#/EspGetResponse'
     EspCommandResponse:
       $ref: './schemas/esp.yaml#/EspCommandResponse'
+    EspPurgeResponsePayload:
+      $ref: './schemas/esp.yaml#/EspPurgeResponsePayload'
+    EspPurgeResponse:
+      $ref: './schemas/esp.yaml#/EspPurgeResponse'

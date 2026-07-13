@@ -36,7 +36,7 @@ esp_list_by_type:
             schema:
               $ref: '../schemas/esp.yaml#/EspListResponse'
 
-esp_get_by_id:
+esp_device_by_id:
   get:
     summary: Ottieni un device ESP per ID
     tags: [ESP]
@@ -56,6 +56,28 @@ esp_get_by_id:
               $ref: '../schemas/esp.yaml#/EspGetResponse'
       404:
         description: Device non trovato
+  delete:
+    summary: Rimuovi un device specifico offline dal registry
+    description: |
+      Purga un singolo device ESP per ID. Il device deve essere offline.
+      Pubblica payload vuoto retained per pulire i retained messages dal broker MQTT.
+    tags: [ESP]
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: ID del device da purgare
+    responses:
+      200:
+        description: Device purgato
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/esp.yaml#/EspPurgeResponse'
+      404:
+        description: Device non trovato o ancora online
 
 esp_command:
   post:
@@ -83,3 +105,22 @@ esp_command:
               $ref: '../schemas/esp.yaml#/EspCommandResponse'
       400:
         description: Richiesta malformata (id o cmd mancante)
+
+esp_purge:
+  post:
+    summary: Rimuovi tutti i device offline dal registry
+    description: |
+      Purga tutti i device ESP attualmente offline. Rimuove dalla registry in-memory
+      e pubblica payload vuoto retained su `guiver/<id>/announce` e `guiver/<id>/online`
+      per pulire i retained messages dal broker MQTT.
+      
+      Se un device è offline da più di 24 ore viene rimosso automaticamente (purge automatica).
+      Questo endpoint permette di forzare la pulizia immediata.
+    tags: [ESP]
+    responses:
+      200:
+        description: Device purgati
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/esp.yaml#/EspPurgeResponse'

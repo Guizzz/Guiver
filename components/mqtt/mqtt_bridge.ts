@@ -66,7 +66,7 @@ class MqttBridge {
     this.client.on("close", () => {});
   }
 
-  publish(topic: string, message: string | Buffer): void {
+  publish(topic: string, message: string | Buffer, options?: { retain?: boolean; qos?: 0 | 1 | 2 }): void {
     if (this.offline) {
       return;
     }
@@ -74,7 +74,7 @@ class MqttBridge {
       this.logger.warn("Cannot publish to " + topic + ": not connected");
       return;
     }
-    this.client.publish(topic, message);
+    this.client.publish(topic, message, options);
   }
 
   subscribe(topic: string, callback: (topic: string, message: Buffer) => void): void {
