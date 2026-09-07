@@ -18,7 +18,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@apidevtools/swagger-parser": "^12.1.0",
+    "@apidevtools/swagger-parser": "^13.0.0",
     "axios": "^1.18.1",
     "body-parser": "^2.3.0",
     "cors": "^2.8.5",
