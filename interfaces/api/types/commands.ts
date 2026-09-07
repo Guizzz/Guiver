@@ -17,4 +17,5 @@ export interface CoreCommand<T = any> {
     module?: string
     module_queue?: string
     payload?: T
+    pin?: string
 }

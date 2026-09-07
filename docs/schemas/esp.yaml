@@ -69,6 +69,10 @@ EspCommandRequest:
       type: boolean
       description: Valore opzionale per il comando
       example: true
+    pin:
+      type: string
+      description: Codice di sicurezza obbligatorio per i comandi protetti (vedi conf/security_config.json)
+      example: "1234"
 
 EspCommandResponsePayload:
   type: object

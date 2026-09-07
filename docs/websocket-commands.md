@@ -314,7 +314,8 @@ Invia un comando MQTT al dispositivo ESP. La risposta conferma solo l'invio — 
     "id": "esp-led-01",
     "cmd": "set_color",
     "color": "#00ff00",
-    "brightness": 100
+    "brightness": 100,
+    "pin": "1234"
   }
 }
 ```
@@ -323,7 +324,10 @@ Invia un comando MQTT al dispositivo ESP. La risposta conferma solo l'invio — 
 |-------|-------------|-------------|
 | `payload.id` | sì | ID del dispositivo ESP target |
 | `payload.cmd` | sì | Comando da eseguire |
+| `payload.pin` | sì* | Codice di sicurezza per i comandi protetti (vedi `conf/security_config.json`) |
 | `payload.*` | no | Parametri aggiuntivi inoltrati all'ESP |
+
+> **\*** `pin` è obbligatorio **solo** per i comandi elencati in `conf/security_config.json`. Se assente o errato il server risponde con `error: "Invalid or missing security code"` e il comando non viene inoltrato. Il `pin` viene rimosso dal payload prima dell'invio all'ESP.
 
 Il payload MQTT inviato all'ESP sarà: `{"cmd": "set_color", "color": "#00ff00", "brightness": 100}`
 
